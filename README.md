@@ -99,11 +99,11 @@ El siguiente diagrama describe las principales entidades y sus relaciones:
 
 6. **¿Cómo probar otros roles?**  
    - Inicia sesión como **Director** con la opción "Portal CTP" con las credenciales de arriba.
-     <img width="643" height="388" alt="image" src="https://github.com/user-attachments/assets/78525b50-e80f-41e5-ae1c-c95b7842aa14" />
-   - Desde el menú registros, selecciona la opción mantenimiento y véras diveras opciones para realizar registros.
-     <img width="646" height="392" alt="image" src="https://github.com/user-attachments/assets/72a2b4b7-eaaa-4170-b4ec-5cc43a7dc430" />  
+     <p align="center"><img width="643" height="388" alt="image" src="https://github.com/user-attachments/assets/78525b50-e80f-41e5-ae1c-c95b7842aa14"></p>
+   - Desde el menú registros, selecciona la opción mantenimiento y verás diversas opciones para realizar registros.
+     <p align="center"><img width="646" height="392" alt="image" src="https://github.com/user-attachments/assets/72a2b4b7-eaaa-4170-b4ec-5cc43a7dc430"></p>
    - Selecciona Docente/Estudiante y completa los datos para crear el registro.
-     <img width="1416" height="699" alt="image" src="https://github.com/user-attachments/assets/90aeaf52-785c-4e35-8ef4-d170b4b8dbaf" />
+     <p align="center"><img width="1416" height="699" alt="image" src="https://github.com/user-attachments/assets/90aeaf52-785c-4e35-8ef4-d170b4b8dbaf"></p>
    - Cierra sesión y prueba con las nuevas credenciales.
 
 > ⚠️ **Importante:** El sistema permite que el Director cree cuentas para Docentes y Estudiantes. No hay cuentas predefinidas para estos roles.
