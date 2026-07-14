@@ -1,0 +1,13 @@
+#Archivos compilados
+build/
+dist/
+*.class
+*.jar
+*.war
+
+#Archivos de NetBeans
+nbproject/private/
+
+#Archivos del sistema operativo
+.DS_Store
+Thumbs.db
