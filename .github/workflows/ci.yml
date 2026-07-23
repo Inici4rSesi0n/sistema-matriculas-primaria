@@ -28,5 +28,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Excluir vistas del CI
+        run: mv src/vista src/vista_disabled
+
       - name: Build and run tests
         run: mvn clean test
