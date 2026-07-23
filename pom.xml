@@ -54,13 +54,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.netbeans.lib</groupId>
-            <artifactId>awtextra</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>/snap/netbeans/145/netbeans/java/modules/ext/AbsoluteLayout.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.10.0</version>
