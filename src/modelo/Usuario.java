@@ -1,7 +1,7 @@
 package modelo;
 import java.io.Serializable;
 import java.util.Arrays;
-import procesos.Utilidades;
+import procesos.Seguridad;
 /**
  *
  * @author inici4rsesi0n
@@ -26,8 +26,7 @@ public abstract class Usuario implements Serializable{
     }
     public boolean autenticarUsuario(String codigo, char[] contraseñaIngresada){
         if (contraseñaIngresada == null) return false;
-        String hashIngresado = Utilidades.generarHash(contraseñaIngresada);
-        boolean resultado = this.cod.equals(codigo) && this.pwd.equals(hashIngresado);
+        boolean resultado = this.cod.equals(codigo) && Seguridad.verificarHash(this.pwd, contraseñaIngresada);
         limpiarContraseña(contraseñaIngresada);
         return resultado;
     }
@@ -36,7 +35,6 @@ public abstract class Usuario implements Serializable{
             Arrays.fill(pwd, '\0');
         }
     }
-    
     public String getCod() {return cod;}
     public void setCod(String cod) {this.cod = cod;}
     public String getHashPwd() {return pwd;}
@@ -49,10 +47,8 @@ public abstract class Usuario implements Serializable{
     public void setApe(String ape) {this.ape = ape;}
     public int getAge() {return age;}
     public void setAge(int age) {this.age = age;}
-
     @Override
     public String toString() {
         return "Usuario [cod=" +cod+ ", dni=" +dni+ ", nom=" +nom+ ", ape=" +ape+ ", age=" +age+ "]";
     }
-    
 }

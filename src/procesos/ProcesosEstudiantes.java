@@ -13,18 +13,24 @@ import vista.FREstudiante;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTable;
 import java.util.ArrayList;
-
+/**
+ *
+ * @author inici4rsesi0n
+ */
 public class ProcesosEstudiantes {
+    public static Estudiante crearEstudiante(Salon salon, Grado grado, String cod, String hashPwd, String dni, String nom, String ape, int age) {
+        return new Estudiante(salon, grado, cod, hashPwd, dni, nom, ape, age);
+    }
     public static Estudiante leerEstudiante(FREstudiante vista, Salon salon, Grado grado) {
         String cod = vista.txtCodigo.getText().trim();
         char[] pwd = vista.txtContraseña.getPassword();
-        String hashPwd = Utilidades.generarHash(pwd);
-        Utilidades.limpiarContraseña(pwd);
+        String hashPwd = Seguridad.generarHash(pwd);
+        Seguridad.limpiarContraseña(pwd);
         String dni = vista.txtDNI.getText().trim();
         String nom = vista.txtNombre.getText().trim();
         String ape = vista.txtApellido.getText().trim();
         int age = Integer.parseInt(vista.txtEdad.getText().trim());
-        return new Estudiante(salon, grado, cod, hashPwd, dni, nom, ape, age);
+        return crearEstudiante(salon, grado, cod, hashPwd, dni, nom, ape, age);
     }
     public static void limpiarCampos(FREstudiante vista) {
         vista.txtCodigo.setText("");
@@ -70,27 +76,39 @@ public class ProcesosEstudiantes {
         }
         return filtrada;
     }
-    public static String validarCampos(FREstudiante vista, ListaEstudiantes lista,
-            ListaDocentes listaDocentes, GestorDirector gestorDirector) {
-        String cod = vista.txtCodigo.getText().trim();
-        if (cod.isEmpty()) {return "El código no puede estar vacío.";}
-        if (lista.buscarPorCODIGO(cod) != -1) {return "El código ya existe.";}
-        if (listaDocentes.buscarPorCODIGO(cod) != -1) {return "El código ya existe.";}
+    public static String validarDatosEstudiante(String cod, String dni, String nom, String ape, String edadTexto,
+                                                char[] password, String gradoSel, String salonSel,
+                                                ListaEstudiantes lista, ListaDocentes listaDocentes, GestorDirector gestorDirector) {
+        if (cod == null || cod.trim().isEmpty()) return "El código no puede estar vacío.";
+        if (lista.buscarPorCODIGO(cod) != -1) return "El código ya existe.";
+        if (listaDocentes.buscarPorCODIGO(cod) != -1) return "El código ya existe.";
         Director director = gestorDirector.getDirector();
-        if (director.getCod().equals(cod)) {return "El código ya existe.";}
-        if (vista.txtDNI.getText().trim().isEmpty()) {return "El DNI no puede estar vacío.";}
-        if (vista.txtNombre.getText().trim().isEmpty()) {return "El nombre no puede estar vacío.";}
-        if (vista.txtApellido.getText().trim().isEmpty()) {return "El apellido no puede estar vacío.";}
-        if (vista.txtEdad.getText().trim().isEmpty()) {return "La edad no puede estar vacía.";}
-        if (vista.txtContraseña.getPassword().length == 0) {return "La contraseña no puede estar vacía.";}
-        if (vista.cbxGrado.getSelectedItem() == null) {return "Debe seleccionar un grado.";}
-        if (vista.cbxSalon.getSelectedItem() == null) {return "Debe seleccionar un salón.";}
+        if (director.getCod().equals(cod)) return "El código ya existe.";
+        if (dni == null || dni.trim().isEmpty()) return "El DNI no puede estar vacío.";
+        if (nom == null || nom.trim().isEmpty()) return "El nombre no puede estar vacío.";
+        if (ape == null || ape.trim().isEmpty()) return "El apellido no puede estar vacío.";
+        if (edadTexto == null || edadTexto.trim().isEmpty()) return "La edad no puede estar vacía.";
+        if (password == null || password.length == 0) return "La contraseña no puede estar vacía.";
+        if (gradoSel == null) return "Debe seleccionar un grado.";
+        if (salonSel == null) return "Debe seleccionar un salón.";
         try {
-            Integer.parseInt(vista.txtEdad.getText().trim());
+            Integer.parseInt(edadTexto.trim());
         } catch (NumberFormatException e) {
             return "La edad debe ser un número válido.";
         }
         return null;
+    }
+    public static String validarCampos(FREstudiante vista, ListaEstudiantes lista,
+            ListaDocentes listaDocentes, GestorDirector gestorDirector) {
+        String cod = vista.txtCodigo.getText().trim();
+        String dni = vista.txtDNI.getText().trim();
+        String nom = vista.txtNombre.getText().trim();
+        String ape = vista.txtApellido.getText().trim();
+        String edadTexto = vista.txtEdad.getText().trim();
+        char[] password = vista.txtContraseña.getPassword();
+        String gradoSel = (String) vista.cbxGrado.getSelectedItem();
+        String salonSel = (String) vista.cbxSalon.getSelectedItem();
+        return validarDatosEstudiante(cod, dni, nom, ape, edadTexto, password, gradoSel, salonSel, lista, listaDocentes, gestorDirector);
     }
     public static Salon obtenerSalonSeleccionado(FREstudiante vista, ListaSalones listaSalones) {
         String gradoSeleccionado = (String) vista.cbxGrado.getSelectedItem();

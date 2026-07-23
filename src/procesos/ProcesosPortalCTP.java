@@ -12,7 +12,6 @@ public class ProcesosPortalCTP {
     public static void cargarDatosEstudiante(FPortalCTP vista, Estudiante est) {
         vista.txtAlumno.setText(est.getNombreCompleto());
         vista.txtCodigo.setText(est.getCod());
-        // El grado se obtiene a través del salón; si no tiene salón, se muestra "Sin grado"
         vista.txtGrado.setText(est.getGrado() != null ? est.getGrado().getNom() : "Sin grado");
     }
     public static void actualizarComboSalones(FPortalCTP vista, ListaSalones listaSalones,
