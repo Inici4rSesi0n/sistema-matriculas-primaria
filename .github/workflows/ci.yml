@@ -28,8 +28,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Remove unused views to avoid AbsoluteLayout dependency
-        run: rm -rf src/vista
-
       - name: Build and run tests
         run: mvn clean test
