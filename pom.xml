@@ -47,8 +47,6 @@
             <groupId>org.netbeans.lib</groupId>
             <artifactId>awtextra</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/AbsoluteLayout.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
