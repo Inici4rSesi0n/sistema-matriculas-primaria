@@ -30,6 +30,12 @@
                     <excludes>
                         <exclude>vista/**/*.java</exclude>
                     </excludes>
+                    <sourceDirectories>
+                        <sourceDirectory>src</sourceDirectory>
+                    </sourceDirectories>
+                    <testSourceDirectories>
+                        <testSourceDirectory>test</testSourceDirectory>
+                    </testSourceDirectories>
                 </configuration>
             </plugin>
             <plugin>
