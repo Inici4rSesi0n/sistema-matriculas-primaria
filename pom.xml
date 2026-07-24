@@ -22,6 +22,29 @@
         <sourceDirectory>src</sourceDirectory>
         <testSourceDirectory>test</testSourceDirectory>
         <plugins>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>install-awtextra</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.basedir}/lib/AbsoluteLayout.jar</file>
+                            <groupId>org.netbeans.lib</groupId>
+                            <artifactId>awtextra</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -34,6 +57,7 @@
                     </archive>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -43,11 +67,13 @@
     </build>
 
     <dependencies>
+        
         <dependency>
             <groupId>org.netbeans.lib</groupId>
             <artifactId>awtextra</artifactId>
             <version>1.0</version>
         </dependency>
+        
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
