@@ -1,14 +1,17 @@
-#Archivos compilados
+# Archivos compilados
 build/
 dist/
 *.class
 *.jar
 *.war
 
-#Archivos de NetBeans
+# Excepción: permitir JARs locales en lib/
+!lib/*.jar
+
+# Archivos de NetBeans
 nbproject/private/
 
-#Archivos del sistema operativo
+# Archivos del sistema operativo
 .DS_Store
 Thumbs.db
 /nbproject/
