@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" 
+            xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="presentacion.controlador.s_GestionAcademicaController"
+            styleClass="seccion-root">
+    
+    <top>
+        <HBox styleClass="seccion-header" alignment="CENTER_LEFT">
+            <Label styleClass="seccion-title" text="Gestión Académica" />
+            <Region HBox.hgrow="ALWAYS" />
+            <ComboBox fx:id="cmbCategoria" promptText="Seleccione categoría" styleClass="formulario-input" prefWidth="200.0" />
+        </HBox>
+    </top>
+    
+    <center>
+        <StackPane fx:id="contenedorCategorias">
+            <fx:include fx:id="tabPaneCatalogos" source="tab_Catalogos.fxml" />
+            <fx:include fx:id="tabPaneAsignaciones" source="tab_Asignaciones.fxml" />
+            <fx:include fx:id="tabPaneHorarios" source="tab_Horarios.fxml" />
+        </StackPane>
+    </center>
+</BorderPane>

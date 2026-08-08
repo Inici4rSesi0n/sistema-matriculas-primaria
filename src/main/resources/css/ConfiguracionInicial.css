@@ -1,0 +1,82 @@
+@import url("global.css");
+
+.setup-background {
+    -fx-background-color: linear-gradient(to bottom right, #4A8DB5, #1E3A8A);
+}
+
+.setup-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 24px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 30, 0.1, 0, 10);
+    -fx-border-color: #4A8DB5;
+    -fx-border-width: 1px;
+    -fx-border-radius: 24px;
+    -fx-padding: 35px 40px 35px 40px;
+    -fx-spacing: 15px;
+}
+
+.setup-title {
+    -fx-font-family: "Liberation Serif", serif;
+    -fx-font-size: 32px;
+    -fx-text-fill: #1E3A8A;
+}
+
+.setup-subtitle {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-style: italic;
+    -fx-font-size: 14px;
+    -fx-text-fill: #6B7280;
+    -fx-wrap-text: true;
+}
+
+.setup-label {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E3A8A;
+    -fx-font-size: 14px;
+}
+
+.setup-input {
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 8px;
+    -fx-border-color: #D1D5DB;
+    -fx-border-radius: 8px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 14px;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+.setup-input:focused {
+    -fx-border-color: #4A8DB5;
+    -fx-effect: dropshadow(gaussian, rgba(74, 141, 181, 0.3), 5, 0, 0, 0);
+}
+
+.setup-btn-confirm {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-color: linear-gradient(to bottom, #7AB4D8, #4A8DB5);
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(74, 141, 181, 0.3), 5, 0.1, 0, 2);
+}
+.setup-btn-confirm:hover {
+    -fx-background-color: linear-gradient(to bottom, #4A8DB5, #1E3A8A);
+}
+
+.setup-btn-cancel {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #4A8DB5;
+    -fx-border-radius: 8px;
+    -fx-text-fill: #4A8DB5;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+}
+.setup-btn-cancel:hover {
+    -fx-background-color: #EFF6FF;
+    -fx-border-color: #1E3A8A;
+    -fx-text-fill: #1E3A8A;
+}

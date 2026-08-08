@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<TabPane fx:id="tabPaneHorarios" xmlns="http://javafx.com/javafx/23.0.1"
+         xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="presentacion.controlador.tab_HorariosController"
+         styleClass="seccion-tabpane">
+    <tabs>
+        <Tab fx:id="tabClases" text="Clases" closable="false">
+            <BorderPane>
+                <top>
+                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
+                        <Button fx:id="btnNuevaClase"
+                                text="+ Nueva Clase"
+                                styleClass="boton-primario"
+                                onAction="#handleNuevaClase" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="btnVerHorario"
+                                text="📅 Ver Horario"
+                                styleClass="boton-secundario"
+                                onAction="#handleVerHorario" />
+                    </HBox>
+                </top>
+                <center>
+                    <TableView fx:id="tablaClases" styleClass="seccion-tabla">
+                        <columns>
+                            <TableColumn fx:id="colNumClase" text="N°" prefWidth="50.0" styleClass="col-center" />
+                            <TableColumn fx:id="colDiaClase" text="Día" prefWidth="100.0" styleClass="col-center" />
+                            <TableColumn fx:id="colInicioClase" text="Inicio" prefWidth="80.0" styleClass="col-center" />
+                            <TableColumn fx:id="colFinClase" text="Fin" prefWidth="80.0" styleClass="col-center" />
+                            <TableColumn fx:id="colAsignaturaClase" text="Asignatura" prefWidth="150.0" />
+                            <TableColumn fx:id="colDocenteClase" text="Docente" prefWidth="150.0" />
+                            <TableColumn fx:id="colGrupoClase" text="Grupo" prefWidth="120.0" />
+                            <TableColumn fx:id="colAulaClase" text="Aula" prefWidth="100.0" />
+                            <TableColumn fx:id="colPeriodoClase" text="Periodo" prefWidth="100.0" />
+                            <TableColumn fx:id="colAccionesClase" text="Acciones" prefWidth="160.0" styleClass="col-center" />
+                        </columns>
+                    </TableView>
+                </center>
+                <right>
+                    <ScrollPane fitToWidth="true">
+                        <VBox fx:id="panelFormularioClase" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
+                            <padding>
+                                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                            </padding>
+                            <Label styleClass="formulario-title" text="Clase" />
+                            <Separator styleClass="formulario-separator" />
+                            <Label text="Día:" styleClass="formulario-label" />
+                            <ComboBox fx:id="cmbDiaClase" promptText="Seleccione un día" styleClass="formulario-input" />
+                            <Label text="Hora Inicio:" styleClass="formulario-label" />
+                            <TextField fx:id="txtInicioClase" promptText="HH:mm" styleClass="formulario-input" />
+                            <Label text="Hora Fin:" styleClass="formulario-label" />
+                            <TextField fx:id="txtFinClase" promptText="HH:mm" styleClass="formulario-input" />
+                            <Label text="Asignatura:" styleClass="formulario-label" />
+                            <ComboBox fx:id="cmbAsignaturaClase" promptText="Seleccione una asignatura" styleClass="formulario-input" />
+                            <Label text="Docente:" styleClass="formulario-label" />
+                            <ComboBox fx:id="cmbDocenteClase" promptText="Seleccione un docente" styleClass="formulario-input" />
+                            <Label text="Grupo:" styleClass="formulario-label" />
+                            <ComboBox fx:id="cmbGrupoClase" promptText="Seleccione un grupo" styleClass="formulario-input" />
+                            <Label text="Aula:" styleClass="formulario-label" />
+                            <ComboBox fx:id="cmbAulaClase" promptText="Seleccione un aula" styleClass="formulario-input" />
+                            <Label text="Periodo:" styleClass="formulario-label" />
+                            <ComboBox fx:id="cmbPeriodoClase" promptText="Seleccione un periodo" styleClass="formulario-input" />
+                            <Region VBox.vgrow="ALWAYS" />
+                            <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                                <Button fx:id="btnCancelarClase" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarClase" />
+                                <Button fx:id="btnGuardarClase" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarClase" />
+                            </HBox>
+                        </VBox>
+                    </ScrollPane>
+                </right>
+            </BorderPane>
+        </Tab>
+    </tabs>
+</TabPane>

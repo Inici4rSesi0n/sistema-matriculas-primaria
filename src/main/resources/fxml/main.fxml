@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="mainRoot" 
+            xmlns="http://javafx.com/javafx/23.0.1" 
+            xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="presentacion.controlador.FxMainController"
+            maxWidth="1.0E8" maxHeight="1.0E8">
+   <stylesheets>
+      <URL value="@/css/main.css" />
+   </stylesheets>
+   
+   <top>
+      <VBox>
+         <VBox styleClass="header-container">
+            <Label fx:id="lblSchoolBase" 
+                   onMouseEntered="#handleMouseEntered" 
+                   onMouseExited="#handleMouseExited" 
+                   styleClass="titulo-principal" 
+                   text="SchoolBase" />
+                   
+            <Label fx:id="lblConectado" 
+                   onMouseEntered="#handleMouseEntered" 
+                   onMouseExited="#handleMouseExited" 
+                   styleClass="subtitulo" 
+                   text="¡Conectado a la comunidad educativa!" />
+            
+            <Label fx:id="lblUsuarioConectado" styleClass="usuario-conectado" text="" />
+         </VBox>
+
+         <HBox styleClass="menu-bar-container">
+            <MenuButton fx:id="menuIdioma" 
+                        contentDisplay="BOTTOM" 
+                        mnemonicParsing="false" 
+                        styleClass="menu-idioma" 
+                        text="🌐 IDIOMA" />
+         </HBox>
+      </VBox>
+   </top>
+   
+   <center>
+      <VBox styleClass="center-container" 
+            maxWidth="1.0E8" maxHeight="1.0E8" spacing="20.0">
+         <VBox alignment="CENTER" spacing="20.0">
+            <Button fx:id="btnPortalIngreso" 
+                    mnemonicParsing="false" 
+                    onAction="#handlePortalIngreso" 
+                    styleClass="boton-primario" 
+                    prefWidth="320.0" prefHeight="65.0"
+                    text="Portal de Ingreso" />
+                    
+            <Button fx:id="btnPortalTramites" 
+                    mnemonicParsing="false" 
+                    onAction="#handlePortalTramites" 
+                    styleClass="boton-secundario" 
+                    prefWidth="320.0" prefHeight="65.0"
+                    text="Portal de Trámites" />
+                    
+            <Button fx:id="btnPortalMatricula" 
+                    mnemonicParsing="false" 
+                    onAction="#handlePortalMatricula" 
+                    styleClass="boton-terciario" 
+                    prefWidth="320.0" prefHeight="65.0"
+                    text="Portal de Matrícula" />
+            
+            <Button fx:id="btnCerrarSesion" 
+                    mnemonicParsing="false" 
+                    onAction="#handleCerrarSesion" 
+                    styleClass="boton-cerrar-sesion" 
+                    prefWidth="320.0" prefHeight="65.0"
+                    text="Cerrar Sesión" 
+                    visible="false" />
+         </VBox>
+      </VBox>
+   </center>
+   
+   <bottom>
+      <HBox styleClass="footer-container">
+         <Label styleClass="texto-pie" 
+                text="¿Problemas con el acceso? Contacta a soporte@sistemaschoolbase.com" 
+                textFill="WHITE" />
+                   
+         <Label styleClass="texto-pie" 
+                text=" | SchoolBase 1.0.0 " 
+                textFill="WHITE" />
+      </HBox>
+   </bottom>
+</BorderPane>

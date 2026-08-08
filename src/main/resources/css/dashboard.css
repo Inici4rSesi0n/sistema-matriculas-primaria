@@ -1,0 +1,166 @@
+@import url("global.css");
+@import url("s_GestionUsuarios.css");
+@import url("s_GestionAcademica.css");
+@import url("s_Matricula.css");
+
+
+.dashboard-root {
+    -fx-background-color: #F3F4F6;
+}
+
+.dashboard-header {
+    -fx-background-color: linear-gradient(to right, #4A8DB5, #1E3A8A);
+    -fx-padding: 15px 30px;
+}
+.header-title {
+    -fx-font-family: "Liberation Serif", serif;
+    -fx-font-size: 20px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+    -fx-background-color: linear-gradient(to bottom, #FFFFFF, #F8FAFC);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0.1, 0, 0);
+    -fx-min-width: 240px;
+    -fx-max-width: 240px;
+    -fx-padding: 0px;
+    -fx-spacing: 0;
+}
+
+.sidebar-branding {
+    -fx-padding: 30px 20px 15px 20px;
+    -fx-spacing: 5px;
+}
+.sidebar-logo {
+    -fx-font-family: "Liberation Serif", serif;
+    -fx-font-size: 26px;
+    -fx-text-fill: #1E3A8A;
+    -fx-font-weight: bold;
+}
+.sidebar-subtitle {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #6B7280;
+}
+.sidebar-separator {
+    -fx-background-color: #E2E8F0;
+    -fx-padding: 0 20px 0 20px;
+}
+
+/* TÍTULOS DE SECCIÓN EN EL SIDEBAR */
+.sidebar-section-title {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 11px;
+    -fx-text-fill: #6B7280;
+    -fx-font-weight: bold;
+    -fx-padding: 15px 20px 5px 20px;
+}
+
+/* --- BOTONES DEL MENÚ --- */
+.sidebar-btn {
+    -fx-background-color: linear-gradient(to bottom, #FFFFFF, #F8FAFC);
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-radius: 0;
+    -fx-pref-width: 240px;
+    -fx-padding: 12px 20px;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT;
+}
+.sidebar-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #EFF6FF, #FFFFFF);
+    -fx-border-color: #93C5FD;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 4, 0.1, 0, 0);
+}
+.sidebar-btn:pressed {
+    -fx-background-color: #E2E8F0;
+}
+
+.emoji-icon {
+    -fx-font-family: "Symbola", "Noto Color Emoji", "Segoe UI Emoji", "Apple Color Emoji", "EmojiOne Color", sans-serif;
+    -fx-font-size: 18px;
+    -fx-text-fill: #4A8DB5;
+}
+.sidebar-label {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #1E3A8A;
+}
+.sidebar-btn:hover .sidebar-label {
+    -fx-text-fill: #1E3A8A;
+}
+.sidebar-btn:hover .emoji-icon {
+    -fx-text-fill: #1E3A8A;
+}
+
+/* --- ETIQUETA DE USUARIO --- */
+.header-user {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #FFFFFF;
+    -fx-padding: 0 15px 0 0;
+    -fx-opacity: 0.9;
+}
+
+/* --- BOTÓN VOLVER AL INICIO (ESTILO "SIDEBAR") --- */
+.btn-volver-inicio {
+    -fx-background-color: linear-gradient(to bottom, #FFFFFF, #F8FAFC);
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px; /* Un poco de redondeo para integrarlo como botón */
+    -fx-background-radius: 8px;
+    -fx-text-fill: #1E3A8A;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 6px 16px;
+}
+.btn-volver-inicio:hover {
+    -fx-background-color: linear-gradient(to bottom, #EFF6FF, #FFFFFF);
+    -fx-border-color: #93C5FD;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 4, 0.1, 0, 0);
+}
+.btn-volver-inicio:pressed {
+    -fx-background-color: #E2E8F0;
+}
+
+/* --- DASHBOARD CENTRAL --- */
+.content-area {
+    -fx-padding: 40px;
+}
+.dashboard-title {
+    -fx-font-family: "Liberation Serif", serif;
+    -fx-font-size: 34px;
+    -fx-text-fill: #1E3A8A;
+}
+.dashboard-subtitle {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-style: italic;
+    -fx-font-size: 16px;
+    -fx-text-fill: #6B7280;
+}
+.dashboard-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0.1, 0, 2);
+    -fx-padding: 20px;
+    -fx-min-width: 130px;
+    -fx-min-height: 100px;
+    -fx-alignment: CENTER;
+    -fx-spacing: 5px;
+}
+.dashboard-card-number {
+    -fx-font-family: "Liberation Serif", serif;
+    -fx-font-size: 44px;
+    -fx-text-fill: #4A8DB5;
+    -fx-font-weight: bold;
+}
+.dashboard-card-label {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #4B5563;
+}

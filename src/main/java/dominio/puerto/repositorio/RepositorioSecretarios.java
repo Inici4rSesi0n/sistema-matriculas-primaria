@@ -1,0 +1,10 @@
+package dominio.puerto.repositorio;
+import dominio.modelo.Secretario;
+import java.util.Optional;
+/**
+ *
+ * @author inici4rsesi0n
+ */
+public interface RepositorioSecretarios extends Repositorio<Secretario> {
+    Optional<Secretario> buscarPorCodigo(String codigo);
+}

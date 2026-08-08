@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<TabPane fx:id="tabPaneAsignaciones" xmlns="http://javafx.com/javafx/23.0.1"
+         xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="presentacion.controlador.tab_AsignacionesController"
+         styleClass="seccion-tabpane">
+    <tabs>
+        <Tab fx:id="tabAsignacionDocente" text="Asignación Docente" closable="false">
+            <VBox spacing="20.0">
+                <padding>
+                    <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                </padding>
+                <Label text="Asignar Asignaturas a Docente" styleClass="formulario-title" />
+                <HBox spacing="15.0" alignment="CENTER_LEFT">
+                    <Label text="Docente:" styleClass="formulario-label" />
+                    <ComboBox fx:id="cmbDocenteAsignatura" promptText="Seleccione un docente" styleClass="formulario-input" prefWidth="300.0" />
+                    <Label text="Asignatura:" styleClass="formulario-label" />
+                    <ComboBox fx:id="cmbAsignaturaDocente" promptText="Seleccione una asignatura" styleClass="formulario-input" prefWidth="300.0" />
+                    <Button fx:id="btnAgregarAsignaturaDocente" text="Agregar" styleClass="boton-primario btn-asignacion" onAction="#handleAgregarAsignaturaDocente" />
+                </HBox>
+                <TableView fx:id="tablaAsignaturasDocente" styleClass="seccion-tabla">
+                    <columns>
+                        <TableColumn fx:id="colCodigoDocenteAsignatura" text="Código Docente" prefWidth="150.0" />
+                        <TableColumn fx:id="colNombreDocenteAsignatura" text="Nombre Docente" prefWidth="200.0" />
+                        <TableColumn fx:id="colAsignaturaDocente" text="Asignatura" prefWidth="200.0" />
+                        <TableColumn fx:id="colAccionesAsignaturaDocente" text="Acciones" prefWidth="100.0" styleClass="col-center" />
+                    </columns>
+                </TableView>
+                <Separator styleClass="formulario-separator" />
+                <Label text="Asignar Tutor a Grupo" styleClass="formulario-title" />
+                <HBox spacing="15.0" alignment="CENTER_LEFT">
+                    <Label text="Docente:" styleClass="formulario-label" />
+                    <ComboBox fx:id="cmbDocenteTutor" promptText="Seleccione un docente" styleClass="formulario-input" prefWidth="300.0" />
+                    <Label text="Grupo:" styleClass="formulario-label" />
+                    <ComboBox fx:id="cmbGrupoTutor" promptText="Seleccione un grupo" styleClass="formulario-input" prefWidth="300.0" />
+                    <Button fx:id="btnAsignarTutor" text="Asignar Tutor" styleClass="boton-primario btn-asignacion" onAction="#handleAsignarTutor" />
+                </HBox>
+                <TableView fx:id="tablaTutores" styleClass="seccion-tabla">
+                    <columns>
+                        <TableColumn fx:id="colGrupoTutor" text="Grupo" prefWidth="200.0" />
+                        <TableColumn fx:id="colDocenteTutor" text="Docente Tutor" prefWidth="200.0" />
+                        <TableColumn fx:id="colAccionesTutor" text="Acciones" prefWidth="100.0" styleClass="col-center" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </Tab>
+
+        <Tab fx:id="tabAsignacionCoordinacion" text="Asignación de Coordinación" closable="false">
+            <VBox spacing="20.0">
+                <padding>
+                    <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                </padding>
+                <Label text="Asignar Coordinador a Grado" styleClass="formulario-title" />
+                <HBox spacing="15.0" alignment="CENTER_LEFT">
+                    <Label text="Coordinador:" styleClass="formulario-label" />
+                    <ComboBox fx:id="cmbCoordinador" promptText="Seleccione un coordinador" styleClass="formulario-input" prefWidth="300.0" />
+                    <Label text="Grado:" styleClass="formulario-label" />
+                    <ComboBox fx:id="cmbGradoCoordinacion" promptText="Seleccione un grado" styleClass="formulario-input" prefWidth="300.0" />
+                    <Button fx:id="btnAsignarCoordinacion" text="Asignar" styleClass="boton-primario btn-asignacion" onAction="#handleAsignarCoordinacion" />
+                </HBox>
+                <TableView fx:id="tablaCoordinaciones" styleClass="seccion-tabla">
+                    <columns>
+                        <TableColumn fx:id="colCoordinadorNombre" text="Coordinador" prefWidth="250.0" />
+                        <TableColumn fx:id="colGradoCoordinado" text="Grado Supervisado" prefWidth="250.0" />
+                        <TableColumn fx:id="colAccionesCoordinacion" text="Acciones" prefWidth="100.0" styleClass="col-center" />
+                    </columns>
+                </TableView>
+            </VBox>
+        </Tab>
+    </tabs>
+</TabPane>

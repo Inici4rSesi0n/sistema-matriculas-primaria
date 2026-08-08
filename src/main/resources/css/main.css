@@ -1,0 +1,128 @@
+@import url("global.css");
+
+.titulo-principal {
+    -fx-text-fill: radial-gradient(center 50% 50%, radius 50%, #4C5A9C 0%, #8595D4 100%);
+    -fx-font-size: 96px;
+    -fx-font-family: "Liberation Serif", serif;
+}
+
+.subtitulo {
+    -fx-text-fill: #b3abd0;
+    -fx-font-size: 36px;
+    -fx-font-family: "Liberation Serif", serif;
+}
+
+.texto-pie {
+    -fx-text-fill: white;
+    -fx-font-family: "Liberation Serif", serif;
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+    -fx-font-size: 24px;
+}
+
+.header-container {
+    -fx-background-color: linear-gradient(to bottom, #F4F6F9, #E2E6EB);
+    -fx-alignment: center;
+    -fx-padding: 20px 0;
+}
+
+.menu-bar-container {
+    -fx-background-color: linear-gradient(to bottom, #7AB4D8, #4A8DB5);
+    -fx-border-width: 1 0 0 0;
+    -fx-border-color: #E0E0E0;
+    -fx-padding: 0 0 0 50px; /* Margen izquierdo de 50px */
+    -fx-alignment: center-left;
+}
+
+.center-container {
+    -fx-background-color: #FFFFFF;
+    -fx-alignment: center;
+    -fx-spacing: 20px;
+}
+
+.footer-container {
+    -fx-background-color: linear-gradient(to bottom, #7AB4D8, #4A8DB5);
+    -fx-border-width: 1 0 0 0;
+    -fx-border-color: #E0E0E0;
+    -fx-alignment: center;
+    -fx-padding: 10px;
+}
+
+.boton-primario {
+    -fx-background-color: linear-gradient(to bottom, #7AB4D8, #4A8DB5);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 28px;
+}
+.boton-primario:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0.2, 0, 4);
+}
+
+.boton-secundario {
+    -fx-background-color: transparent;
+    -fx-border-color: #5D9BC7;
+    -fx-border-width: 2;
+    -fx-text-fill: #5D9BC7;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 28px;
+}
+.boton-secundario:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0.2, 0, 4);
+}
+
+.boton-terciario {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #7AB4D8;
+    -fx-border-width: 2;
+    -fx-text-fill: #4A8DB5;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 28px;
+}
+.boton-terciario:hover {
+    -fx-background-color: #EFF6FF;
+    -fx-border-color: #4A8DB5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0.2, 0, 4);
+}
+
+.menu-idioma {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-mark-color: white;
+}
+.menu-idioma:hover {
+    -fx-text-fill: #B0C4DE;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.1, 0, 2);
+    -fx-cursor: hand;
+}
+
+/* --- LABEL DE USUARIO CONECTADO --- */
+.usuario-conectado {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: #4A8DB5;
+    -fx-padding: 5px 0;
+    -fx-alignment: center;
+}
+
+/* --- BOTÓN CERRAR SESIÓN (Igual que los otros, pero en rojo) --- */
+.boton-cerrar-sesion {
+    -fx-background-color: linear-gradient(to bottom, #EF4444, #DC2626);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-font-size: 28px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 0);
+}
+.boton-cerrar-sesion:hover {
+    -fx-background-color: linear-gradient(to bottom, #DC2626, #B91C1C);
+    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.4), 8, 0.1, 0, 2);
+}
+

@@ -1,0 +1,77 @@
+/* ============================================= */
+/* GLOBAL - PALETA DE COLORES Y ESTILOS BASE     */
+/* ============================================= */
+.root {
+    -fx-primary-color: #4A8DB5;
+    -fx-secondary-color: #7AB4D8;
+    -fx-accent-color: #5D9BC7;
+    -fx-text-dark: #4C5A9C;
+    -fx-text-light: #FFFFFF;
+    -fx-font-family: "Liberation Serif", "Times New Roman", serif;
+}
+
+/* BOTONES PRIMARIOS Y SECUNDARIOS */
+.boton-primario {
+    -fx-background-color: linear-gradient(to bottom, #7AB4D8, #4A8DB5);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 36px;
+}
+.boton-primario:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0.2, 0, 4);
+}
+
+.boton-secundario {
+    -fx-background-color: transparent;
+    -fx-border-color: #5D9BC7;
+    -fx-border-width: 2;
+    -fx-text-fill: #5D9BC7;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 36px;
+}
+.boton-secundario:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0.2, 0, 4);
+}
+
+/* INPUTS PARA LOGIN Y FORMULARIOS */
+.login-input {
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 8;
+    -fx-border-color: #D1D5DB;
+    -fx-border-radius: 8;
+    -fx-padding: 8px 15px;
+    -fx-font-size: 14px;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+.login-input:focused {
+    -fx-border-color: #4A8DB5;
+    -fx-effect: dropshadow(gaussian, rgba(74, 141, 181, 0.3), 5, 0, 0, 0);
+}
+
+/* ENLACES */
+.link-olvidado {
+    -fx-text-fill: #5D9BC7;
+    -fx-font-size: 14px;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-cursor: hand;
+}
+.link-olvidado:hover {
+    -fx-underline: true;
+}
+
+/* MENÚ IDIOMA (del Main) */
+.menu-idioma {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-mark-color: white;
+}
+.menu-idioma:hover {
+    -fx-text-fill: #B0C4DE;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0.1, 0, 2);
+    -fx-cursor: hand;
+}

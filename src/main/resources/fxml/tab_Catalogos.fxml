@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<TabPane fx:id="tabPaneCatalogos" xmlns="http://javafx.com/javafx/23.0.1"
+         xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="presentacion.controlador.tab_CatalogosController"
+         styleClass="seccion-tabpane">
+    <tabs>
+        <Tab fx:id="tabAsignaturas" text="Asignaturas" closable="false">
+            <BorderPane>
+                <top>
+                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
+                        <Button fx:id="btnNuevaAsignatura"
+                                text="+ Nueva Asignatura"
+                                styleClass="boton-primario"
+                                onAction="#handleNuevaAsignatura" />
+                    </HBox>
+                </top>
+                <center>
+                    <TableView fx:id="tablaAsignaturas" styleClass="seccion-tabla">
+                        <columns>
+                            <TableColumn fx:id="colNumAsignatura" text="N°" prefWidth="50.0" styleClass="col-center" />
+                            <TableColumn fx:id="colNombreAsignatura" text="Nombre" prefWidth="300.0" />
+                            <TableColumn fx:id="colAccionesAsignatura" text="Acciones" prefWidth="160.0" styleClass="col-center" />
+                        </columns>
+                    </TableView>
+                </center>
+                <right>
+                    <VBox fx:id="panelFormularioAsignatura" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
+                        <padding>
+                            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                        </padding>
+                        <Label styleClass="formulario-title" text="Asignatura" />
+                        <Separator styleClass="formulario-separator" />
+                        <Label text="Nombre:" styleClass="formulario-label" />
+                        <TextField fx:id="txtNombreAsignatura" promptText="Nombre de la asignatura" styleClass="formulario-input" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                            <Button fx:id="btnCancelarAsignatura" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarAsignatura" />
+                            <Button fx:id="btnGuardarAsignatura" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarAsignatura" />
+                        </HBox>
+                    </VBox>
+                </right>
+            </BorderPane>
+        </Tab>
+
+        <Tab fx:id="tabPeriodos" text="Periodos" closable="false">
+            <BorderPane>
+                <top>
+                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
+                        <Button fx:id="btnNuevoPeriodo"
+                                text="+ Nuevo Periodo"
+                                styleClass="boton-primario"
+                                onAction="#handleNuevoPeriodo" />
+                    </HBox>
+                </top>
+                <center>
+                    <TableView fx:id="tablaPeriodos" styleClass="seccion-tabla">
+                        <columns>
+                            <TableColumn fx:id="colNumPeriodo" text="N°" prefWidth="50.0" styleClass="col-center" />
+                            <TableColumn fx:id="colNombrePeriodo" text="Nombre" prefWidth="150.0" />
+                            <TableColumn fx:id="colFechaInicio" text="Fecha Inicio" prefWidth="120.0" styleClass="col-center" />
+                            <TableColumn fx:id="colFechaFin" text="Fecha Fin" prefWidth="120.0" styleClass="col-center" />
+                            <TableColumn fx:id="colEstadoPeriodo" text="Estado" prefWidth="100.0" styleClass="col-center" />
+                            <TableColumn fx:id="colAccionesPeriodo" text="Acciones" prefWidth="160.0" styleClass="col-center" />
+                        </columns>
+                    </TableView>
+                </center>
+                <right>
+                    <VBox fx:id="panelFormularioPeriodo" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
+                        <padding>
+                            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                        </padding>
+                        <Label styleClass="formulario-title" text="Periodo" />
+                        <Separator styleClass="formulario-separator" />
+                        <Label text="Nombre:" styleClass="formulario-label" />
+                        <TextField fx:id="txtNombrePeriodo" promptText="Nombre del periodo" styleClass="formulario-input" />
+                        <Label text="Fecha Inicio:" styleClass="formulario-label" />
+                        <DatePicker fx:id="dateFechaInicio" promptText="YYYY-MM-DD" styleClass="formulario-input" />
+                        <Label text="Fecha Fin:" styleClass="formulario-label" />
+                        <DatePicker fx:id="dateFechaFin" promptText="YYYY-MM-DD" styleClass="formulario-input" />
+                        <Label text="Estado:" styleClass="formulario-label" />
+                        <ComboBox fx:id="cmbEstadoPeriodo" promptText="Seleccione un estado" styleClass="formulario-input" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                            <Button fx:id="btnCancelarPeriodo" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarPeriodo" />
+                            <Button fx:id="btnGuardarPeriodo" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarPeriodo" />
+                        </HBox>
+                    </VBox>
+                </right>
+            </BorderPane>
+        </Tab>
+
+        <Tab fx:id="tabAulas" text="Aulas" closable="false">
+            <BorderPane>
+                <top>
+                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
+                        <Button fx:id="btnNuevaAula"
+                                text="+ Nueva Aula"
+                                styleClass="boton-primario"
+                                onAction="#handleNuevaAula" />
+                    </HBox>
+                </top>
+                <center>
+                    <TableView fx:id="tablaAulas" styleClass="seccion-tabla">
+                        <columns>
+                            <TableColumn fx:id="colNumAula" text="N°" prefWidth="50.0" styleClass="col-center" />
+                            <TableColumn fx:id="colNombreAula" text="Nombre" prefWidth="150.0" />
+                            <TableColumn fx:id="colCapacidadAula" text="Capacidad" prefWidth="80.0" styleClass="col-center" />
+                            <TableColumn fx:id="colUbicacionAula" text="Ubicación" prefWidth="150.0" />
+                            <TableColumn fx:id="colTipoAula" text="Tipo" prefWidth="100.0" />
+                            <TableColumn fx:id="colAccionesAula" text="Acciones" prefWidth="160.0" styleClass="col-center" />
+                        </columns>
+                    </TableView>
+                </center>
+                <right>
+                    <VBox fx:id="panelFormularioAula" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
+                        <padding>
+                            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                        </padding>
+                        <Label styleClass="formulario-title" text="Aula" />
+                        <Separator styleClass="formulario-separator" />
+                        <Label text="Nombre:" styleClass="formulario-label" />
+                        <TextField fx:id="txtNombreAula" promptText="Nombre del aula" styleClass="formulario-input" />
+                        <Label text="Capacidad:" styleClass="formulario-label" />
+                        <TextField fx:id="txtCapacidadAula" promptText="Número de alumnos" styleClass="formulario-input" />
+                        <Label text="Ubicación:" styleClass="formulario-label" />
+                        <TextField fx:id="txtUbicacionAula" promptText="Edificio/Piso" styleClass="formulario-input" />
+                        <Label text="Tipo:" styleClass="formulario-label" />
+                        <TextField fx:id="txtTipoAula" promptText="Teórica/Laboratorio" styleClass="formulario-input" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                            <Button fx:id="btnCancelarAula" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarAula" />
+                            <Button fx:id="btnGuardarAula" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarAula" />
+                        </HBox>
+                    </VBox>
+                </right>
+            </BorderPane>
+        </Tab>
+
+        <Tab fx:id="tabGrupos" text="Grupos" closable="false">
+            <BorderPane>
+                <top>
+                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
+                        <Button fx:id="btnNuevoGrupo"
+                                text="+ Nuevo Grupo"
+                                styleClass="boton-primario"
+                                onAction="#handleNuevoGrupo" />
+                    </HBox>
+                </top>
+                <center>
+                    <TableView fx:id="tablaGrupos" styleClass="seccion-tabla">
+                        <columns>
+                            <TableColumn fx:id="colNumGrupo" text="N°" prefWidth="50.0" styleClass="col-center" />
+                            <TableColumn fx:id="colNombreGrupo" text="Nombre" prefWidth="200.0" />
+                            <TableColumn fx:id="colGradoGrupo" text="Grado" prefWidth="150.0" />
+                            <TableColumn fx:id="colAccionesGrupo" text="Acciones" prefWidth="160.0" styleClass="col-center" />
+                        </columns>
+                    </TableView>
+                </center>
+                <right>
+                    <VBox fx:id="panelFormularioGrupo" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
+                        <padding>
+                            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                        </padding>
+                        <Label styleClass="formulario-title" text="Grupo" />
+                        <Separator styleClass="formulario-separator" />
+                        <Label text="Nombre:" styleClass="formulario-label" />
+                        <TextField fx:id="txtNombreGrupo" promptText="Nombre del grupo" styleClass="formulario-input" />
+                        <Label text="Grado:" styleClass="formulario-label" />
+                        <ComboBox fx:id="cmbGradoGrupo" promptText="Seleccione un grado" styleClass="formulario-input" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                            <Button fx:id="btnCancelarGrupo" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarGrupo" />
+                            <Button fx:id="btnGuardarGrupo" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarGrupo" />
+                        </HBox>
+                    </VBox>
+                </right>
+            </BorderPane>
+        </Tab>
+
+        <Tab fx:id="tabRecreos" text="Recreos" closable="false">
+            <BorderPane>
+                <top>
+                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
+                        <Button fx:id="btnNuevoRecreo"
+                                text="+ Nuevo Recreo"
+                                styleClass="boton-primario"
+                                onAction="#handleNuevoRecreo" />
+                    </HBox>
+                </top>
+                <center>
+                    <TableView fx:id="tablaRecreos" styleClass="seccion-tabla">
+                        <columns>
+                            <TableColumn fx:id="colNumRecreo" text="N°" prefWidth="50.0" styleClass="col-center" />
+                            <TableColumn fx:id="colDiaRecreo" text="Día" prefWidth="100.0" styleClass="col-center" />
+                            <TableColumn fx:id="colInicioRecreo" text="Hora Inicio" prefWidth="100.0" styleClass="col-center" />
+                            <TableColumn fx:id="colFinRecreo" text="Hora Fin" prefWidth="100.0" styleClass="col-center" />
+                            <TableColumn fx:id="colDescripcionRecreo" text="Descripción" prefWidth="200.0" />
+                            <TableColumn fx:id="colAccionesRecreo" text="Acciones" prefWidth="160.0" styleClass="col-center" />
+                        </columns>
+                    </TableView>
+                </center>
+                <right>
+                    <VBox fx:id="panelFormularioRecreo" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
+                        <padding>
+                            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                        </padding>
+                        <Label styleClass="formulario-title" text="Recreo" />
+                        <Separator styleClass="formulario-separator" />
+                        <Label text="Día:" styleClass="formulario-label" />
+                        <ComboBox fx:id="cmbDiaRecreo" promptText="Seleccione un día" styleClass="formulario-input" />
+                        <Label text="Periodo:" styleClass="formulario-label" />
+                        <ComboBox fx:id="cmbPeriodoRecreo" promptText="Seleccione un periodo" styleClass="formulario-input" />
+                        <Label text="Hora Inicio:" styleClass="formulario-label" />
+                        <TextField fx:id="txtInicioRecreo" promptText="HH:mm" styleClass="formulario-input" />
+                        <Label text="Hora Fin:" styleClass="formulario-label" />
+                        <TextField fx:id="txtFinRecreo" promptText="HH:mm" styleClass="formulario-input" />
+                        <Label text="Descripción:" styleClass="formulario-label" />
+                        <TextField fx:id="txtDescripcionRecreo" promptText="Recreo" styleClass="formulario-input" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                            <Button fx:id="btnCancelarRecreo" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarRecreo" />
+                            <Button fx:id="btnGuardarRecreo" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarRecreo" />
+                        </HBox>
+                    </VBox>
+                </right>
+            </BorderPane>
+        </Tab>
+
+        <Tab fx:id="tabGrados" text="Grados" closable="false">
+            <BorderPane>
+                <top>
+                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
+                        <Button fx:id="btnNuevoGrado"
+                                text="+ Nuevo Grado"
+                                styleClass="boton-primario"
+                                onAction="#handleNuevoGrado" />
+                    </HBox>
+                </top>
+                <center>
+                    <TableView fx:id="tablaGrados" styleClass="seccion-tabla">
+                        <columns>
+                            <TableColumn fx:id="colNumGrado" text="N°" prefWidth="50.0" styleClass="col-center" />
+                            <TableColumn fx:id="colNombreGrado" text="Nombre" prefWidth="200.0" />
+                            <TableColumn fx:id="colNivelGrado" text="Nivel" prefWidth="150.0" />
+                            <TableColumn fx:id="colAccionesGrado" text="Acciones" prefWidth="160.0" styleClass="col-center" />
+                        </columns>
+                    </TableView>
+                </center>
+                <right>
+                    <VBox fx:id="panelFormularioGrado" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
+                        <padding>
+                            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                        </padding>
+                        <Label styleClass="formulario-title" text="Grado" />
+                        <Separator styleClass="formulario-separator" />
+                        <Label text="Nombre:" styleClass="formulario-label" />
+                        <TextField fx:id="txtNombreGrado" promptText="Nombre del grado" styleClass="formulario-input" />
+                        <Label text="Nivel:" styleClass="formulario-label" />
+                        <TextField fx:id="txtNivelGrado" promptText="Primaria, Secundaria, Pregrado..." styleClass="formulario-input" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                            <Button fx:id="btnCancelarGrado" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarGrado" />
+                            <Button fx:id="btnGuardarGrado" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarGrado" />
+                        </HBox>
+                    </VBox>
+                </right>
+            </BorderPane>
+        </Tab>
+
+        <Tab fx:id="tabTurnos" text="Turnos" closable="false">
+            <BorderPane>
+                <top>
+                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
+                        <Button fx:id="btnNuevoTurno"
+                                text="+ Nuevo Turno"
+                                styleClass="boton-primario"
+                                onAction="#handleNuevoTurno" />
+                    </HBox>
+                </top>
+                <center>
+                    <TableView fx:id="tablaTurnos" styleClass="seccion-tabla">
+                        <columns>
+                            <TableColumn fx:id="colNumTurno" text="N°" prefWidth="50.0" styleClass="col-center" />
+                            <TableColumn fx:id="colNombreTurno" text="Nombre" prefWidth="300.0" />
+                            <TableColumn fx:id="colAccionesTurno" text="Acciones" prefWidth="160.0" styleClass="col-center" />
+                        </columns>
+                    </TableView>
+                </center>
+                <right>
+                    <VBox fx:id="panelFormularioTurno" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
+                        <padding>
+                            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                        </padding>
+                        <Label styleClass="formulario-title" text="Turno" />
+                        <Separator styleClass="formulario-separator" />
+                        <Label text="Nombre:" styleClass="formulario-label" />
+                        <TextField fx:id="txtNombreTurno" promptText="Nombre del turno" styleClass="formulario-input" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                            <Button fx:id="btnCancelarTurno" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarTurno" />
+                            <Button fx:id="btnGuardarTurno" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarTurno" />
+                        </HBox>
+                    </VBox>
+                </right>
+            </BorderPane>
+        </Tab>
+    </tabs>
+</TabPane>

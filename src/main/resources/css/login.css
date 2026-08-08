@@ -1,0 +1,206 @@
+@import url("global.css");
+
+.login-root {
+    -fx-background-color: #FFFFFF;
+}
+
+.login-left-panel {
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 40px;
+}
+
+.login-right-panel {
+    -fx-background-color: linear-gradient(to bottom right, #4A8DB5, #1E3A8A);
+    -fx-background-image: url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="1.5" fill="%23ffffff" opacity="0.15"/></svg>');
+    -fx-background-repeat: repeat;
+    -fx-padding: 40px;
+}
+
+.login-titulo {
+    -fx-font-size: 46px;
+    -fx-text-fill: #4C5A9C;
+}
+
+.info-titulo {
+    -fx-font-size: 42px;
+    -fx-text-fill: #FFFFFF;
+}
+
+.info-subtitulo {
+    -fx-font-style: italic;
+    -fx-font-size: 18px;
+    -fx-text-fill: #E0EAF5;
+}
+
+.lema-institucional {
+    -fx-font-family: "Liberation Serif", serif;
+    -fx-font-style: italic;
+    -fx-font-size: 32px;
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+}
+
+.beta-tag {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-background-radius: 20;
+    -fx-padding: 4 16 4 16;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-radius: 20;
+}
+
+.version-text {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: rgba(255, 255, 255, 0.6);
+}
+
+.logo-placeholder {
+    -fx-background-color: rgba(255, 255, 255, 0.25);
+    -fx-background-radius: 40;
+    -fx-border-radius: 40;
+    -fx-border-color: #FFFFFF;
+    -fx-border-width: 2;
+    -fx-min-width: 80px;
+    -fx-min-height: 80px;
+    -fx-max-width: 80px;
+    -fx-max-height: 80px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0.1, 0, 2);
+    -fx-alignment: center;
+}
+
+.password-wrapper {
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 8;
+    -fx-border-color: #D1D5DB;
+    -fx-border-radius: 8;
+    -fx-padding: 0 5px 0 0;
+}
+
+.password-stack {
+    -fx-background-color: transparent;
+}
+
+.login-input-password {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 8px 15px;
+    -fx-font-size: 14px;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.eye-icon {
+    -fx-font-size: 18px;
+    -fx-cursor: hand;
+    -fx-padding: 5;
+    -fx-text-fill: #6B7280;
+}
+.eye-icon:hover {
+    -fx-text-fill: #1E3A8A;
+}
+
+.login-input {
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 8;
+    -fx-border-color: #D1D5DB;
+    -fx-border-radius: 8;
+    -fx-padding: 8px 15px;
+    -fx-font-size: 14px;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.login-input:focused, .password-wrapper:focused-within {
+    -fx-border-color: #4A8DB5;
+    -fx-effect: dropshadow(gaussian, rgba(74, 141, 181, 0.3), 5, 0, 0, 0);
+}
+
+/* --- BOTÓN PRIMARIO (IGUAL AL MAIN) --- */
+.boton-primario {
+    -fx-background-color: linear-gradient(to bottom, #7AB4D8, #4A8DB5);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-font-size: 28px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 0);
+}
+.boton-primario:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0.2, 0, 4);
+}
+
+.link-olvidado {
+    -fx-text-fill: #5D9BC7;
+    -fx-font-size: 14px;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-cursor: hand;
+}
+.link-olvidado:hover {
+    -fx-underline: true;
+}
+
+.login-separator {
+    -fx-background-color: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+    -fx-padding: 0;
+    -fx-min-height: 1px;
+    -fx-max-height: 1px;
+}
+
+/* --- BOTÓN "REGRESAR" --- */
+.back-wrapper {
+    -fx-padding: 20px 0 0 25px;
+}
+
+.btn-back-text {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: 500;
+    -fx-cursor: hand;
+    -fx-padding: 8px 14px;
+    -fx-background-radius: 8px;
+}
+.back-arrow-icon {
+    -fx-text-fill: #4A8DB5;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+.back-label {
+    -fx-text-fill: #4A8DB5;
+}
+
+.btn-back-text:hover {
+    -fx-background-color: rgba(74, 141, 181, 0.1);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 0);
+}
+.btn-back-text:hover .back-arrow-icon,
+.btn-back-text:hover .back-label {
+    -fx-text-fill: #1E3A8A;
+}
+.btn-back-text:pressed {
+    -fx-background-color: rgba(74, 141, 181, 0.2);
+}
+/* --- CHECKBOX DE MANTENER SESIÓN (ADN de SchoolBase) --- */
+.login-checkbox {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-text-fill: #4A8DB5;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 5px 0;
+}
+.login-checkbox .box {
+    -fx-background-color: #F3F4F6;
+    -fx-border-color: #D1D5DB;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+.login-checkbox:selected .box {
+    -fx-background-color: #4A8DB5;
+    -fx-border-color: #4A8DB5;
+}
+.login-checkbox:selected .mark {
+    -fx-background-color: #FFFFFF;
+}

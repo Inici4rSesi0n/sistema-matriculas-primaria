@@ -1,0 +1,112 @@
+package aplicacion.casosdeuso;
+
+import dominio.modelo.Asignatura;
+import dominio.modelo.Docente;
+import dominio.modelo.Grado;
+import dominio.modelo.Grupo;
+import dominio.puerto.repositorio.RepositorioDocentes;
+import dominio.puerto.repositorio.RepositorioGrupos;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+/**
+ *
+ * @author inici4rsesi0n
+ */
+class GestionDocentesTest {
+
+    private RepositorioDocentes repoDocentes;
+    private RepositorioGrupos repoGrupos;
+    private GestionDocentes casoUso;
+
+    @BeforeEach
+    void setUp() {
+        repoDocentes = mock(RepositorioDocentes.class);
+        repoGrupos = mock(RepositorioGrupos.class);
+        casoUso = new GestionDocentes(repoDocentes);
+    }
+
+    @Test
+    void agregar_debeGuardarDocenteCuandoNoExiste() {
+        Docente docente = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
+        when(repoDocentes.buscarPorCodigo("D001")).thenReturn(Optional.empty());
+        when(repoDocentes.buscarPorDni("111")).thenReturn(Optional.empty());
+
+        casoUso.agregar(docente);
+
+        verify(repoDocentes).agregar(docente);
+    }
+
+    @Test
+    void agregar_debeLanzarExcepcionSiCodigoDuplicado() {
+        Docente existente = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
+        Docente nuevo = new Docente("D001", "hash2", "222", "Ana", "Lopez", 28, "Ing", new ArrayList<>());
+        when(repoDocentes.buscarPorCodigo("D001")).thenReturn(Optional.of(existente));
+
+        assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(nuevo));
+        verify(repoDocentes, never()).agregar(any());
+    }
+
+    @Test
+    void buscarPorCodigo_debeRetornarDocenteSiExiste() {
+        Docente esperado = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
+        when(repoDocentes.buscarPorCodigo("D001")).thenReturn(Optional.of(esperado));
+
+        Docente resultado = casoUso.buscarPorCodigo("D001");
+        assertEquals(esperado, resultado);
+    }
+
+    @Test
+    void buscarPorDni_debeRetornarDocenteSiExiste() {
+        Docente esperado = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
+        when(repoDocentes.buscarPorDni("111")).thenReturn(Optional.of(esperado));
+
+        Docente resultado = casoUso.buscarPorDni("111");
+        assertEquals(esperado, resultado);
+    }
+
+    @Test
+    void agregarAsignatura_debeAgregarlaYActualizar() {
+        Docente docente = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
+        Asignatura asig = new Asignatura("Física");
+
+        casoUso.agregarAsignatura(docente, asig);
+
+        assertTrue(docente.getAsignaturas().contains(asig));
+        verify(repoDocentes).actualizar(docente, docente);
+    }
+
+    @Test
+    void removerAsignatura_debeRemoverlaYActualizar() {
+        List<Asignatura> lista = new ArrayList<>();
+        Asignatura asig = new Asignatura("Química");
+        lista.add(asig);
+        Docente docente = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", lista);
+
+        casoUso.removerAsignatura(docente, asig);
+
+        assertFalse(docente.getAsignaturas().contains(asig));
+        verify(repoDocentes).actualizar(docente, docente);
+    }
+
+    @Test
+    void asignarTutoria_debeAsignarTutorYActualizarAmbos() {
+        Docente docente = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
+        Grado grado = new Grado("1er Grado", "Primaria");
+        Grupo grupo = new Grupo("1A", grado);
+
+        casoUso.asignarTutoria(docente, grupo, repoGrupos);
+
+        assertEquals(docente, grupo.getTutor());
+        assertEquals(grupo, docente.getTutoria());
+        verify(repoGrupos).actualizar(grupo, grupo);
+        verify(repoDocentes).actualizar(docente, docente);
+    }
+}

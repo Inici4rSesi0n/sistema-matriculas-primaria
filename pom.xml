@@ -16,35 +16,70 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <javafx.version>23.0.1</javafx.version>
+        <junit.version>5.10.0</junit.version>
+        <mockito.version>5.14.2</mockito.version>
+        <jbcrypt.version>0.4</jbcrypt.version>
     </properties>
 
+    <dependencies>
+        <!-- JavaFX -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
+        <!-- Seguridad: bcrypt para hashing de contraseñas -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>${jbcrypt.version}</version>
+        </dependency>
+
+        <!-- JUnit 5 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <build>
-        <sourceDirectory>src</sourceDirectory>
-        <testSourceDirectory>test</testSourceDirectory>
         <plugins>
-            
+            <!-- Compilador de Java -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>3.1.1</version>
-                <executions>
-                    <execution>
-                        <id>install-awtextra</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>${project.basedir}/lib/AbsoluteLayout.jar</file>
-                            <groupId>org.netbeans.lib</groupId>
-                            <artifactId>awtextra</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
             </plugin>
-            
+
+            <!-- Plugin para JAR ejecutable -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -52,33 +87,42 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>principal.Main</mainClass>
+                            <mainClass>boot.SchoolBaseApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
-            
+
+            <!-- Plugin para ejecutar JUnit 5 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+                <configuration>
+                    <argLine>
+                        -Xshare:off
+                        -javaagent:${settings.localRepository}/net/bytebuddy/byte-buddy-agent/1.15.4/byte-buddy-agent-1.15.4.jar
+                    </argLine>
+                    <systemPropertyVariables>
+                        <mockito.mock.maker.class>mock-maker-subclass</mockito.mock.maker.class>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin de JavaFX -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>boot.SchoolBaseApp</mainClass>
+                    <modules>
+                        <module>javafx.controls</module>
+                        <module>javafx.fxml</module>
+                        <module>javafx.base</module>
+                    </modules>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        
-        <dependency>
-            <groupId>org.netbeans.lib</groupId>
-            <artifactId>awtextra</artifactId>
-            <version>1.0</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.10.0</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 </project>
