@@ -2,6 +2,8 @@ package infraestructura.persistencia;
 
 import dominio.modelo.Recreo;
 import dominio.puerto.repositorio.RepositorioRecreos;
+import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +12,8 @@ import java.util.Optional;
  *
  * @author inici4rsesi0n
  */
-public class AdaptadorRepositorioRecreos implements RepositorioRecreos {
+@Repository
+public class AdaptadorRepositorioRecreos implements RepositorioRecreos, Recargable {
     private static final String ARCHIVO = "recreos.bin";
     private List<Recreo> lista;
 
@@ -54,5 +57,10 @@ public class AdaptadorRepositorioRecreos implements RepositorioRecreos {
 
     private void guardar() {
         ManejadorPersistencia.guardar(new ArrayList<>(lista), ARCHIVO);
+    }
+    @Override
+    public void recargar() {
+        List<Recreo> cargada = ManejadorPersistencia.cargar(ARCHIVO);
+        this.lista = (cargada != null)?new ArrayList<>(cargada):new ArrayList<>();
     }
 }

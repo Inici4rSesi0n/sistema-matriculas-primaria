@@ -2,6 +2,8 @@ package infraestructura.persistencia;
 
 import dominio.modelo.PeriodoAcademico;
 import dominio.puerto.repositorio.RepositorioPeriodos;
+import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +12,8 @@ import java.util.Optional;
  *
  * @author inici4rsesi0n
  */
-public class AdaptadorRepositorioPeriodos implements RepositorioPeriodos {
+@Repository
+public class AdaptadorRepositorioPeriodos implements RepositorioPeriodos, Recargable {
     private static final String ARCHIVO = "periodos.bin";
     private List<PeriodoAcademico> lista;
 
@@ -54,5 +57,10 @@ public class AdaptadorRepositorioPeriodos implements RepositorioPeriodos {
 
     private void guardar() {
         ManejadorPersistencia.guardar(new ArrayList<>(lista), ARCHIVO);
+    }
+    @Override
+    public void recargar() {
+        List<PeriodoAcademico> cargada = ManejadorPersistencia.cargar(ARCHIVO);
+        this.lista = (cargada != null)?new ArrayList<>(cargada):new ArrayList<>();
     }
 }

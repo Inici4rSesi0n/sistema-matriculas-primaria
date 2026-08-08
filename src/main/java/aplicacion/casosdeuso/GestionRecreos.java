@@ -4,12 +4,15 @@ import dominio.modelo.FranjaHoraria;
 import dominio.modelo.PeriodoAcademico;
 import dominio.modelo.Recreo;
 import dominio.puerto.repositorio.RepositorioRecreos;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 /**
  *
  * @author inici4rsesi0n
  */
+@Service
 public class GestionRecreos {
 
     private final RepositorioRecreos repo;
@@ -19,30 +22,18 @@ public class GestionRecreos {
     }
 
     public void crearRecreo(FranjaHoraria franja, String descripcion, PeriodoAcademico periodo) {
-        if (franja == null || periodo == null) {
-            throw new IllegalArgumentException("La franja horaria y el periodo son obligatorios.");
-        }
-        Recreo recreo = new Recreo(franja, descripcion, periodo);
-        repo.agregar(recreo);
+        if (franja == null || periodo == null) throw new IllegalArgumentException("La franja horaria y el periodo son obligatorios.");
+        repo.agregar(new Recreo(franja, descripcion, periodo));
     }
 
-    public Recreo buscarPorDescripcion(String descripcion) {
-        return repo.buscarPorDescripcion(descripcion).orElse(null);
-    }
-
-    public List<Recreo> listarTodos() {
-        return repo.listarTodos();
-    }
+    public Recreo buscarPorDescripcion(String descripcion) { return repo.buscarPorDescripcion(descripcion).orElse(null); }
+    public List<Recreo> listarTodos() { return repo.listarTodos(); }
 
     public void actualizarRecreo(Recreo original, FranjaHoraria franja, String descripcion, PeriodoAcademico periodo) {
-        if (franja == null || periodo == null) {
-            throw new IllegalArgumentException("La franja horaria y el periodo son obligatorios.");
-        }
+        if (franja == null || periodo == null) throw new IllegalArgumentException("La franja horaria y el periodo son obligatorios.");
         Recreo actualizado = new Recreo(franja, descripcion, periodo);
         repo.actualizar(original, actualizado);
     }
 
-    public void eliminarRecreo(Recreo recreo) {
-        repo.eliminar(recreo);
-    }
+    public void eliminarRecreo(Recreo recreo) { repo.eliminar(recreo); }
 }

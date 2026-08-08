@@ -1,7 +1,7 @@
 package presentacion.controlador;
 
 import presentacion.dialogos.Dialogos;
-import infraestructura.configuracion.ProveedorInfraestructura;
+import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionMatriculas;
 import aplicacion.casosdeuso.GestionEstudiantes;
 import aplicacion.casosdeuso.GestionPeriodos;
@@ -52,10 +52,10 @@ public class s_MatriculaController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionMatriculas = ProveedorInfraestructura.getGestionMatriculas();
-        gestionEstudiantes = ProveedorInfraestructura.getGestionEstudiantes();
-        gestionPeriodos = ProveedorInfraestructura.getGestionPeriodos();
-        gestionGrupos = ProveedorInfraestructura.getGestionGrupos();
+        gestionMatriculas = SpringContext.getBean(GestionMatriculas.class);
+        gestionEstudiantes = SpringContext.getBean(GestionEstudiantes.class);
+        gestionPeriodos = SpringContext.getBean(GestionPeriodos.class);
+        gestionGrupos = SpringContext.getBean(GestionGrupos.class);
 
         configurarTabla();
         configurarColumnaAcciones();
@@ -192,7 +192,7 @@ public class s_MatriculaController implements Initializable {
             } else {
                 gestionMatriculas.actualizarEstado(matriculaEditando, estado);
                 matriculaEditando.setFecha(fecha);
-                gestionMatriculas.actualizarEstado(matriculaEditando, matriculaEditando.getEstado()); // Refresca la matrícula (mejor usar un método dedicado si existiera)
+                gestionMatriculas.actualizarEstado(matriculaEditando, matriculaEditando.getEstado());
             }
             cargarMatriculas();
             limpiarFormulario();

@@ -1,7 +1,7 @@
 package presentacion.controlador;
 
 import presentacion.dialogos.Dialogos;
-import infraestructura.configuracion.ProveedorInfraestructura;
+import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionAsignaturas;
 import aplicacion.casosdeuso.GestionAulas;
 import aplicacion.casosdeuso.GestionClases;
@@ -71,12 +71,12 @@ public class tab_HorariosController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionClases = ProveedorInfraestructura.getGestionClases();
-        gestionAsignaturas = ProveedorInfraestructura.getGestionAsignaturas();
-        gestionDocentes = ProveedorInfraestructura.getGestionDocentes();
-        gestionGrupos = ProveedorInfraestructura.getGestionGrupos();
-        gestionAulas = ProveedorInfraestructura.getGestionAulas();
-        gestionPeriodos = ProveedorInfraestructura.getGestionPeriodos();
+        gestionClases = SpringContext.getBean(GestionClases.class);
+        gestionAsignaturas = SpringContext.getBean(GestionAsignaturas.class);
+        gestionDocentes = SpringContext.getBean(GestionDocentes.class);
+        gestionGrupos = SpringContext.getBean(GestionGrupos.class);
+        gestionAulas = SpringContext.getBean(GestionAulas.class);
+        gestionPeriodos = SpringContext.getBean(GestionPeriodos.class);
 
         configurarTablaClases();
         cargarClases();

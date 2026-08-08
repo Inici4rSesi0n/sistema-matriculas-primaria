@@ -1,6 +1,7 @@
 package presentacion.controlador;
+
 import presentacion.dialogos.Dialogos;
-import infraestructura.configuracion.ProveedorInfraestructura;
+import infraestructura.configuracion.SpringContext;
 import dominio.modelo.Usuario;
 import aplicacion.casosdeuso.GestionUsuarios;
 import dominio.puerto.externo.HashProvider;
@@ -15,6 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+
 /**
  *
  * @author inici4rsesi0n
@@ -48,8 +50,8 @@ public class s_GestionUsuariosController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionUsuarios = ProveedorInfraestructura.getGestionUsuarios();
-        hashProvider = ProveedorInfraestructura.getHashProvider();
+        gestionUsuarios = SpringContext.getBean(GestionUsuarios.class);
+        hashProvider = SpringContext.getBean(HashProvider.class);
         configurarTabla();
         configurarColumnaAcciones();
         configurarComboRoles();

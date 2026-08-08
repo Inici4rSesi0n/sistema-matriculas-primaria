@@ -28,8 +28,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Install AbsoluteLayout JAR locally
-        run: mvn install:install-file -Dfile=lib/AbsoluteLayout.jar -DgroupId=org.netbeans.lib -DartifactId=awtextra -Dversion=1.0 -Dpackaging=jar
-
       - name: Build and run tests
         run: mvn clean test

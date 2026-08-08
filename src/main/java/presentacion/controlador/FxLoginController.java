@@ -1,8 +1,9 @@
 package presentacion.controlador;
 
+import aplicacion.casosdeuso.AutenticarUsuario;
 import presentacion.dialogos.Dialogos;
 import presentacion.estadousuario.SesionUsuario;
-import infraestructura.configuracion.ProveedorInfraestructura;
+import infraestructura.configuracion.SpringContext;
 import infraestructura.seguridad.UtilLimpieza;
 import dominio.modelo.Usuario;
 import java.net.URL;
@@ -86,7 +87,8 @@ public class FxLoginController implements Initializable {
             return;
         }
         try {
-            Usuario usuario = ProveedorInfraestructura.getAutenticarUsuario().ejecutar(codigo, contraseña);
+            AutenticarUsuario autenticarUsuario = SpringContext.getBean(AutenticarUsuario.class);
+            Usuario usuario = autenticarUsuario.ejecutar(codigo, contraseña);
             if (usuario != null) {
                 this.usuarioAutenticado = usuario;
                 if (chkMantenerSesion.isSelected()) {

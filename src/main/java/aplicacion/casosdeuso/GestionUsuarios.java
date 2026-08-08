@@ -2,6 +2,8 @@ package aplicacion.casosdeuso;
 
 import dominio.modelo.*;
 import dominio.puerto.repositorio.*;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,7 @@ import java.util.List;
  *
  * @author inici4rsesi0n
  */
+@Service
 public class GestionUsuarios {
 
     private final RepositorioAdministradores repoAdmin;
@@ -19,68 +22,48 @@ public class GestionUsuarios {
     private final RepositorioCoordinadores repoCoord;
     private final RepositorioPadres repoPad;
 
-    public GestionUsuarios(RepositorioAdministradores repoAdmin,
-                           RepositorioDirectores repoDir,
-                           RepositorioDocentes repoDoc,
-                           RepositorioEstudiantes repoEst,
-                           RepositorioSecretarios repoSec,
-                           RepositorioCoordinadores repoCoord,
-                           RepositorioPadres repoPad) {
-        this.repoAdmin = repoAdmin;
-        this.repoDir = repoDir;
-        this.repoDoc = repoDoc;
-        this.repoEst = repoEst;
-        this.repoSec = repoSec;
-        this.repoCoord = repoCoord;
-        this.repoPad = repoPad;
+    public GestionUsuarios(RepositorioAdministradores repoAdmin, RepositorioDirectores repoDir, RepositorioDocentes repoDoc,
+                           RepositorioEstudiantes repoEst, RepositorioSecretarios repoSec, RepositorioCoordinadores repoCoord, RepositorioPadres repoPad) {
+        this.repoAdmin = repoAdmin; this.repoDir = repoDir; this.repoDoc = repoDoc; this.repoEst = repoEst;
+        this.repoSec = repoSec; this.repoCoord = repoCoord; this.repoPad = repoPad;
     }
 
     public List<Usuario> listarTodos() {
         List<Usuario> todos = new ArrayList<>();
-        todos.addAll(repoAdmin.listarTodos());
-        todos.addAll(repoDir.listarTodos());
-        todos.addAll(repoDoc.listarTodos());
-        todos.addAll(repoEst.listarTodos());
-        todos.addAll(repoSec.listarTodos());
-        todos.addAll(repoCoord.listarTodos());
+        todos.addAll(repoAdmin.listarTodos()); todos.addAll(repoDir.listarTodos()); todos.addAll(repoDoc.listarTodos());
+        todos.addAll(repoEst.listarTodos()); todos.addAll(repoSec.listarTodos()); todos.addAll(repoCoord.listarTodos());
         todos.addAll(repoPad.listarTodos());
         return todos;
     }
 
     public Usuario buscarPorCodigo(String codigo) {
-        Usuario usuario = repoAdmin.buscarPorCodigo(codigo).orElse(null);
-        if (usuario == null) usuario = repoDir.buscarPorCodigo(codigo).orElse(null);
-        if (usuario == null) usuario = repoDoc.buscarPorCodigo(codigo).orElse(null);
-        if (usuario == null) usuario = repoEst.buscarPorCodigo(codigo).orElse(null);
-        if (usuario == null) usuario = repoSec.buscarPorCodigo(codigo).orElse(null);
-        if (usuario == null) usuario = repoCoord.buscarPorCodigo(codigo).orElse(null);
-        if (usuario == null) usuario = repoPad.buscarPorCodigo(codigo).orElse(null);
-        return usuario;
+        Usuario u = repoAdmin.buscarPorCodigo(codigo).orElse(null);
+        if (u == null) u = repoDir.buscarPorCodigo(codigo).orElse(null);
+        if (u == null) u = repoDoc.buscarPorCodigo(codigo).orElse(null);
+        if (u == null) u = repoEst.buscarPorCodigo(codigo).orElse(null);
+        if (u == null) u = repoSec.buscarPorCodigo(codigo).orElse(null);
+        if (u == null) u = repoCoord.buscarPorCodigo(codigo).orElse(null);
+        if (u == null) u = repoPad.buscarPorCodigo(codigo).orElse(null);
+        return u;
     }
 
     public boolean existeDni(String dni, Usuario excluir) {
-        return listarTodos().stream()
-                .anyMatch(u -> u.getDni().equalsIgnoreCase(dni) && !u.equals(excluir));
+        return listarTodos().stream().anyMatch(u -> u.getDni().equalsIgnoreCase(dni) && !u.equals(excluir));
     }
 
-    public void agregarUsuario(String codigo, String hash, String dni,
-                               String nombre, String apellido, int edad,
-                               Usuario.Rol rol, String especialidad) {
+    public void agregarUsuario(String codigo, String hash, String dni, String nombre, String apellido, int edad, Usuario.Rol rol, String especialidad) {
         validarUnicidad(codigo, dni, null);
-
         switch (rol) {
             case ADMINISTRADOR -> repoAdmin.agregar(new Administrador(codigo, hash, dni, nombre, apellido, edad));
             case DIRECTOR -> repoDir.agregar(new Director(codigo, hash, dni, nombre, apellido, edad));
             case SECRETARIO -> repoSec.agregar(new Secretario(codigo, hash, dni, nombre, apellido, edad));
             case COORDINADOR -> repoCoord.agregar(new CoordinadorAcademico(codigo, hash, dni, nombre, apellido, edad));
-            case DOCENTE -> {
-                String esp = (especialidad != null && !especialidad.isBlank()) ? especialidad : "Sin asignar";
-                repoDoc.agregar(new Docente(codigo, hash, dni, nombre, apellido, edad, esp, new ArrayList<>()));
-            }
+            case DOCENTE -> { String esp = (especialidad != null && !especialidad.isBlank()) ? especialidad : "Sin asignar"; repoDoc.agregar(new Docente(codigo, hash, dni, nombre, apellido, edad, esp, new ArrayList<>())); }
             case ESTUDIANTE -> repoEst.agregar(new Estudiante(codigo, hash, dni, nombre, apellido, edad));
             case PADRE -> repoPad.agregar(new Padre(codigo, hash, dni, nombre, apellido, edad, new ArrayList<>()));
         }
     }
+
     public void actualizarUsuario(Usuario usuario) {
         switch (usuario.getRol()) {
             case ADMINISTRADOR -> repoAdmin.actualizar((Administrador) usuario, (Administrador) usuario);
@@ -92,6 +75,7 @@ public class GestionUsuarios {
             case PADRE -> repoPad.actualizar((Padre) usuario, (Padre) usuario);
         }
     }
+
     public void eliminarUsuario(Usuario usuario) {
         switch (usuario.getRol()) {
             case ADMINISTRADOR -> repoAdmin.eliminar((Administrador) usuario);
@@ -103,12 +87,9 @@ public class GestionUsuarios {
             case PADRE -> repoPad.eliminar((Padre) usuario);
         }
     }
+
     private void validarUnicidad(String codigo, String dni, Usuario excluir) {
-        if (buscarPorCodigo(codigo) != null) {
-            throw new IllegalArgumentException("Ya existe un usuario con el código " + codigo);
-        }
-        if (existeDni(dni, excluir)) {
-            throw new IllegalArgumentException("Ya existe un usuario con el DNI " + dni);
-        }
+        if (buscarPorCodigo(codigo) != null) throw new IllegalArgumentException("Ya existe un usuario con el código " + codigo);
+        if (existeDni(dni, excluir)) throw new IllegalArgumentException("Ya existe un usuario con el DNI " + dni);
     }
 }

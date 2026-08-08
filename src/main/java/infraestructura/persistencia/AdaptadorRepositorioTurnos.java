@@ -2,6 +2,8 @@ package infraestructura.persistencia;
 
 import dominio.modelo.Turno;
 import dominio.puerto.repositorio.RepositorioTurnos;
+import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +12,8 @@ import java.util.Optional;
  *
  * @author inici4rsesi0n
  */
-public class AdaptadorRepositorioTurnos implements RepositorioTurnos {
+@Repository
+public class AdaptadorRepositorioTurnos implements RepositorioTurnos, Recargable {
     private static final String ARCHIVO = "turnos.bin";
     private List<Turno> lista;
 
@@ -54,5 +57,10 @@ public class AdaptadorRepositorioTurnos implements RepositorioTurnos {
 
     private void guardar() {
         ManejadorPersistencia.guardar(new ArrayList<>(lista), ARCHIVO);
+    }
+    @Override
+    public void recargar() {
+        List<Turno> cargada = ManejadorPersistencia.cargar(ARCHIVO);
+        this.lista = (cargada != null)?new ArrayList<>(cargada):new ArrayList<>();
     }
 }

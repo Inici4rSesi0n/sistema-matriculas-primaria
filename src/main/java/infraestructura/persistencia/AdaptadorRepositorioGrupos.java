@@ -2,6 +2,8 @@ package infraestructura.persistencia;
 
 import dominio.modelo.Grupo;
 import dominio.puerto.repositorio.RepositorioGrupos;
+import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +13,8 @@ import java.util.stream.Collectors;
  *
  * @author inici4rsesi0n
  */
-public class AdaptadorRepositorioGrupos implements RepositorioGrupos {
+@Repository
+public class AdaptadorRepositorioGrupos implements RepositorioGrupos, Recargable {
     private static final String ARCHIVO = "grupos.bin";
     private List<Grupo> lista;
 
@@ -64,5 +67,10 @@ public class AdaptadorRepositorioGrupos implements RepositorioGrupos {
 
     private void guardar() {
         ManejadorPersistencia.guardar(new ArrayList<>(lista), ARCHIVO);
+    }
+    @Override
+    public void recargar() {
+        List<Grupo> cargada = ManejadorPersistencia.cargar(ARCHIVO);
+        this.lista = (cargada != null)?new ArrayList<>(cargada):new ArrayList<>();
     }
 }

@@ -1,11 +1,16 @@
 package aplicacion.casosdeuso;
+
 import dominio.modelo.Administrador;
 import dominio.puerto.repositorio.RepositorioAdministradores;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
+
 /**
  *
  * @author inici4rsesi0n
  */
+@Service
 public class GestionAdministradores {
 
     private final RepositorioAdministradores repo;

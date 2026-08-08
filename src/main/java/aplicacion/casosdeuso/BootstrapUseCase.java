@@ -1,5 +1,4 @@
 package aplicacion.casosdeuso;
-
 import aplicacion.puerto.ProveedorDatosIniciales;
 import dominio.modelo.Administrador;
 import dominio.modelo.FranjaHoraria;
@@ -10,6 +9,7 @@ import dominio.modelo.Turno;
 import dominio.puerto.externo.HashProvider;
 import infraestructura.persistencia.ManejadorPersistencia;
 import infraestructura.seguridad.UtilLimpieza;
+import org.springframework.stereotype.Service;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -19,11 +19,11 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-
 /**
  *
  * @author inici4rsesi0n
  */
+@Service
 public class BootstrapUseCase {
 
     private static final String ARCHIVO_ADMINISTRADORES = "administradores.bin";

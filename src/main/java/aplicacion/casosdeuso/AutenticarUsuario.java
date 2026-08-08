@@ -1,11 +1,15 @@
 package aplicacion.casosdeuso;
+
 import dominio.modelo.Usuario;
 import dominio.puerto.externo.HashProvider;
 import dominio.puerto.repositorio.*;
+import org.springframework.stereotype.Service;
+
 /**
  *
  * @author inici4rsesi0n
  */
+@Service
 public class AutenticarUsuario {
 
     private final RepositorioAdministradores repoAdmin;

@@ -1,16 +1,21 @@
 package infraestructura.persistencia;
+
 import dominio.modelo.Clase;
 import dominio.puerto.repositorio.RepositorioClases;
+import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 /**
  *
  * @author inici4rsesi0n
  */
-public class AdaptadorRepositorioClases implements RepositorioClases {
+@Repository
+public class AdaptadorRepositorioClases implements RepositorioClases, Recargable {
     private static final String ARCHIVO = "clases.bin";
     private List<Clase> lista;
 
@@ -79,5 +84,10 @@ public class AdaptadorRepositorioClases implements RepositorioClases {
 
     private void guardar() {
         ManejadorPersistencia.guardar(new ArrayList<>(lista), ARCHIVO);
+    }
+    @Override
+    public void recargar() {
+        List<Clase> cargada = ManejadorPersistencia.cargar(ARCHIVO);
+        this.lista = (cargada != null)?new ArrayList<>(cargada):new ArrayList<>();
     }
 }

@@ -1,8 +1,12 @@
 package presentacion.controlador;
 
-import infraestructura.configuracion.ProveedorInfraestructura;
+import aplicacion.casosdeuso.GestionAsignaturas;
+import aplicacion.casosdeuso.GestionDocentes;
+import aplicacion.casosdeuso.GestionEstudiantes;
+import aplicacion.casosdeuso.GestionGrupos;
 import aplicacion.casosdeuso.GestionPermisos;
 import dominio.modelo.Usuario;
+import infraestructura.configuracion.SpringContext;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -39,7 +43,7 @@ public class FxDashboardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionPermisos = ProveedorInfraestructura.getGestionPermisos();
+        gestionPermisos = SpringContext.getBean(GestionPermisos.class);
         precargarRutas();
     }
 
@@ -87,10 +91,10 @@ public class FxDashboardController implements Initializable {
     }
 
     private void actualizarTarjetas() {
-        lblNumEstudiantes.setText(String.valueOf(ProveedorInfraestructura.getGestionEstudiantes().listarTodos().size()));
-        lblNumDocentes.setText(String.valueOf(ProveedorInfraestructura.getGestionDocentes().listarTodos().size()));
-        lblNumGrupos.setText(String.valueOf(ProveedorInfraestructura.getGestionGrupos().listarTodos().size()));
-        lblNumAsignaturas.setText(String.valueOf(ProveedorInfraestructura.getGestionAsignaturas().listarTodos().size()));
+        lblNumEstudiantes.setText(String.valueOf(SpringContext.getBean(GestionEstudiantes.class).listarTodos().size()));
+        lblNumDocentes.setText(String.valueOf(SpringContext.getBean(GestionDocentes.class).listarTodos().size()));
+        lblNumGrupos.setText(String.valueOf(SpringContext.getBean(GestionGrupos.class).listarTodos().size()));
+        lblNumAsignaturas.setText(String.valueOf(SpringContext.getBean(GestionAsignaturas.class).listarTodos().size()));
     }
 
     @FXML

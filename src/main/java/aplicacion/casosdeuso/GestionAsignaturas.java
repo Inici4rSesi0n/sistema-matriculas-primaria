@@ -1,11 +1,16 @@
 package aplicacion.casosdeuso;
+
 import dominio.modelo.Asignatura;
 import dominio.puerto.repositorio.RepositorioAsignaturas;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
+
 /**
  *
  * @author inici4rsesi0n
  */
+@Service
 public class GestionAsignaturas {
 
     private final RepositorioAsignaturas repo;

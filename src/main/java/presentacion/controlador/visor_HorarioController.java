@@ -1,7 +1,7 @@
 package presentacion.controlador;
 
 import presentacion.dialogos.Dialogos;
-import infraestructura.configuracion.ProveedorInfraestructura;
+import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionGrupos;
 import aplicacion.casosdeuso.GestionPeriodos;
 import aplicacion.casosdeuso.GestionHorario;
@@ -50,9 +50,9 @@ public class visor_HorarioController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionGrupos = ProveedorInfraestructura.getGestionGrupos();
-        gestionPeriodos = ProveedorInfraestructura.getGestionPeriodos();
-        gestionHorario = ProveedorInfraestructura.getGestionHorario();
+        gestionGrupos = SpringContext.getBean(GestionGrupos.class);
+        gestionPeriodos = SpringContext.getBean(GestionPeriodos.class);
+        gestionHorario = SpringContext.getBean(GestionHorario.class);
 
         configurarCombos();
         configurarTabla();

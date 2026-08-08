@@ -1,7 +1,7 @@
 package presentacion.controlador;
 
 import presentacion.dialogos.Dialogos;
-import infraestructura.configuracion.ProveedorInfraestructura;
+import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionAsignaturas;
 import aplicacion.casosdeuso.GestionAulas;
 import aplicacion.casosdeuso.GestionGrados;
@@ -134,13 +134,13 @@ public class tab_CatalogosController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionAsignaturas = ProveedorInfraestructura.getGestionAsignaturas();
-        gestionPeriodos = ProveedorInfraestructura.getGestionPeriodos();
-        gestionAulas = ProveedorInfraestructura.getGestionAulas();
-        gestionGrupos = ProveedorInfraestructura.getGestionGrupos();
-        gestionRecreos = ProveedorInfraestructura.getGestionRecreos();
-        gestionGrados = ProveedorInfraestructura.getGestionGrados();
-        gestionTurnos = ProveedorInfraestructura.getGestionTurnos();
+        gestionAsignaturas = SpringContext.getBean(GestionAsignaturas.class);
+        gestionPeriodos = SpringContext.getBean(GestionPeriodos.class);
+        gestionAulas = SpringContext.getBean(GestionAulas.class);
+        gestionGrupos = SpringContext.getBean(GestionGrupos.class);
+        gestionRecreos = SpringContext.getBean(GestionRecreos.class);
+        gestionGrados = SpringContext.getBean(GestionGrados.class);
+        gestionTurnos = SpringContext.getBean(GestionTurnos.class);
 
         configurarCombos();
         configurarTablaAsignaturas();

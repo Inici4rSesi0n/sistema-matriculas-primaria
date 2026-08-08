@@ -1,16 +1,16 @@
 package infraestructura.persistencia;
-
 import dominio.modelo.Administrador;
 import dominio.puerto.repositorio.RepositorioAdministradores;
+import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 /**
  *
  * @author inici4rsesi0n
  */
-public class AdaptadorRepositorioAdministradores implements RepositorioAdministradores {
+@Repository
+public class AdaptadorRepositorioAdministradores implements RepositorioAdministradores, Recargable {
     private static final String ARCHIVO = "administradores.bin";
     private List<Administrador> lista;
 
@@ -54,5 +54,11 @@ public class AdaptadorRepositorioAdministradores implements RepositorioAdministr
 
     private void guardar() {
         ManejadorPersistencia.guardar(new ArrayList<>(lista), ARCHIVO);
+    }
+
+    @Override
+    public void recargar() {
+        List<Administrador> cargada = ManejadorPersistencia.cargar(ARCHIVO);
+        this.lista = (cargada != null)?new ArrayList<>(cargada):new ArrayList<>();
     }
 }

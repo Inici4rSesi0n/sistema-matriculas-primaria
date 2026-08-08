@@ -1,7 +1,7 @@
 package presentacion.controlador;
 
 import presentacion.dialogos.Dialogos;
-import infraestructura.configuracion.ProveedorInfraestructura;
+import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionAsignaturas;
 import aplicacion.casosdeuso.GestionDocentes;
 import aplicacion.casosdeuso.GestionGrados;
@@ -66,11 +66,11 @@ public class tab_AsignacionesController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionDocentes = ProveedorInfraestructura.getGestionDocentes();
-        gestionAsignaturas = ProveedorInfraestructura.getGestionAsignaturas();
-        gestionGrupos = ProveedorInfraestructura.getGestionGrupos();
-        gestionUsuarios = ProveedorInfraestructura.getGestionUsuarios();
-        gestionGrados = ProveedorInfraestructura.getGestionGrados();
+        gestionDocentes = SpringContext.getBean(GestionDocentes.class);
+        gestionAsignaturas = SpringContext.getBean(GestionAsignaturas.class);
+        gestionGrupos = SpringContext.getBean(GestionGrupos.class);
+        gestionUsuarios = SpringContext.getBean(GestionUsuarios.class);
+        gestionGrados = SpringContext.getBean(GestionGrados.class);
 
         configurarCombos();
         configurarTablaAsignacionesDocente();
