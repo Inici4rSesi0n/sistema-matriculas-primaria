@@ -1,4 +1,5 @@
 package aplicacion.casosdeuso;
+
 import aplicacion.puerto.ProveedorDatosIniciales;
 import dominio.modelo.Administrador;
 import dominio.modelo.FranjaHoraria;
@@ -7,9 +8,11 @@ import dominio.modelo.PeriodoAcademico;
 import dominio.modelo.Recreo;
 import dominio.modelo.Turno;
 import dominio.puerto.externo.HashProvider;
+import dominio.puerto.externo.LoggerPort;
 import infraestructura.persistencia.ManejadorPersistencia;
 import infraestructura.seguridad.UtilLimpieza;
 import org.springframework.stereotype.Service;
+
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -19,6 +22,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+
 /**
  *
  * @author inici4rsesi0n
@@ -40,29 +44,37 @@ public class BootstrapUseCase {
     private static final int LONGITUD_CLAVE_AES = 256;
 
     private final HashProvider hashProvider;
+    private final LoggerPort logger;
 
-    public BootstrapUseCase(HashProvider hashProvider) {
+    public BootstrapUseCase(HashProvider hashProvider, LoggerPort logger) {
         this.hashProvider = hashProvider;
+        this.logger = logger;
     }
 
     public void inicializarSistema(ProveedorDatosIniciales proveedor) {
         List<Administrador> administradores = ManejadorPersistencia.cargar(ARCHIVO_ADMINISTRADORES);
 
         if (administradores == null || administradores.isEmpty()) {
+            logger.info("No se encontraron administradores. Iniciando configuración inicial del sistema.");
             if (proveedor == null) {
                 throw new IllegalArgumentException("El proveedor de datos del administrador no puede ser nulo");
             }
 
             Administrador admin = crearAdministrador(proveedor);
+            logger.info("Administrador {} creado correctamente.", admin.getCodigo());
 
             generarKeystore(proveedor.getContrasenaMaestra());
             ManejadorPersistencia.recargarClave();
+            logger.info("Keystore generado y clave recargada.");
 
             administradores = new ArrayList<>();
             administradores.add(admin);
             ManejadorPersistencia.guardar(new ArrayList<>(administradores), ARCHIVO_ADMINISTRADORES);
 
             inicializarCatalogos();
+            logger.info("Catálogos inicializados exitosamente.");
+        } else {
+            logger.info("Sistema ya inicializado. Se encontraron {} administradores.", administradores.size());
         }
     }
 
@@ -107,8 +119,8 @@ public class BootstrapUseCase {
             try (FileOutputStream fos = new FileOutputStream(ARCHIVO_KEYSTORE)) {
                 ks.store(fos, CLAVE_KEYSTORE.toCharArray());
             }
-
         } catch (Exception e) {
+            logger.error("Error al generar el keystore", e);
             throw new RuntimeException("No se pudo generar el almacén de claves.", e);
         } finally {
             UtilLimpieza.limpiarContraseña(contrasenaMaestra);

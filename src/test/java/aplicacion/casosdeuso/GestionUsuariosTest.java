@@ -1,6 +1,7 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.*;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ class GestionUsuariosTest {
     private RepositorioSecretarios repoSec;
     private RepositorioCoordinadores repoCoord;
     private RepositorioPadres repoPad;
+    private LoggerPort loggerPort;
 
     private GestionUsuarios casoUso;
 
@@ -37,8 +39,9 @@ class GestionUsuariosTest {
         repoSec = mock(RepositorioSecretarios.class);
         repoCoord = mock(RepositorioCoordinadores.class);
         repoPad = mock(RepositorioPadres.class);
+        loggerPort = mock(LoggerPort.class);
 
-        casoUso = new GestionUsuarios(repoAdmin, repoDir, repoDoc, repoEst, repoSec, repoCoord, repoPad);
+        casoUso = new GestionUsuarios(repoAdmin, repoDir, repoDoc, repoEst, repoSec, repoCoord, repoPad, loggerPort);
     }
 
     @Test

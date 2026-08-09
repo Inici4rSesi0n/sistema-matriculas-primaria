@@ -4,6 +4,7 @@ import dominio.modelo.Docente;
 import dominio.modelo.Secretario;
 import dominio.modelo.Usuario;
 import dominio.puerto.externo.HashProvider;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ class AutenticarUsuarioTest {
     private RepositorioCoordinadores repoCoord;
     private RepositorioPadres repoPad;
     private HashProvider hashProvider;
+    private LoggerPort loggerPort;
 
     private AutenticarUsuario autenticarUsuario;
 
@@ -41,9 +43,10 @@ class AutenticarUsuarioTest {
         repoCoord = mock(RepositorioCoordinadores.class);
         repoPad = mock(RepositorioPadres.class);
         hashProvider = mock(HashProvider.class);
+        loggerPort = mock(LoggerPort.class);
 
         autenticarUsuario = new AutenticarUsuario(repoAdmin, repoDir, repoDoc,
-                repoEst, repoSec, repoCoord, repoPad, hashProvider);
+                repoEst, repoSec, repoCoord, repoPad, hashProvider, loggerPort);
     }
 
     @Test

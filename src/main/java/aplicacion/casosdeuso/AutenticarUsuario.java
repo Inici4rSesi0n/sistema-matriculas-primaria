@@ -2,6 +2,7 @@ package aplicacion.casosdeuso;
 
 import dominio.modelo.Usuario;
 import dominio.puerto.externo.HashProvider;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.*;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class AutenticarUsuario {
     private final RepositorioCoordinadores repoCoord;
     private final RepositorioPadres repoPad;
     private final HashProvider hashProvider;
+    private final LoggerPort logger;
 
     public AutenticarUsuario(RepositorioAdministradores repoAdmin,
                              RepositorioDirectores repoDir,
@@ -28,7 +30,8 @@ public class AutenticarUsuario {
                              RepositorioSecretarios repoSec,
                              RepositorioCoordinadores repoCoord,
                              RepositorioPadres repoPad,
-                             HashProvider hashProvider) {
+                             HashProvider hashProvider,
+                             LoggerPort logger) {
         this.repoAdmin = repoAdmin;
         this.repoDir = repoDir;
         this.repoDoc = repoDoc;
@@ -37,13 +40,16 @@ public class AutenticarUsuario {
         this.repoCoord = repoCoord;
         this.repoPad = repoPad;
         this.hashProvider = hashProvider;
+        this.logger = logger;
     }
 
     public Usuario ejecutar(String codigo, char[] contraseña) {
         if (codigo == null || codigo.isBlank()) {
+            logger.warn("Intento de autenticación con código vacío.");
             throw new IllegalArgumentException("El código no puede estar vacío.");
         }
         if (contraseña == null) {
+            logger.warn("Intento de autenticación con contraseña nula para código: {}", codigo);
             throw new IllegalArgumentException("La contraseña no puede ser nula.");
         }
 
@@ -58,7 +64,14 @@ public class AutenticarUsuario {
         if (usuario == null) usuario = repoPad.buscarPorCodigo(codigo).orElse(null);
 
         if (usuario != null && hashProvider.verificarHash(usuario.getHashContrasena(), contraseña)) {
+            logger.info("Usuario {} autenticado exitosamente.", codigo);
             return usuario;
+        }
+
+        if (usuario != null) {
+            logger.warn("Contraseña incorrecta para usuario: {}", codigo);
+        } else {
+            logger.warn("Código de usuario no encontrado: {}", codigo);
         }
         return null;
     }
