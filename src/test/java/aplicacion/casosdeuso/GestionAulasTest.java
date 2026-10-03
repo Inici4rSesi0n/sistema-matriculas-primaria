@@ -1,6 +1,7 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.Aula;
+import dominio.modelo.ModalidadAula;
 import dominio.puerto.repositorio.RepositorioAulas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,16 @@ class GestionAulasTest {
     void crearAula_debeGuardarCuandoNoExiste() {
         when(repoMock.buscarPorNombre("Laboratorio")).thenReturn(Optional.empty());
 
-        casoUso.crearAula("Laboratorio", 30, "Edificio A", "Laboratorio");
+        casoUso.crearAula("Laboratorio", 30, "Edificio A", "Laboratorio", ModalidadAula.PRESENCIAL);
+
+        verify(repoMock).agregar(any(Aula.class));
+    }
+
+    @Test
+    void crearAula_conModalidadVirtual_debeGuardar() {
+        when(repoMock.buscarPorNombre("Zoom-101")).thenReturn(Optional.empty());
+
+        casoUso.crearAula("Zoom-101", 50, "Plataforma", "Teoría", ModalidadAula.VIRTUAL);
 
         verify(repoMock).agregar(any(Aula.class));
     }
@@ -40,7 +50,7 @@ class GestionAulasTest {
         when(repoMock.buscarPorNombre("Laboratorio")).thenReturn(Optional.of(new Aula("Laboratorio", 30, "Edificio A", "Laboratorio")));
 
         assertThrows(IllegalArgumentException.class,
-                () -> casoUso.crearAula("Laboratorio", 30, "Edificio A", "Laboratorio"));
+                () -> casoUso.crearAula("Laboratorio", 30, "Edificio A", "Laboratorio", ModalidadAula.PRESENCIAL));
         verify(repoMock, never()).agregar(any());
     }
 
@@ -84,8 +94,9 @@ class GestionAulasTest {
         int nuevaCapacidad = 30;
         String nuevaUbicacion = "Pabellón 4";
         String nuevoTipo = "Taller";
+        ModalidadAula nuevaModalidad = ModalidadAula.VIRTUAL;
 
-        casoUso.actualizarAula(original, nuevoNombre, nuevaCapacidad, nuevaUbicacion, nuevoTipo);
+        casoUso.actualizarAula(original, nuevoNombre, nuevaCapacidad, nuevaUbicacion, nuevoTipo, nuevaModalidad);
 
         verify(repoMock).actualizar(eq(original), any(Aula.class));
     }

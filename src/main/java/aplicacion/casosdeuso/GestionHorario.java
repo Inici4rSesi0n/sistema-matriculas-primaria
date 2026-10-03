@@ -1,29 +1,23 @@
 package aplicacion.casosdeuso;
-
 import dominio.modelo.*;
 import dominio.puerto.repositorio.RepositorioClases;
 import dominio.puerto.repositorio.RepositorioRecreos;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
 /**
  *
  * @author inici4rsesi0n
  */
 @Service
 public class GestionHorario {
-
     private final RepositorioClases repoClases;
     private final RepositorioRecreos repoRecreos;
-
     public GestionHorario(RepositorioClases repoClases, RepositorioRecreos repoRecreos) {
         this.repoClases = repoClases;
         this.repoRecreos = repoRecreos;
     }
-
     public List<Evento> obtenerHorarioCompleto(Grupo grupo, PeriodoAcademico periodo) {
         if (grupo == null) throw new IllegalArgumentException("El grupo no puede ser nulo.");
         if (periodo == null) throw new IllegalArgumentException("El periodo académico no puede ser nulo.");
@@ -35,7 +29,6 @@ public class GestionHorario {
         eventos.sort(Comparator.comparing(Evento::getDiaSemana).thenComparing(Evento::getHoraInicio));
         return eventos;
     }
-
     private List<Clase> obtenerClasesDelGrupo(Grupo grupo, PeriodoAcademico periodo) {
         List<Clase> resultado = new ArrayList<>();
         for (Clase c : repoClases.listarTodos()) {
@@ -45,7 +38,6 @@ public class GestionHorario {
         }
         return resultado;
     }
-
     private List<Recreo> obtenerRecreosDelPeriodo(PeriodoAcademico periodo) {
         List<Recreo> resultado = new ArrayList<>();
         for (Recreo r : repoRecreos.listarTodos()) {

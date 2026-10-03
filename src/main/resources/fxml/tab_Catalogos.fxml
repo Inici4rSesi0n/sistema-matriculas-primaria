@@ -122,8 +122,9 @@
                             <TableColumn fx:id="colNumAula" text="N°" prefWidth="50.0" styleClass="col-center" />
                             <TableColumn fx:id="colNombreAula" text="Nombre" prefWidth="150.0" />
                             <TableColumn fx:id="colCapacidadAula" text="Capacidad" prefWidth="80.0" styleClass="col-center" />
-                            <TableColumn fx:id="colUbicacionAula" text="Ubicación" prefWidth="150.0" />
+                            <TableColumn fx:id="colUbicacionAula" text="Ubicación" prefWidth="120.0" />
                             <TableColumn fx:id="colTipoAula" text="Tipo" prefWidth="100.0" />
+                            <TableColumn fx:id="colModalidadAula" text="Modalidad" prefWidth="100.0" styleClass="col-center" />
                             <TableColumn fx:id="colAccionesAula" text="Acciones" prefWidth="160.0" styleClass="col-center" />
                         </columns>
                     </TableView>
@@ -143,6 +144,8 @@
                         <TextField fx:id="txtUbicacionAula" promptText="Edificio/Piso" styleClass="formulario-input" />
                         <Label text="Tipo:" styleClass="formulario-label" />
                         <TextField fx:id="txtTipoAula" promptText="Teórica/Laboratorio" styleClass="formulario-input" />
+                        <Label text="Modalidad:" styleClass="formulario-label" />
+                        <ComboBox fx:id="cmbModalidadAula" promptText="Seleccione una modalidad" styleClass="formulario-input" />
                         <Region VBox.vgrow="ALWAYS" />
                         <HBox alignment="CENTER_RIGHT" spacing="15.0">
                             <Button fx:id="btnCancelarAula" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarAula" />

@@ -1,7 +1,5 @@
 package dominio.modelo;
 import java.io.Serializable;
-import java.util.Objects;
-
 /**
  *
  * @author inici4rsesi0n
@@ -9,7 +7,6 @@ import java.util.Objects;
 public class Asignatura implements Serializable {
     private static final long serialVersionUID = 1L;
     private String nombre;
-
     protected Asignatura() {}
     public Asignatura(String nombre) {
         if (nombre == null || nombre.isBlank()) {

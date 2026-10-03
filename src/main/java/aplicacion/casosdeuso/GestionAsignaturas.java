@@ -1,9 +1,7 @@
 package aplicacion.casosdeuso;
-
 import dominio.modelo.Asignatura;
 import dominio.puerto.repositorio.RepositorioAsignaturas;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 /**
@@ -12,13 +10,10 @@ import java.util.List;
  */
 @Service
 public class GestionAsignaturas {
-
     private final RepositorioAsignaturas repo;
-
     public GestionAsignaturas(RepositorioAsignaturas repo) {
         this.repo = repo;
     }
-
     public void crearAsignatura(String nombre) {
         if (nombre == null || nombre.isBlank()) {
             throw new IllegalArgumentException("El nombre de la asignatura no puede estar vacío.");
@@ -28,15 +23,12 @@ public class GestionAsignaturas {
         }
         repo.agregar(new Asignatura(nombre));
     }
-
     public List<Asignatura> listarTodos() {
         return repo.listarTodos();
     }
-
     public Asignatura buscarAsignatura(String nombre) {
         return repo.buscarPorNombre(nombre).orElse(null);
     }
-
     public void actualizarAsignatura(Asignatura original, String nuevoNombre) {
         if (nuevoNombre == null || nuevoNombre.isBlank()) {
             throw new IllegalArgumentException("El nuevo nombre no puede estar vacío.");
@@ -44,7 +36,6 @@ public class GestionAsignaturas {
         Asignatura actualizada = new Asignatura(nuevoNombre);
         repo.actualizar(original, actualizada);
     }
-
     public void eliminarAsignatura(Asignatura asignatura) {
         repo.eliminar(asignatura);
     }

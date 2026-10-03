@@ -17,6 +17,36 @@ class AulaTest {
         assertEquals(30, aula.getCapacidad());
         assertEquals("Edificio A", aula.getUbicacion());
         assertEquals("Laboratorio", aula.getTipo());
+        assertEquals(ModalidadAula.PRESENCIAL, aula.getModalidad());
+    }
+
+    @Test
+    void constructor_legacy_debeAsignarPresencialPorDefecto() {
+        Aula aula = new Aula("Aula 101", 40, "Pabellón 1", "Teoría");
+        assertEquals(ModalidadAula.PRESENCIAL, aula.getModalidad());
+    }
+
+    @Test
+    void constructor_conModalidad_debeAsignarModalidadCorrecta() {
+        Aula aula = new Aula("Zoom-101", 50, "Plataforma", "Teoría", ModalidadAula.VIRTUAL);
+        assertEquals("Zoom-101", aula.getNombre());
+        assertEquals(50, aula.getCapacidad());
+        assertEquals("Plataforma", aula.getUbicacion());
+        assertEquals("Teoría", aula.getTipo());
+        assertEquals(ModalidadAula.VIRTUAL, aula.getModalidad());
+    }
+
+    @Test
+    void constructor_conModalidadNula_debeAsignarPresencial() {
+        Aula aula = new Aula("Híbrida", 30, "Pabellón 3", "Teoría", null);
+        assertEquals(ModalidadAula.PRESENCIAL, aula.getModalidad());
+    }
+
+    @Test
+    void setModalidad_debeActualizarModalidad() {
+        Aula aula = new Aula("Aula 101", 40, "Pabellón 1", "Teoría");
+        aula.setModalidad(ModalidadAula.REMOTO);
+        assertEquals(ModalidadAula.REMOTO, aula.getModalidad());
     }
 
     @Test
@@ -82,6 +112,20 @@ class AulaTest {
     }
 
     @Test
+    void equals_debeIgnorarModalidad() {
+        Aula a1 = new Aula("Aula 101", 40, "Pabellón 1", "Teoría", ModalidadAula.PRESENCIAL);
+        Aula a2 = new Aula("Aula 101", 30, "Otro lugar", "Laboratorio", ModalidadAula.VIRTUAL);
+        assertEquals(a1, a2);
+    }
+
+    @Test
+    void hashCode_debeSerIgualParaNombresIgualesIgnorandoModalidad() {
+        Aula a1 = new Aula("Aula 101", 40, "Pabellón 1", "Teoría", ModalidadAula.PRESENCIAL);
+        Aula a2 = new Aula("Aula 101", 30, "Otro lugar", "Laboratorio", ModalidadAula.VIRTUAL);
+        assertEquals(a1.hashCode(), a2.hashCode());
+    }
+
+    @Test
     void equals_debeRetornarFalsoSiNombresDiferentes() {
         Aula a1 = new Aula("Aula 101", 40, "Pabellón 1", "Teoría");
         Aula a2 = new Aula("Aula 102", 40, "Pabellón 1", "Teoría");
@@ -95,10 +139,12 @@ class AulaTest {
         aula.setCapacidad(100);
         aula.setUbicacion("Rectorado");
         aula.setTipo("Auditorio");
+        aula.setModalidad(ModalidadAula.REMOTO);
 
         assertEquals("Aula Magna", aula.getNombre());
         assertEquals(100, aula.getCapacidad());
         assertEquals("Rectorado", aula.getUbicacion());
         assertEquals("Auditorio", aula.getTipo());
+        assertEquals(ModalidadAula.REMOTO, aula.getModalidad());
     }
 }

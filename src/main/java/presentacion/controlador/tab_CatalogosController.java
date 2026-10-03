@@ -14,6 +14,7 @@ import dominio.modelo.Aula;
 import dominio.modelo.FranjaHoraria;
 import dominio.modelo.Grado;
 import dominio.modelo.Grupo;
+import dominio.modelo.ModalidadAula;
 import dominio.modelo.PeriodoAcademico;
 import dominio.modelo.Recreo;
 import dominio.modelo.Turno;
@@ -37,6 +38,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 
 /**
  *
@@ -69,9 +71,11 @@ public class tab_CatalogosController implements Initializable {
     @FXML private TableColumn<Aula, Integer> colNumAula;
     @FXML private TableColumn<Aula, String> colNombreAula, colUbicacionAula, colTipoAula;
     @FXML private TableColumn<Aula, Integer> colCapacidadAula;
+    @FXML private TableColumn<Aula, ModalidadAula> colModalidadAula;
     @FXML private TableColumn<Aula, Void> colAccionesAula;
     @FXML private VBox panelFormularioAula;
     @FXML private TextField txtNombreAula, txtCapacidadAula, txtUbicacionAula, txtTipoAula;
+    @FXML private ComboBox<ModalidadAula> cmbModalidadAula;
     @FXML private Button btnNuevaAula, btnGuardarAula, btnCancelarAula;
 
     @FXML private TableView<Grupo> tablaGrupos;
@@ -143,13 +147,7 @@ public class tab_CatalogosController implements Initializable {
         gestionTurnos = SpringContext.getBean(GestionTurnos.class);
 
         configurarCombos();
-        configurarTablaAsignaturas();
-        configurarTablaPeriodos();
-        configurarTablaAulas();
-        configurarTablaGrupos();
-        configurarTablaRecreos();
-        configurarTablaGrados();
-        configurarTablaTurnos();
+        configurarTablas();
         cargarDatos();
     }
 
@@ -160,36 +158,31 @@ public class tab_CatalogosController implements Initializable {
         cmbDiaRecreo.getItems().addAll("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo");
         cmbDiaRecreo.getSelectionModel().selectFirst();
 
+        cmbModalidadAula.getItems().setAll(ModalidadAula.values());
+        cmbModalidadAula.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(ModalidadAula modalidad) {
+                return modalidad != null ? modalidad.name() : "";
+            }
+            @Override
+            public ModalidadAula fromString(String string) {
+                return ModalidadAula.fromString(string);
+            }
+        });
+        cmbModalidadAula.getSelectionModel().selectFirst();
+
         recargarComboGrados();
         recargarComboPeriodosRecreo();
     }
 
-    private void recargarComboGrados() {
-        cmbGradoGrupo.getItems().clear();
-        cmbGradoGrupo.getItems().add("Seleccione un grado");
-        for (Grado g : gestionGrados.listarTodos()) {
-            cmbGradoGrupo.getItems().add(g.getNombre());
-        }
-        cmbGradoGrupo.getSelectionModel().selectFirst();
-    }
-
-    private void recargarComboPeriodosRecreo() {
-        cmbPeriodoRecreo.getItems().clear();
-        cmbPeriodoRecreo.getItems().add("Seleccione un periodo");
-        for (PeriodoAcademico p : gestionPeriodos.listarTodos()) {
-            cmbPeriodoRecreo.getItems().add(p.getNombre());
-        }
-        cmbPeriodoRecreo.getSelectionModel().selectFirst();
-    }
-
-    private void cargarDatos() {
-        cargarAsignaturas();
-        cargarPeriodos();
-        cargarAulas();
-        cargarGrupos();
-        cargarRecreos();
-        cargarGrados();
-        cargarTurnos();
+    private void configurarTablas() {
+        configurarTablaAsignaturas();
+        configurarTablaPeriodos();
+        configurarTablaAulas();
+        configurarTablaGrupos();
+        configurarTablaRecreos();
+        configurarTablaGrados();
+        configurarTablaTurnos();
     }
 
     private void configurarTablaAsignaturas() {
@@ -228,6 +221,7 @@ public class tab_CatalogosController implements Initializable {
         colCapacidadAula.setCellValueFactory(new PropertyValueFactory<>("capacidad"));
         colUbicacionAula.setCellValueFactory(new PropertyValueFactory<>("ubicacion"));
         colTipoAula.setCellValueFactory(new PropertyValueFactory<>("tipo"));
+        colModalidadAula.setCellValueFactory(new PropertyValueFactory<>("modalidad"));
         configurarAcciones(colAccionesAula, "aula");
     }
 
@@ -326,6 +320,7 @@ public class tab_CatalogosController implements Initializable {
                 txtCapacidadAula.setText(String.valueOf(a.getCapacidad()));
                 txtUbicacionAula.setText(a.getUbicacion());
                 txtTipoAula.setText(a.getTipo());
+                cmbModalidadAula.setValue(a.getModalidad());
                 panelFormularioAula.setVisible(true);
                 panelFormularioAula.setManaged(true);
             }
@@ -388,6 +383,34 @@ public class tab_CatalogosController implements Initializable {
         }
     }
 
+    private void recargarComboGrados() {
+        cmbGradoGrupo.getItems().clear();
+        cmbGradoGrupo.getItems().add("Seleccione un grado");
+        for (Grado g : gestionGrados.listarTodos()) {
+            cmbGradoGrupo.getItems().add(g.getNombre());
+        }
+        cmbGradoGrupo.getSelectionModel().selectFirst();
+    }
+
+    private void recargarComboPeriodosRecreo() {
+        cmbPeriodoRecreo.getItems().clear();
+        cmbPeriodoRecreo.getItems().add("Seleccione un periodo");
+        for (PeriodoAcademico p : gestionPeriodos.listarTodos()) {
+            cmbPeriodoRecreo.getItems().add(p.getNombre());
+        }
+        cmbPeriodoRecreo.getSelectionModel().selectFirst();
+    }
+
+    private void cargarDatos() {
+        cargarAsignaturas();
+        cargarPeriodos();
+        cargarAulas();
+        cargarGrupos();
+        cargarRecreos();
+        cargarGrados();
+        cargarTurnos();
+    }
+
     private void cargarAsignaturas() {
         listaAsignaturas = FXCollections.observableArrayList(gestionAsignaturas.listarTodos());
         tablaAsignaturas.setItems(listaAsignaturas);
@@ -447,14 +470,15 @@ public class tab_CatalogosController implements Initializable {
     }
     @FXML private void handleCancelarPeriodo() { panelFormularioPeriodo.setVisible(false); panelFormularioPeriodo.setManaged(false); }
 
-    @FXML private void handleNuevaAula() { aulaEditando = null; txtNombreAula.clear(); txtCapacidadAula.clear(); txtUbicacionAula.clear(); txtTipoAula.clear(); panelFormularioAula.setVisible(true); panelFormularioAula.setManaged(true); }
+    @FXML private void handleNuevaAula() { aulaEditando = null; txtNombreAula.clear(); txtCapacidadAula.clear(); txtUbicacionAula.clear(); txtTipoAula.clear(); cmbModalidadAula.getSelectionModel().selectFirst(); panelFormularioAula.setVisible(true); panelFormularioAula.setManaged(true); }
     @FXML private void handleGuardarAula() {
         String nombre = txtNombreAula.getText().trim(), capacidadStr = txtCapacidadAula.getText().trim(), ubicacion = txtUbicacionAula.getText().trim(), tipo = txtTipoAula.getText().trim();
+        ModalidadAula modalidad = cmbModalidadAula.getValue();
         if (nombre.isBlank() || capacidadStr.isBlank() || ubicacion.isBlank() || tipo.isBlank()) { Dialogos.M1("Todos los campos son obligatorios."); return; }
         int capacidad = Integer.parseInt(capacidadStr);
         try {
-            if (aulaEditando == null) gestionAulas.crearAula(nombre, capacidad, ubicacion, tipo);
-            else gestionAulas.actualizarAula(aulaEditando, nombre, capacidad, ubicacion, tipo);
+            if (aulaEditando == null) gestionAulas.crearAula(nombre, capacidad, ubicacion, tipo, modalidad);
+            else gestionAulas.actualizarAula(aulaEditando, nombre, capacidad, ubicacion, tipo, modalidad);
             cargarAulas();
             panelFormularioAula.setVisible(false);
             panelFormularioAula.setManaged(false);

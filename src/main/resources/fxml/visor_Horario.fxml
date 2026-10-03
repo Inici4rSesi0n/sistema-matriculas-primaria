@@ -16,9 +16,6 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="presentacion.controlador.visor_HorarioController"
             styleClass="visor-root">
-   <stylesheets>
-        <URL value="@/css/visor_Horarios.css" />
-    </stylesheets>
     <top>
         <VBox spacing="15.0" styleClass="visor-header">
             <padding>
@@ -50,6 +47,7 @@
                     <TableColumn fx:id="colAsignaturaHorario" text="Asignatura" prefWidth="200.0" />
                     <TableColumn fx:id="colDocenteHorario" text="Docente" prefWidth="200.0" />
                     <TableColumn fx:id="colAulaHorario" text="Aula" prefWidth="100.0" />
+                    <TableColumn fx:id="colModalidadAula" text="Modalidad" prefWidth="100.0" styleClass="col-center" />
                     <TableColumn fx:id="colDescripcion" text="Descripción" prefWidth="200.0" />
                 </columns>
             </TableView>

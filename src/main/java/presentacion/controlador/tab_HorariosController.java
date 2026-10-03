@@ -54,7 +54,12 @@ public class tab_HorariosController implements Initializable {
     @FXML private TableColumn<Clase, String> colDiaClase, colInicioClase, colFinClase, colAsignaturaClase, colDocenteClase, colGrupoClase, colAulaClase, colPeriodoClase;
     @FXML private TableColumn<Clase, Void> colAccionesClase;
     @FXML private VBox panelFormularioClase;
-    @FXML private ComboBox<String> cmbDiaClase, cmbAsignaturaClase, cmbDocenteClase, cmbGrupoClase, cmbAulaClase, cmbPeriodoClase;
+    @FXML private ComboBox<String> cmbDiaClase;
+    @FXML private ComboBox<String> cmbAsignaturaClase;
+    @FXML private ComboBox<String> cmbDocenteClase;
+    @FXML private ComboBox<String> cmbGrupoClase;
+    @FXML private ComboBox<String> cmbAulaClase;
+    @FXML private ComboBox<String> cmbPeriodoClase;
     @FXML private TextField txtInicioClase, txtFinClase;
     @FXML private Button btnNuevaClase, btnGuardarClase, btnCancelarClase;
     @FXML private Button btnVerHorario;
@@ -185,9 +190,14 @@ public class tab_HorariosController implements Initializable {
 
     @FXML private void handleNuevaClase() { claseEditando = null; recargarComboClases(); limpiarFormularioClase(); panelFormularioClase.setVisible(true); panelFormularioClase.setManaged(true); }
     @FXML private void handleGuardarClase() {
-        String dia = cmbDiaClase.getValue(), inicio = txtInicioClase.getText().trim(), fin = txtFinClase.getText().trim();
-        String asignaturaNombre = cmbAsignaturaClase.getValue(), docenteSel = cmbDocenteClase.getValue();
-        String grupoNombre = cmbGrupoClase.getValue(), aulaNombre = cmbAulaClase.getValue(), periodoNombre = cmbPeriodoClase.getValue();
+        String dia = cmbDiaClase.getValue();
+        String inicio = txtInicioClase.getText().trim();
+        String fin = txtFinClase.getText().trim();
+        String asignaturaNombre = cmbAsignaturaClase.getValue();
+        String docenteSel = cmbDocenteClase.getValue();
+        String grupoNombre = cmbGrupoClase.getValue();
+        String aulaNombre = cmbAulaClase.getValue();
+        String periodoNombre = cmbPeriodoClase.getValue();
 
         if (dia == null || inicio.isBlank() || fin.isBlank() || asignaturaNombre == null || asignaturaNombre.startsWith("Seleccione")
                 || docenteSel == null || docenteSel.startsWith("Seleccione") || grupoNombre == null || grupoNombre.startsWith("Seleccione")
@@ -217,7 +227,8 @@ public class tab_HorariosController implements Initializable {
     }
     @FXML private void handleCancelarClase() { panelFormularioClase.setVisible(false); panelFormularioClase.setManaged(false); }
 
-    @FXML private void handleVerHorario() {
+    @FXML
+    private void handleVerHorario() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/visor_Horario.fxml"));
             Parent root = loader.load();
@@ -228,6 +239,9 @@ public class tab_HorariosController implements Initializable {
             stage.initOwner(btnVerHorario.getScene().getWindow());
 
             Scene scene = new Scene(root);
+            scene.getStylesheets().add(
+                    getClass().getResource("/css/visor_Horarios.css").toExternalForm()
+            );
             stage.setScene(scene);
 
             Stage owner = (Stage) btnVerHorario.getScene().getWindow();
