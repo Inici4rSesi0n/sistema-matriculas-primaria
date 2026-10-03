@@ -58,6 +58,7 @@ data/*.keystore
 # ==========================================
 # Documentación interna
 # ==========================================
+PAUTAS
 PAUTAS/
 *.txt
 !README.txt
