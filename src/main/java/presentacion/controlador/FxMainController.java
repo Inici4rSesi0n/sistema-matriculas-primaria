@@ -1,5 +1,4 @@
 package presentacion.controlador;
-
 import presentacion.animaciones.AnimacionesMain;
 import presentacion.dialogos.Dialogos;
 import presentacion.estadousuario.SesionUsuario;
@@ -23,7 +22,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 /**
  *
  * @author inici4rsesi0n
@@ -34,19 +32,19 @@ public class FxMainController implements Initializable {
     @FXML private Button btnPortalTramites;
     @FXML private Button btnPortalMatricula;
     @FXML private Button btnCerrarSesion;
-    @FXML private Label lblSchoolBase;
+    @FXML private Label lblWiredAcademy;
     @FXML private Label lblConectado;
     @FXML private Label lblUsuarioConectado;
     @FXML private MenuButton menuIdioma;
 
-    private Timeline timelineSchoolBase;
+    private Timeline timelineWiredAcademy;
     private Timeline timelineConectado;
 
     private final Map<String, URL> rutasVistas = new ConcurrentHashMap<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        timelineSchoolBase = AnimacionesMain.crearTimelinePulso(lblSchoolBase);
+        timelineWiredAcademy = AnimacionesMain.crearTimelinePulso(lblWiredAcademy);
         timelineConectado = AnimacionesMain.crearTimelinePulso(lblConectado);
 
         menuIdioma.getItems().addAll(
@@ -114,7 +112,7 @@ public class FxMainController implements Initializable {
             FxLoginController controller = loader.getController();
 
             Stage loginStage = new Stage(StageStyle.DECORATED);
-            loginStage.setTitle("Inicio de Sesión - SchoolBase");
+            loginStage.setTitle("Inicio de Sesión - WiredAcademy");
             loginStage.setScene(new Scene(root));
 
             loginStage.setOnCloseRequest(event -> Platform.exit());
@@ -175,7 +173,7 @@ public class FxMainController implements Initializable {
             nuevaVentana.setHeight(ventanaActual.getHeight());
 
             if ("dashboard".equals(vistaKey)) {
-                nuevaVentana.setTitle("SchoolBase - Panel de Control");
+                nuevaVentana.setTitle("WiredAcademy · Ecosistema Educativo Digital");
                 FxDashboardController dashboardController = (FxDashboardController) controller;
                 dashboardController.setUsuario(usuario);
 
@@ -185,7 +183,7 @@ public class FxMainController implements Initializable {
                     navegarAVista("main", nuevaVentana, null);
                 });
             } else if ("main".equals(vistaKey)) {
-                nuevaVentana.setTitle("SchoolBase - Sistema de Gestión Educativa");
+                nuevaVentana.setTitle("WiredAcademy · Ecosistema Educativo Digital");
             }
 
             ventanaActual.close();
@@ -220,7 +218,7 @@ public class FxMainController implements Initializable {
     @FXML
     private void handleMouseEntered(MouseEvent event) {
         Label label = (Label) event.getSource();
-        Timeline tl = (label == lblSchoolBase) ? timelineSchoolBase : timelineConectado;
+        Timeline tl = (label == lblWiredAcademy) ? timelineWiredAcademy : timelineConectado;
         tl.stop();
         tl.playFromStart();
     }
@@ -228,7 +226,7 @@ public class FxMainController implements Initializable {
     @FXML
     private void handleMouseExited(MouseEvent event) {
         Label label = (Label) event.getSource();
-        Timeline tl = (label == lblSchoolBase) ? timelineSchoolBase : timelineConectado;
+        Timeline tl = (label == lblWiredAcademy) ? timelineWiredAcademy : timelineConectado;
         tl.stop();
         label.setScaleX(1.0);
         label.setScaleY(1.0);

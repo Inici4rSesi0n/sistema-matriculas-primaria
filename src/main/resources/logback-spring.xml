@@ -3,8 +3,8 @@
     <property name="PATRON_CONSOLE" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
     <property name="PATRON_ARCHIVO" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
     <property name="DIRECTORIO_LOGS" value="./logs"/>
-    <property name="ARCHIVO_LOG" value="${DIRECTORIO_LOGS}/schoolbase.log"/>
-    <property name="ARCHIVO_ERROR" value="${DIRECTORIO_LOGS}/schoolbase-error.log"/>
+    <property name="ARCHIVO_LOG" value="${DIRECTORIO_LOGS}/wiredacademy.log"/>
+    <property name="ARCHIVO_ERROR" value="${DIRECTORIO_LOGS}/wiredacademy-error.log"/>
 
     <springProfile name="dev">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -18,7 +18,7 @@
             <appender-ref ref="CONSOLE"/>
         </root>
 
-        <logger name="SchoolBase" level="TRACE"/>
+        <logger name="WiredAcademy" level="TRACE"/>
     </springProfile>
 
     <springProfile name="prod">
@@ -32,7 +32,7 @@
         <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${ARCHIVO_LOG}</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>${DIRECTORIO_LOGS}/schoolbase-%d{yyyy-MM-dd}.log</fileNamePattern>
+                <fileNamePattern>${DIRECTORIO_LOGS}/wiredacademy-%d{yyyy-MM-dd}.log</fileNamePattern>
                 <maxHistory>30</maxHistory>
             </rollingPolicy>
             <encoder>
@@ -47,7 +47,7 @@
                 <level>ERROR</level>
             </filter>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>${DIRECTORIO_LOGS}/schoolbase-error-%d{yyyy-MM-dd}.log</fileNamePattern>
+                <fileNamePattern>${DIRECTORIO_LOGS}/wiredacademy-error-%d{yyyy-MM-dd}.log</fileNamePattern>
                 <maxHistory>30</maxHistory>
             </rollingPolicy>
             <encoder>
@@ -62,7 +62,7 @@
             <appender-ref ref="FILE_ERROR"/>
         </root>
 
-        <logger name="SchoolBase" level="INFO"/>
+        <logger name="WiredAcademy" level="INFO"/>
     </springProfile>
 
     <springProfile name="!dev &amp; !prod">
@@ -77,6 +77,6 @@
             <appender-ref ref="CONSOLE"/>
         </root>
 
-        <logger name="SchoolBase" level="INFO"/>
+        <logger name="WiredAcademy" level="INFO"/>
     </springProfile>
 </configuration>

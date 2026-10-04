@@ -79,8 +79,8 @@
                         <ImageView fx:id="imgLogo" fitWidth="100" fitHeight="100" preserveRatio="true" />
                     </StackPane>
                     <VBox alignment="CENTER" spacing="0.0">
-                        <Label styleClass="info-titulo" text="SchoolBase" />
-                        <Label styleClass="info-subtitulo" text="Sistema de Gestión Educativa" />
+                        <Label styleClass="info-titulo" text="WiredAcademy" />
+                        <Label styleClass="info-subtitulo" text="Ecosistema Educativo Digital" />
                     </VBox>
                 </VBox>
                 
@@ -89,7 +89,7 @@
                 <VBox alignment="CENTER" spacing="10.0">
                     <Label styleClass="beta-tag" text="🚧 BETA · Próxima versión en 3 meses" />
                     <Label styleClass="lema-institucional" text="¡Comprometidos con la&#10;Excelencia Educativa!" textAlignment="CENTER" />
-                    <Label styleClass="version-text" text="SchoolBase v1.0.0-BETA" />
+                    <Label styleClass="version-text" text="WiredAcademy v1.0.0-BETA" />
                 </VBox>
             </VBox>
         </HBox>

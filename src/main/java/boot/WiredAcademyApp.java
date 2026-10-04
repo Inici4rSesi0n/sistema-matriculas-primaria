@@ -15,13 +15,13 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author inici4rsesi0n
  */
 @SpringBootApplication(scanBasePackages = {"infraestructura", "aplicacion", "presentacion", "boot"})
-public class SchoolBaseApp extends Application {
+public class WiredAcademyApp extends Application {
 
     private static ConfigurableApplicationContext contextoSpring;
 
     @Override
     public void init() {
-        contextoSpring = SpringApplication.run(SchoolBaseApp.class);
+        contextoSpring = SpringApplication.run(WiredAcademyApp.class);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class SchoolBaseApp extends Application {
 
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/main.fxml"));
         Scene scene = new Scene(root, 1200, 800);
-        stage.setTitle("SchoolBase - Sistema de Gestión Educativa");
+        stage.setTitle("WiredAcademy · Ecosistema Educativo Digital");
         stage.setScene(scene);
         stage.show();
     }

@@ -20,11 +20,11 @@
    <top>
       <VBox>
          <VBox styleClass="header-container">
-            <Label fx:id="lblSchoolBase" 
+            <Label fx:id="lblWiredAcademy" 
                    onMouseEntered="#handleMouseEntered" 
                    onMouseExited="#handleMouseExited" 
                    styleClass="titulo-principal" 
-                   text="SchoolBase" />
+                   text="WiredAcademy" />
                    
             <Label fx:id="lblConectado" 
                    onMouseEntered="#handleMouseEntered" 
@@ -84,11 +84,11 @@
    <bottom>
       <HBox styleClass="footer-container">
          <Label styleClass="texto-pie" 
-                text="¿Problemas con el acceso? Contacta a soporte@sistemaschoolbase.com" 
+                text="¿Problemas con el acceso? Contacta a inici4rsesi0n@gmail.com" 
                 textFill="WHITE" />
                    
          <Label styleClass="texto-pie" 
-                text=" | SchoolBase 1.0.0 " 
+                text=" | WiredAcademy 1.0.0 " 
                 textFill="WHITE" />
       </HBox>
    </bottom>

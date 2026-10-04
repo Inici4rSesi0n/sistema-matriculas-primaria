@@ -21,7 +21,7 @@
     
     <top>
         <HBox styleClass="dashboard-header" alignment="CENTER_LEFT">
-            <Label styleClass="header-title" text="SchoolBase · Dashboard" />
+            <Label styleClass="header-title" text="WiredAcademy · Dashboard" />
             <Region HBox.hgrow="ALWAYS" />
             <Label fx:id="lblUsuarioHeader" styleClass="header-user" text="Usuario" />
             <Button fx:id="btnVolverInicio" 
@@ -34,7 +34,7 @@
     <left>
         <VBox styleClass="sidebar">
             <VBox styleClass="sidebar-branding" alignment="CENTER">
-                <Label styleClass="sidebar-logo" text="SchoolBase" />
+                <Label styleClass="sidebar-logo" text="WiredAcademy" />
                 <Label styleClass="sidebar-subtitle" text="Panel de Control" />
             </VBox>
             

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class Slf4jLoggerAdapter implements LoggerPort {
     private final Logger logger;
     public Slf4jLoggerAdapter() {
-        this.logger = LoggerFactory.getLogger("SchoolBase");
+        this.logger = LoggerFactory.getLogger("WiredAcademy");
     }
     @Override
     public void info(String mensaje) {

@@ -121,7 +121,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>boot.SchoolBaseApp</mainClass>
+                    <mainClass>boot.WiredAcademyApp</mainClass>
                     <modules>
                         <module>javafx.controls</module>
                         <module>javafx.fxml</module>
@@ -135,7 +135,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>boot.SchoolBaseApp</mainClass>
+                    <mainClass>boot.WiredAcademyApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>

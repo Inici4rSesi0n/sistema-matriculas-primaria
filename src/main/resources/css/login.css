@@ -183,7 +183,7 @@
 .btn-back-text:pressed {
     -fx-background-color: rgba(74, 141, 181, 0.2);
 }
-/* --- CHECKBOX DE MANTENER SESIÓN (ADN de SchoolBase) --- */
+/* --- CHECKBOX DE MANTENER SESIÓN (ADN de WiredAcademy) --- */
 .login-checkbox {
     -fx-font-family: "Segoe UI", sans-serif;
     -fx-text-fill: #4A8DB5;

@@ -106,7 +106,7 @@
     -fx-alignment: CENTER;
 }
 
-/* --- BOTONES DE ACCIONES DENTRO DE LA TABLA (ADN DE SCHOOLBASE) --- */
+/* --- BOTONES DE ACCIONES DENTRO DE LA TABLA (ADN DE WIREDACADEMY) --- */
 .btn-action {
     -fx-background-color: linear-gradient(to bottom, #7AB4D8, #4A8DB5);
     -fx-text-fill: #FFFFFF;
