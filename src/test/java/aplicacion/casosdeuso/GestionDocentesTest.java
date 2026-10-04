@@ -30,7 +30,7 @@ class GestionDocentesTest {
     void setUp() {
         repoDocentes = mock(RepositorioDocentes.class);
         repoGrupos = mock(RepositorioGrupos.class);
-        casoUso = new GestionDocentes(repoDocentes);
+        casoUso = new GestionDocentes(repoDocentes, repoGrupos);
     }
 
     @Test
@@ -59,8 +59,7 @@ class GestionDocentesTest {
         Docente esperado = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
         when(repoDocentes.buscarPorCodigo("D001")).thenReturn(Optional.of(esperado));
 
-        Docente resultado = casoUso.buscarPorCodigo("D001");
-        assertEquals(esperado, resultado);
+        assertEquals(esperado, casoUso.buscarPorCodigo("D001"));
     }
 
     @Test
@@ -68,8 +67,7 @@ class GestionDocentesTest {
         Docente esperado = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
         when(repoDocentes.buscarPorDni("111")).thenReturn(Optional.of(esperado));
 
-        Docente resultado = casoUso.buscarPorDni("111");
-        assertEquals(esperado, resultado);
+        assertEquals(esperado, casoUso.buscarPorDni("111"));
     }
 
     @Test
@@ -97,12 +95,12 @@ class GestionDocentesTest {
     }
 
     @Test
-    void asignarTutoria_debeAsignarTutorYActualizarAmbos() {
+    void asignarTutoria_debeAsignarTutorYPersistirAmbos() {
         Docente docente = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
         Grado grado = new Grado("1er Grado", "Primaria");
         Grupo grupo = new Grupo("1A", grado);
 
-        casoUso.asignarTutoria(docente, grupo, repoGrupos);
+        casoUso.asignarTutoria(docente, grupo);
 
         assertEquals(docente, grupo.getTutor());
         assertEquals(grupo, docente.getTutoria());

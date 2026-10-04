@@ -1,11 +1,14 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.Docente;
+import dominio.modelo.Estudiante;
 import dominio.modelo.Grado;
 import dominio.modelo.Grupo;
+import dominio.puerto.repositorio.RepositorioDocentes;
 import dominio.puerto.repositorio.RepositorioGrupos;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,29 +24,28 @@ import static org.mockito.Mockito.*;
 class GestionGruposTest {
 
     private RepositorioGrupos repoMock;
+    private RepositorioDocentes repoDocentesMock;
     private GestionGrupos casoUso;
     private Grado grado;
 
     @BeforeEach
     void setUp() {
         repoMock = mock(RepositorioGrupos.class);
-        casoUso = new GestionGrupos(repoMock);
+        repoDocentesMock = mock(RepositorioDocentes.class);
+        casoUso = new GestionGrupos(repoMock, repoDocentesMock);
         grado = new Grado("1er Grado", "Primaria");
     }
 
     @Test
     void crearGrupo_debeGuardarCuandoNoExiste() {
         when(repoMock.buscarPorNombre("1A")).thenReturn(Optional.empty());
-
         casoUso.crearGrupo("1A", grado);
-
         verify(repoMock).agregar(any(Grupo.class));
     }
 
     @Test
     void crearGrupo_debeLanzarExcepcionCuandoYaExiste() {
         when(repoMock.buscarPorNombre("1A")).thenReturn(Optional.of(new Grupo("1A", grado)));
-
         assertThrows(IllegalArgumentException.class, () -> casoUso.crearGrupo("1A", grado));
         verify(repoMock, never()).agregar(any());
     }
@@ -52,80 +54,121 @@ class GestionGruposTest {
     void buscarPorNombre_debeRetornarGrupoSiExiste() {
         Grupo esperado = new Grupo("1A", grado);
         when(repoMock.buscarPorNombre("1A")).thenReturn(Optional.of(esperado));
-
-        Grupo resultado = casoUso.buscarPorNombre("1A");
-
-        assertEquals(esperado, resultado);
+        assertEquals(esperado, casoUso.buscarPorNombre("1A"));
     }
 
     @Test
     void buscarPorNombre_debeRetornarNullSiNoExiste() {
         when(repoMock.buscarPorNombre("Inexistente")).thenReturn(Optional.empty());
-
-        Grupo resultado = casoUso.buscarPorNombre("Inexistente");
-
-        assertNull(resultado);
+        assertNull(casoUso.buscarPorNombre("Inexistente"));
     }
 
     @Test
     void listarTodos_debeRetornarListaCompleta() {
         List<Grupo> lista = List.of(new Grupo("1A", grado), new Grupo("1B", grado));
         when(repoMock.listarTodos()).thenReturn(lista);
-
-        List<Grupo> resultado = casoUso.listarTodos();
-
-        assertEquals(2, resultado.size());
+        assertEquals(2, casoUso.listarTodos().size());
     }
 
     @Test
     void buscarPorNombreYGrado_debeRetornarFiltrados() {
         List<Grupo> filtrados = List.of(new Grupo("1A", grado));
         when(repoMock.buscarPorNombreYGrado("1A", "1er Grado")).thenReturn(filtrados);
-
-        List<Grupo> resultado = casoUso.buscarPorNombreYGrado("1A", "1er Grado");
-
-        assertEquals(1, resultado.size());
+        assertEquals(1, casoUso.buscarPorNombreYGrado("1A", "1er Grado").size());
     }
 
     @Test
     void actualizarGrupo_debeActualizarConNuevosDatos() {
         Grupo original = new Grupo("Viejo", grado);
         Grado nuevoGrado = new Grado("2do Grado", "Primaria");
-
         casoUso.actualizarGrupo(original, "Nuevo", nuevoGrado);
-
         verify(repoMock).actualizar(eq(original), any(Grupo.class));
+    }
+
+    // ============ B4: Preservar asociaciones al actualizar ============
+    @Test
+    void actualizarGrupo_debePreservarTutorYEstudiantesAlPersistir() {
+        // GIVEN: Grupo con tutor y estudiantes
+        Grupo original = new Grupo("1A", grado);
+        Docente tutor = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
+        Estudiante estudiante = new Estudiante("E001", "hash", "222", "Ana", "Gomez", 10);
+        original.asignarTutor(tutor);
+        original.agregarEstudiante(estudiante);
+
+        // WHEN: Actualizamos nombre y grado
+        Grado nuevoGrado = new Grado("2do Grado", "Primaria");
+        casoUso.actualizarGrupo(original, "1B", nuevoGrado);
+
+        // THEN: El objeto persistido debe conservar tutor y estudiantes
+        ArgumentCaptor<Grupo> captor = ArgumentCaptor.forClass(Grupo.class);
+        verify(repoMock).actualizar(eq(original), captor.capture());
+        Grupo persistido = captor.getValue();
+
+        assertEquals("1B", persistido.getNombre());
+        assertEquals(nuevoGrado, persistido.getGrado());
+        assertEquals(tutor, persistido.getTutor(), "El tutor debe preservarse al actualizar");
+        assertTrue(persistido.getEstudiantes().contains(estudiante),
+                "Los estudiantes deben preservarse al actualizar");
     }
 
     @Test
     void eliminarGrupo_debeEliminarCorrectamente() {
         Grupo aEliminar = new Grupo("1A", grado);
-
         casoUso.eliminarGrupo(aEliminar);
-
         verify(repoMock).eliminar(aEliminar);
     }
 
+    // ============ B5: Persistir docentes al asignar/remover tutor ============
     @Test
-    void asignarTutor_debeAsignarDocenteYActualizar() {
+    void asignarTutor_debeAsignarDocenteYActualizarAmbos() {
         Grupo grupo = new Grupo("1A", grado);
         Docente tutor = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
 
         casoUso.asignarTutor(grupo, tutor);
 
         assertEquals(tutor, grupo.getTutor());
+        assertEquals(grupo, tutor.getTutoria());
+        verify(repoMock).actualizar(grupo, grupo);
+        verify(repoDocentesMock).actualizar(tutor, tutor);
+    }
+
+    @Test
+    void asignarTutor_debePersistirTutorAnteriorAlSerReemplazado() {
+        Grupo grupo = new Grupo("1A", grado);
+        Docente tutorAnterior = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
+        Docente tutorNuevo = new Docente("D002", "hash", "222", "Maria", "Lopez", 35, "Ing", new ArrayList<>());
+        grupo.asignarTutor(tutorAnterior); // precondición
+
+        casoUso.asignarTutor(grupo, tutorNuevo);
+
+        assertNull(tutorAnterior.getTutoria(), "El tutor anterior debe quedar sin tutoría");
+        assertEquals(grupo, tutorNuevo.getTutoria());
+        verify(repoDocentesMock).actualizar(tutorAnterior, tutorAnterior);
+        verify(repoDocentesMock).actualizar(tutorNuevo, tutorNuevo);
         verify(repoMock).actualizar(grupo, grupo);
     }
 
     @Test
-    void removerTutor_debeQuitarDocenteYActualizar() {
+    void removerTutor_debeQuitarDocenteYActualizarAmbos() {
         Grupo grupo = new Grupo("1A", grado);
         Docente tutor = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
-        grupo.asignarTutor(tutor); // precondición: ya tiene tutor
+        grupo.asignarTutor(tutor); // precondición
 
         casoUso.removerTutor(grupo);
 
         assertNull(grupo.getTutor());
+        assertNull(tutor.getTutoria());
         verify(repoMock).actualizar(grupo, grupo);
+        verify(repoDocentesMock).actualizar(tutor, tutor);
+    }
+
+    @Test
+    void removerTutor_noDebeHacerNadaSiNoTieneTutor() {
+        Grupo grupo = new Grupo("1A", grado);
+
+        casoUso.removerTutor(grupo);
+
+        verify(repoMock, never()).actualizar(any(), any());
+        verify(repoDocentesMock, never()).actualizar(any(), any());
     }
 }

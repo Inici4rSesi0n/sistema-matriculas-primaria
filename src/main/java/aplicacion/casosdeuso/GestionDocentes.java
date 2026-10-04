@@ -17,9 +17,11 @@ import java.util.List;
 public class GestionDocentes {
 
     private final RepositorioDocentes repo;
+    private final RepositorioGrupos repoGrupos;
 
-    public GestionDocentes(RepositorioDocentes repo) {
+    public GestionDocentes(RepositorioDocentes repo, RepositorioGrupos repoGrupos) {
         this.repo = repo;
+        this.repoGrupos = repoGrupos;
     }
 
     public void agregar(Docente docente) {
@@ -47,9 +49,19 @@ public class GestionDocentes {
         repo.actualizar(docente, docente);
     }
 
-    public void asignarTutoria(Docente docente, Grupo grupo, RepositorioGrupos repoGrupos) {
+    /**
+     * Asigna una tutoría a un docente sobre un grupo.
+     * Persiste tanto el grupo (con su nuevo tutor) como el docente (con su nueva tutoría).
+     */
+    public void asignarTutoria(Docente docente, Grupo grupo) {
         if (docente == null || grupo == null) throw new IllegalArgumentException("Docente y grupo son obligatorios");
+
+        Docente tutorAnterior = grupo.getTutor();
         grupo.asignarTutor(docente);
+
+        if (tutorAnterior != null && !tutorAnterior.equals(docente)) {
+            repo.actualizar(tutorAnterior, tutorAnterior);
+        }
         repoGrupos.actualizar(grupo, grupo);
         repo.actualizar(docente, docente);
     }
