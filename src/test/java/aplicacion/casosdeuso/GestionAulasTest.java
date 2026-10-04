@@ -109,4 +109,14 @@ class GestionAulasTest {
 
         verify(repoMock).eliminar(aEliminar);
     }
+
+    @Test
+    void actualizarAula_debeModificarMismaReferencia() {
+        Aula original = new Aula("Aula 101", 40, "Piso 1", "Teoria");
+        casoUso.actualizarAula(original, "Aula 102", 50, "Piso 2", "Lab", ModalidadAula.PRESENCIAL);
+
+        assertEquals("Aula 102", original.getNombre());
+        assertEquals(50, original.getCapacidad());
+        verify(repoMock).actualizar(original, original);
+    }
 }

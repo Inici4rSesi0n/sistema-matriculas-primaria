@@ -1,20 +1,16 @@
 package aplicacion.casosdeuso;
-
 import dominio.modelo.FranjaHoraria;
 import dominio.modelo.PeriodoAcademico;
 import dominio.modelo.Recreo;
 import dominio.puerto.repositorio.RepositorioRecreos;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-
 /**
  *
  * @author inici4rsesi0n
  */
 @Service
 public class GestionRecreos {
-
     private final RepositorioRecreos repo;
 
     public GestionRecreos(RepositorioRecreos repo) {
@@ -31,8 +27,10 @@ public class GestionRecreos {
 
     public void actualizarRecreo(Recreo original, FranjaHoraria franja, String descripcion, PeriodoAcademico periodo) {
         if (franja == null || periodo == null) throw new IllegalArgumentException("La franja horaria y el periodo son obligatorios.");
-        Recreo actualizado = new Recreo(franja, descripcion, periodo);
-        repo.actualizar(original, actualizado);
+        original.setFranja(franja);
+        original.setPeriodo(periodo);
+        original.setDescripcion(descripcion);
+        repo.actualizar(original, original);
     }
 
     public void eliminarRecreo(Recreo recreo) { repo.eliminar(recreo); }

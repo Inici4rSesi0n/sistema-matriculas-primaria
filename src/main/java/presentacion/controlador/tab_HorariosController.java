@@ -1,5 +1,5 @@
 package presentacion.controlador;
-
+import java.util.List;
 import presentacion.dialogos.Dialogos;
 import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionAsignaturas;
@@ -14,7 +14,6 @@ import dominio.modelo.Clase;
 import dominio.modelo.Docente;
 import dominio.modelo.Grupo;
 import dominio.modelo.PeriodoAcademico;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -39,16 +38,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 /**
  *
  * @author inici4rsesi0n
  */
 public class tab_HorariosController implements Initializable {
-
     @FXML private TabPane tabPaneHorarios;
     @FXML private Tab tabClases;
-
     @FXML private TableView<Clase> tablaClases;
     @FXML private TableColumn<Clase, Integer> colNumClase;
     @FXML private TableColumn<Clase, String> colDiaClase, colInicioClase, colFinClase, colAsignaturaClase, colDocenteClase, colGrupoClase, colAulaClase, colPeriodoClase;
@@ -66,7 +62,6 @@ public class tab_HorariosController implements Initializable {
 
     private ObservableList<Clase> listaClases;
     private Clase claseEditando;
-
     private GestionClases gestionClases;
     private GestionAsignaturas gestionAsignaturas;
     private GestionDocentes gestionDocentes;
@@ -131,6 +126,7 @@ public class tab_HorariosController implements Initializable {
     private void cargarClases() {
         listaClases = FXCollections.observableArrayList(gestionClases.listarClases());
         tablaClases.setItems(listaClases);
+        tablaClases.refresh();
     }
 
     private void recargarComboClases() {
@@ -148,7 +144,7 @@ public class tab_HorariosController implements Initializable {
         cmbGrupoClase.getItems().clear();
         cmbGrupoClase.getItems().add("Seleccione un grupo");
         for (Grupo g : gestionGrupos.listarTodos()) {
-            cmbGrupoClase.getItems().add(g.getNombre());
+            cmbGrupoClase.getItems().add(formatearGrupo(g));
         }
         cmbAulaClase.getItems().clear();
         cmbAulaClase.getItems().add("Seleccione un aula");
@@ -170,7 +166,7 @@ public class tab_HorariosController implements Initializable {
         txtFinClase.setText(c.getHoraFin());
         cmbAsignaturaClase.setValue(c.getAsignatura() != null ? c.getAsignatura().getNombre() : null);
         cmbDocenteClase.setValue(c.getDocente() != null ? c.getDocente().getCodigo() + " - " + c.getDocente().getNombreCompleto() : null);
-        cmbGrupoClase.setValue(c.getGrupo() != null ? c.getGrupo().getNombre() : null);
+        cmbGrupoClase.setValue(formatearGrupo(c.getGrupo()));
         cmbAulaClase.setValue(c.getAula() != null ? c.getAula().getNombre() : null);
         cmbPeriodoClase.setValue(c.getPeriodo() != null ? c.getPeriodo().getNombre() : null);
         panelFormularioClase.setVisible(true);
@@ -210,7 +206,7 @@ public class tab_HorariosController implements Initializable {
 
         Asignatura asig = gestionAsignaturas.buscarAsignatura(asignaturaNombre);
         Docente doc = gestionDocentes.buscarPorCodigo(docenteSel.split(" - ")[0]);
-        Grupo grupo = gestionGrupos.buscarPorNombre(grupoNombre);
+        Grupo grupo = parsearGrupo(grupoNombre);
         Aula aula = gestionAulas.buscarAula(aulaNombre);
         PeriodoAcademico periodo = gestionPeriodos.buscarPorNombre(periodoNombre);
         if (asig == null || doc == null || grupo == null || aula == null || periodo == null) {
@@ -266,6 +262,19 @@ public class tab_HorariosController implements Initializable {
         cmbGrupoClase.getSelectionModel().selectFirst();
         cmbAulaClase.getSelectionModel().selectFirst();
         cmbPeriodoClase.getSelectionModel().selectFirst();
+    }
+    private String formatearGrupo(Grupo g) {
+        if (g == null) return "";
+        String grado = (g.getGrado() != null) ? g.getGrado().getNombre() : "Sin grado";
+        return g.getNombre() + " (" + grado + ")";
+    }
+    private Grupo parsearGrupo(String texto) {
+        int idx = texto.lastIndexOf(" (");
+        if (idx < 0) return null;
+        String nombreGrupo = texto.substring(0, idx).trim();
+        String nombreGrado = texto.substring(idx + 2, texto.length() - 1).trim();
+        List<Grupo> encontrados = gestionGrupos.buscarPorNombreYGrado(nombreGrupo, nombreGrado);
+        return encontrados.isEmpty() ? null : encontrados.get(0);
     }
 
     public TabPane getTabPane() {

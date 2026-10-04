@@ -13,6 +13,7 @@ import dominio.modelo.PeriodoAcademico;
 import dominio.modelo.EstadoMatricula;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -75,9 +76,16 @@ public class s_MatriculaController implements Initializable {
         colPeriodo.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(
                 cell.getValue().getPeriodo() != null ? cell.getValue().getPeriodo().getNombre() : ""));
         colGrupo.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(
-                cell.getValue().getGrupo() != null ? cell.getValue().getGrupo().getNombre() : ""));
+                formatearGrupo(cell.getValue().getGrupo())));
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+    }
+
+    /** Formato: "nombre (grado)" para eliminar ambigüedad. */
+    private String formatearGrupo(Grupo g) {
+        if (g == null) return "";
+        String grado = (g.getGrado() != null) ? g.getGrado().getNombre() : "Sin grado";
+        return g.getNombre() + " (" + grado + ")";
     }
 
     private void configurarColumnaAcciones() {
@@ -117,7 +125,6 @@ public class s_MatriculaController implements Initializable {
             public String toString(EstadoMatricula estado) {
                 return estado != null ? estado.name() : "";
             }
-
             @Override
             public EstadoMatricula fromString(String string) {
                 return EstadoMatricula.fromString(string);
@@ -142,13 +149,14 @@ public class s_MatriculaController implements Initializable {
         cmbGrupoMatricula.getItems().clear();
         cmbGrupoMatricula.getItems().add("Seleccione un grupo");
         for (Grupo g : gestionGrupos.listarTodos()) {
-            cmbGrupoMatricula.getItems().add(g.getNombre());
+            cmbGrupoMatricula.getItems().add(formatearGrupo(g));
         }
     }
 
     private void cargarMatriculas() {
         listaMatriculas = FXCollections.observableArrayList(gestionMatriculas.listarTodas());
         tablaMatriculas.setItems(listaMatriculas);
+        tablaMatriculas.refresh();
     }
 
     @FXML
@@ -180,7 +188,7 @@ public class s_MatriculaController implements Initializable {
             String codigoEstudiante = estudianteSeleccionado.split(" - ")[0];
             Estudiante estudiante = gestionEstudiantes.buscarPorCodigo(codigoEstudiante);
             PeriodoAcademico periodo = gestionPeriodos.buscarPorNombre(periodoSeleccionado);
-            Grupo grupo = gestionGrupos.buscarPorNombre(grupoSeleccionado);
+            Grupo grupo = parsearGrupo(grupoSeleccionado);
 
             if (estudiante == null || periodo == null || grupo == null) {
                 Dialogos.M1("Los datos seleccionados no son válidos.");
@@ -190,15 +198,29 @@ public class s_MatriculaController implements Initializable {
             if (matriculaEditando == null) {
                 gestionMatriculas.matricularEstudiante(estudiante, periodo, grupo, null, fecha, estado);
             } else {
-                gestionMatriculas.actualizarEstado(matriculaEditando, estado);
+                // B1 fix: actualizar la matrícula una sola vez
+                matriculaEditando.setEstado(estado);
                 matriculaEditando.setFecha(fecha);
-                gestionMatriculas.actualizarEstado(matriculaEditando, matriculaEditando.getEstado());
+                gestionMatriculas.actualizar(matriculaEditando);
             }
             cargarMatriculas();
             limpiarFormulario();
         } catch (IllegalArgumentException e) {
             Dialogos.M1(e.getMessage());
         }
+    }
+
+    /**
+     * B2 fix: parsea "1A (1er Grado)" para buscar el grupo sin ambigüedad.
+     */
+    private Grupo parsearGrupo(String texto) {
+        int idx = texto.lastIndexOf(" (");
+        if (idx < 0) return null;
+        String nombreGrupo = texto.substring(0, idx).trim();
+        String nombreGrado = texto.substring(idx + 2, texto.length() - 1).trim();
+
+        List<Grupo> encontrados = gestionGrupos.buscarPorNombreYGrado(nombreGrupo, nombreGrado);
+        return encontrados.isEmpty() ? null : encontrados.get(0);
     }
 
     @FXML
@@ -211,7 +233,7 @@ public class s_MatriculaController implements Initializable {
         recargarCombos();
         cmbEstudianteMatricula.setValue(matricula.getEstudiante().getCodigo() + " - " + matricula.getEstudiante().getNombreCompleto());
         cmbPeriodoMatricula.setValue(matricula.getPeriodo().getNombre());
-        cmbGrupoMatricula.setValue(matricula.getGrupo().getNombre());
+        cmbGrupoMatricula.setValue(formatearGrupo(matricula.getGrupo()));
         txtFechaMatricula.setText(matricula.getFecha());
         cmbEstadoMatricula.setValue(matricula.getEstado());
         panelFormularioMatricula.setVisible(true);

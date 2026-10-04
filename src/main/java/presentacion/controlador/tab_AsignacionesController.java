@@ -1,5 +1,7 @@
 package presentacion.controlador;
 
+import presentacion.eventos.SistemaEventBus;
+import presentacion.eventos.Evento;
 import presentacion.dialogos.Dialogos;
 import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionAsignaturas;
@@ -13,12 +15,12 @@ import dominio.modelo.Docente;
 import dominio.modelo.Grado;
 import dominio.modelo.Grupo;
 import dominio.modelo.Usuario;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -64,6 +66,10 @@ public class tab_AsignacionesController implements Initializable {
     private GestionUsuarios gestionUsuarios;
     private GestionGrados gestionGrados;
 
+    private ObservableList<AsignacionItem> listaAsignacionesDocente;
+    private ObservableList<TutorItem> listaTutores;
+    private ObservableList<CoordinacionItem> listaCoordinaciones;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         gestionDocentes = SpringContext.getBean(GestionDocentes.class);
@@ -84,6 +90,17 @@ public class tab_AsignacionesController implements Initializable {
                 cargarDatos();
             }
         });
+
+        SistemaEventBus.suscribir(Evento.GRUPOS, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(Evento.DOCENTES, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(Evento.ASIGNATURAS, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(Evento.GRADOS, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(Evento.USUARIOS, this::recargarDesdeEvento);
+    }
+
+    private void recargarDesdeEvento() {
+        recargarCombosAsignaciones();
+        cargarDatos();
     }
 
     private void configurarCombos() {
@@ -160,8 +177,8 @@ public class tab_AsignacionesController implements Initializable {
                     Docente docente = gestionDocentes.buscarPorCodigo(item.getCodigoDocente());
                     if (docente != null) {
                         gestionDocentes.removerAsignatura(docente, item.getAsignatura());
+                        SistemaEventBus.notificar(Evento.DOCENTES);
                     }
-                    cargarAsignacionesDocente();
                 });
             }
             @Override protected void updateItem(Void item, boolean empty) {
@@ -178,7 +195,9 @@ public class tab_AsignacionesController implements Initializable {
                 items.add(new AsignacionItem(d.getCodigo(), d.getNombreCompleto(), a.getNombre(), a));
             }
         }
-        tablaAsignaturasDocente.setItems(FXCollections.observableArrayList(items));
+        listaAsignacionesDocente = FXCollections.observableArrayList(items);
+        tablaAsignaturasDocente.setItems(listaAsignacionesDocente);
+        tablaAsignaturasDocente.refresh();
     }
 
     private void configurarTablaTutores() {
@@ -196,7 +215,7 @@ public class tab_AsignacionesController implements Initializable {
                     TutorItem item = getTableView().getItems().get(getIndex());
                     Grupo grupo = item.getGrupo();
                     gestionGrupos.removerTutor(grupo);
-                    cargarTutores();
+                    SistemaEventBus.notificar(Evento.GRUPOS, Evento.DOCENTES);
                 });
             }
             @Override protected void updateItem(Void item, boolean empty) {
@@ -213,7 +232,8 @@ public class tab_AsignacionesController implements Initializable {
                 items.add(new TutorItem(g));
             }
         }
-        tablaTutores.setItems(FXCollections.observableArrayList(items));
+        listaTutores = FXCollections.observableArrayList(items);
+        tablaTutores.setItems(listaTutores);
         tablaTutores.refresh();
     }
 
@@ -234,7 +254,7 @@ public class tab_AsignacionesController implements Initializable {
                     Grado grado = item.getGrado();
                     coord.removerGrado(grado);
                     gestionUsuarios.actualizarUsuario(coord);
-                    cargarCoordinaciones();
+                    SistemaEventBus.notificar(Evento.USUARIOS, Evento.GRADOS);
                 });
             }
             @Override protected void updateItem(Void item, boolean empty) {
@@ -254,11 +274,13 @@ public class tab_AsignacionesController implements Initializable {
                 }
             }
         }
-        tablaCoordinaciones.setItems(FXCollections.observableArrayList(items));
+        listaCoordinaciones = FXCollections.observableArrayList(items);
+        tablaCoordinaciones.setItems(listaCoordinaciones);
         tablaCoordinaciones.refresh();
     }
 
-    @FXML private void handleAgregarAsignaturaDocente() {
+    @FXML
+    private void handleAgregarAsignaturaDocente() {
         String docenteSel = cmbDocenteAsignatura.getValue();
         String asigSel = cmbAsignaturaDocente.getValue();
         if (docenteSel == null || docenteSel.startsWith("Seleccione")
@@ -279,13 +301,14 @@ public class tab_AsignacionesController implements Initializable {
         }
         try {
             gestionDocentes.agregarAsignatura(docente, a);
-            cargarAsignacionesDocente();
+            SistemaEventBus.notificar(Evento.DOCENTES);
         } catch (IllegalArgumentException e) {
             Dialogos.M1(e.getMessage());
         }
     }
 
-    @FXML private void handleAsignarTutor() {
+    @FXML
+    private void handleAsignarTutor() {
         String docenteSel = cmbDocenteTutor.getValue();
         String grupoSel = cmbGrupoTutor.getValue();
         if (docenteSel == null || docenteSel.startsWith("Seleccione")
@@ -306,13 +329,14 @@ public class tab_AsignacionesController implements Initializable {
         }
         try {
             gestionGrupos.asignarTutor(grupo, docente);
-            cargarTutores();
+            SistemaEventBus.notificar(Evento.GRUPOS, Evento.DOCENTES);
         } catch (IllegalArgumentException e) {
             Dialogos.M1(e.getMessage());
         }
     }
 
-    @FXML private void handleAsignarCoordinacion() {
+    @FXML
+    private void handleAsignarCoordinacion() {
         String coordSel = cmbCoordinador.getValue();
         String gradoSel = cmbGradoCoordinacion.getValue();
         if (coordSel == null || coordSel.startsWith("Seleccione")
@@ -334,7 +358,7 @@ public class tab_AsignacionesController implements Initializable {
         try {
             coord.agregarGrado(g);
             gestionUsuarios.actualizarUsuario(coord);
-            cargarCoordinaciones();
+            SistemaEventBus.notificar(Evento.USUARIOS, Evento.GRADOS);
         } catch (IllegalArgumentException e) {
             Dialogos.M1(e.getMessage());
         }
@@ -361,6 +385,19 @@ public class tab_AsignacionesController implements Initializable {
         public String getNombreDocente() { return nombreDocente; }
         public String getNombreAsignatura() { return nombreAsignatura; }
         public Asignatura getAsignatura() { return asignatura; }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof AsignacionItem that)) return false;
+            return java.util.Objects.equals(codigoDocente, that.codigoDocente)
+                    && java.util.Objects.equals(nombreAsignatura, that.nombreAsignatura);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(codigoDocente, nombreAsignatura);
+        }
     }
 
     public static class TutorItem {
@@ -374,6 +411,18 @@ public class tab_AsignacionesController implements Initializable {
         public String getNombreGrupo() { return grupo.getNombre(); }
         public String getNombreTutor() {
             return grupo.getTutor() != null ? grupo.getTutor().getNombreCompleto() : "Sin tutor";
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof TutorItem that)) return false;
+            return java.util.Objects.equals(grupo, that.grupo);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(grupo);
         }
     }
 
@@ -390,5 +439,18 @@ public class tab_AsignacionesController implements Initializable {
         public Grado getGrado() { return grado; }
         public String getNombreCoordinador() { return coordinador.getNombreCompleto(); }
         public String getNombreGrado() { return grado.getNombre(); }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof CoordinacionItem that)) return false;
+            return java.util.Objects.equals(coordinador, that.coordinador)
+                    && java.util.Objects.equals(grado, that.grado);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(coordinador, grado);
+        }
     }
 }

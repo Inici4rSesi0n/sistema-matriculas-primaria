@@ -1,6 +1,7 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.Asignatura;
+import dominio.modelo.Docente;
 import dominio.puerto.repositorio.RepositorioAsignaturas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -93,5 +94,18 @@ class GestionAsignaturasTest {
         casoUso.eliminarAsignatura(aEliminar);
 
         verify(repoMock).eliminar(aEliminar);
+    }
+
+    @Test
+    void actualizarAsignatura_debeModificarMismaReferencia() {
+        Asignatura original = new Asignatura("Matematicas");
+        Docente docente = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new java.util.ArrayList<>());
+        docente.agregarAsignatura(original);
+
+        casoUso.actualizarAsignatura(original, "Matematica I");
+
+        assertEquals("Matematica I", docente.getAsignaturas().get(0).getNombre(),
+                "El docente debe ver el nombre actualizado sin recargar");
+        verify(repoMock).actualizar(original, original);
     }
 }

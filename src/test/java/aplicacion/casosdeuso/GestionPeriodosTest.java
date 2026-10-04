@@ -99,4 +99,13 @@ class GestionPeriodosTest {
 
         verify(repoMock).eliminar(aEliminar);
     }
+
+    @Test
+    void actualizarPeriodo_debeModificarMismaReferencia() {
+        PeriodoAcademico original = new PeriodoAcademico("2026-I", "2026-01-01", "2026-12-31", "Activo");
+        casoUso.actualizarPeriodo(original, "2026-II", "2026-06-01", "2026-12-31", "Activo");
+
+        assertEquals("2026-II", original.getNombre());
+        verify(repoMock).actualizar(original, original);
+    }
 }

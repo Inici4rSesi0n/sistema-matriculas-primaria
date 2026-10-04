@@ -29,8 +29,12 @@ public class GestionAulas {
         if (nuevaCapacidad <= 0) throw new IllegalArgumentException("La nueva capacidad debe ser mayor a 0.");
         if (nuevaUbicacion == null || nuevaUbicacion.isBlank()) throw new IllegalArgumentException("La nueva ubicación no puede estar vacía.");
         if (nuevoTipo == null || nuevoTipo.isBlank()) throw new IllegalArgumentException("El nuevo tipo no puede estar vacío.");
-        Aula actualizada = new Aula(nuevoNombre, nuevaCapacidad, nuevaUbicacion, nuevoTipo, nuevaModalidad);
-        repo.actualizar(original, actualizada);
+        original.setNombre(nuevoNombre);
+        original.setCapacidad(nuevaCapacidad);
+        original.setUbicacion(nuevaUbicacion);
+        original.setTipo(nuevoTipo);
+        original.setModalidad(nuevaModalidad);
+        repo.actualizar(original, original);
     }
     public void eliminarAula(Aula aula) { repo.eliminar(aula); }
 }

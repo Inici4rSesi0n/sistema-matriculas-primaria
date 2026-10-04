@@ -1,5 +1,6 @@
 package presentacion.controlador;
-
+import presentacion.eventos.SistemaEventBus;
+import presentacion.eventos.Evento;
 import presentacion.dialogos.Dialogos;
 import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionAsignaturas;
@@ -18,7 +19,6 @@ import dominio.modelo.ModalidadAula;
 import dominio.modelo.PeriodoAcademico;
 import dominio.modelo.Recreo;
 import dominio.modelo.Turno;
-
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
@@ -39,16 +39,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-
 /**
  *
  * @author inici4rsesi0n
  */
 public class tab_CatalogosController implements Initializable {
-
     @FXML private TabPane tabPaneCatalogos;
     @FXML private Tab tabAsignaturas, tabPeriodos, tabAulas, tabGrupos, tabRecreos, tabGrados, tabTurnos;
-
     @FXML private TableView<Asignatura> tablaAsignaturas;
     @FXML private TableColumn<Asignatura, Integer> colNumAsignatura;
     @FXML private TableColumn<Asignatura, String> colNombreAsignatura;
@@ -56,7 +53,6 @@ public class tab_CatalogosController implements Initializable {
     @FXML private VBox panelFormularioAsignatura;
     @FXML private TextField txtNombreAsignatura;
     @FXML private Button btnNuevaAsignatura, btnGuardarAsignatura, btnCancelarAsignatura;
-
     @FXML private TableView<PeriodoAcademico> tablaPeriodos;
     @FXML private TableColumn<PeriodoAcademico, Integer> colNumPeriodo;
     @FXML private TableColumn<PeriodoAcademico, String> colNombrePeriodo, colFechaInicio, colFechaFin, colEstadoPeriodo;
@@ -66,7 +62,6 @@ public class tab_CatalogosController implements Initializable {
     @FXML private DatePicker dateFechaInicio, dateFechaFin;
     @FXML private ComboBox<String> cmbEstadoPeriodo;
     @FXML private Button btnNuevoPeriodo, btnGuardarPeriodo, btnCancelarPeriodo;
-
     @FXML private TableView<Aula> tablaAulas;
     @FXML private TableColumn<Aula, Integer> colNumAula;
     @FXML private TableColumn<Aula, String> colNombreAula, colUbicacionAula, colTipoAula;
@@ -77,7 +72,6 @@ public class tab_CatalogosController implements Initializable {
     @FXML private TextField txtNombreAula, txtCapacidadAula, txtUbicacionAula, txtTipoAula;
     @FXML private ComboBox<ModalidadAula> cmbModalidadAula;
     @FXML private Button btnNuevaAula, btnGuardarAula, btnCancelarAula;
-
     @FXML private TableView<Grupo> tablaGrupos;
     @FXML private TableColumn<Grupo, Integer> colNumGrupo;
     @FXML private TableColumn<Grupo, String> colNombreGrupo, colGradoGrupo;
@@ -86,7 +80,6 @@ public class tab_CatalogosController implements Initializable {
     @FXML private TextField txtNombreGrupo;
     @FXML private ComboBox<String> cmbGradoGrupo;
     @FXML private Button btnNuevoGrupo, btnGuardarGrupo, btnCancelarGrupo;
-
     @FXML private TableView<Recreo> tablaRecreos;
     @FXML private TableColumn<Recreo, Integer> colNumRecreo;
     @FXML private TableColumn<Recreo, String> colDiaRecreo, colInicioRecreo, colFinRecreo, colDescripcionRecreo;
@@ -95,7 +88,6 @@ public class tab_CatalogosController implements Initializable {
     @FXML private ComboBox<String> cmbDiaRecreo, cmbPeriodoRecreo;
     @FXML private TextField txtInicioRecreo, txtFinRecreo, txtDescripcionRecreo;
     @FXML private Button btnNuevoRecreo, btnGuardarRecreo, btnCancelarRecreo;
-
     @FXML private TableView<Grado> tablaGrados;
     @FXML private TableColumn<Grado, Integer> colNumGrado;
     @FXML private TableColumn<Grado, String> colNombreGrado, colNivelGrado;
@@ -103,7 +95,6 @@ public class tab_CatalogosController implements Initializable {
     @FXML private VBox panelFormularioGrado;
     @FXML private TextField txtNombreGrado, txtNivelGrado;
     @FXML private Button btnNuevoGrado, btnGuardarGrado, btnCancelarGrado;
-
     @FXML private TableView<Turno> tablaTurnos;
     @FXML private TableColumn<Turno, Integer> colNumTurno;
     @FXML private TableColumn<Turno, String> colNombreTurno;
@@ -149,6 +140,13 @@ public class tab_CatalogosController implements Initializable {
         configurarCombos();
         configurarTablas();
         cargarDatos();
+        SistemaEventBus.suscribir(Evento.ASIGNATURAS, this::cargarAsignaturas);
+        SistemaEventBus.suscribir(Evento.PERIODOS, this::cargarPeriodos);
+        SistemaEventBus.suscribir(Evento.AULAS, this::cargarAulas);
+        SistemaEventBus.suscribir(Evento.GRUPOS, this::cargarGrupos);
+        SistemaEventBus.suscribir(Evento.RECREOS, this::cargarRecreos);
+        SistemaEventBus.suscribir(Evento.GRADOS, this::cargarGrados);
+        SistemaEventBus.suscribir(Evento.TURNOS, this::cargarTurnos);
     }
 
     private void configurarCombos() {
@@ -369,13 +367,13 @@ public class tab_CatalogosController implements Initializable {
         if (respuesta != 0) return;
         try {
             switch (tipo) {
-                case "asignatura" -> gestionAsignaturas.eliminarAsignatura((Asignatura) obj);
-                case "periodo" -> gestionPeriodos.eliminarPeriodo((PeriodoAcademico) obj);
-                case "aula" -> gestionAulas.eliminarAula((Aula) obj);
-                case "grupo" -> gestionGrupos.eliminarGrupo((Grupo) obj);
-                case "recreo" -> gestionRecreos.eliminarRecreo((Recreo) obj);
-                case "grado" -> gestionGrados.eliminarGrado((Grado) obj);
-                case "turno" -> gestionTurnos.eliminarTurno((Turno) obj);
+                case "asignatura" -> { gestionAsignaturas.eliminarAsignatura((Asignatura) obj); SistemaEventBus.notificar(Evento.ASIGNATURAS); }
+                case "periodo"    -> { gestionPeriodos.eliminarPeriodo((PeriodoAcademico) obj); SistemaEventBus.notificar(Evento.PERIODOS); }
+                case "aula"       -> { gestionAulas.eliminarAula((Aula) obj); SistemaEventBus.notificar(Evento.AULAS); }
+                case "grupo"      -> { gestionGrupos.eliminarGrupo((Grupo) obj); SistemaEventBus.notificar(Evento.GRUPOS); }
+                case "recreo"     -> { gestionRecreos.eliminarRecreo((Recreo) obj); SistemaEventBus.notificar(Evento.RECREOS); }
+                case "grado"      -> { gestionGrados.eliminarGrado((Grado) obj); SistemaEventBus.notificar(Evento.GRADOS); }
+                case "turno"      -> { gestionTurnos.eliminarTurno((Turno) obj); SistemaEventBus.notificar(Evento.TURNOS); }
             }
             cargarDatos();
         } catch (IllegalArgumentException e) {
@@ -414,30 +412,37 @@ public class tab_CatalogosController implements Initializable {
     private void cargarAsignaturas() {
         listaAsignaturas = FXCollections.observableArrayList(gestionAsignaturas.listarTodos());
         tablaAsignaturas.setItems(listaAsignaturas);
+        tablaAsignaturas.refresh();
     }
     private void cargarPeriodos() {
         listaPeriodos = FXCollections.observableArrayList(gestionPeriodos.listarTodos());
         tablaPeriodos.setItems(listaPeriodos);
+        tablaPeriodos.refresh();
     }
     private void cargarAulas() {
         listaAulas = FXCollections.observableArrayList(gestionAulas.listarTodos());
         tablaAulas.setItems(listaAulas);
+        tablaAulas.refresh();
     }
     private void cargarGrupos() {
         listaGrupos = FXCollections.observableArrayList(gestionGrupos.listarTodos());
         tablaGrupos.setItems(listaGrupos);
+        tablaGrupos.refresh();
     }
     private void cargarRecreos() {
         listaRecreos = FXCollections.observableArrayList(gestionRecreos.listarTodos());
         tablaRecreos.setItems(listaRecreos);
+        tablaRecreos.refresh();
     }
     private void cargarGrados() {
         listaGrados = FXCollections.observableArrayList(gestionGrados.listarTodos());
         tablaGrados.setItems(listaGrados);
+        tablaGrados.refresh();
     }
     private void cargarTurnos() {
         listaTurnos = FXCollections.observableArrayList(gestionTurnos.listarTodos());
         tablaTurnos.setItems(listaTurnos);
+        tablaTurnos.refresh();
     }
 
     @FXML private void handleNuevaAsignatura() { asignaturaEditando = null; txtNombreAsignatura.clear(); panelFormularioAsignatura.setVisible(true); panelFormularioAsignatura.setManaged(true); }
@@ -447,7 +452,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (asignaturaEditando == null) gestionAsignaturas.crearAsignatura(nombre);
             else gestionAsignaturas.actualizarAsignatura(asignaturaEditando, nombre);
-            cargarAsignaturas();
+            SistemaEventBus.notificar(Evento.ASIGNATURAS);
             panelFormularioAsignatura.setVisible(false);
             panelFormularioAsignatura.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
@@ -463,7 +468,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (periodoEditando == null) gestionPeriodos.crearPeriodo(nombre, inicio.toString(), fin.toString(), estado);
             else gestionPeriodos.actualizarPeriodo(periodoEditando, nombre, inicio.toString(), fin.toString(), estado);
-            cargarPeriodos();
+            SistemaEventBus.notificar(Evento.PERIODOS);
             panelFormularioPeriodo.setVisible(false);
             panelFormularioPeriodo.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
@@ -475,11 +480,17 @@ public class tab_CatalogosController implements Initializable {
         String nombre = txtNombreAula.getText().trim(), capacidadStr = txtCapacidadAula.getText().trim(), ubicacion = txtUbicacionAula.getText().trim(), tipo = txtTipoAula.getText().trim();
         ModalidadAula modalidad = cmbModalidadAula.getValue();
         if (nombre.isBlank() || capacidadStr.isBlank() || ubicacion.isBlank() || tipo.isBlank()) { Dialogos.M1("Todos los campos son obligatorios."); return; }
-        int capacidad = Integer.parseInt(capacidadStr);
+        int capacidad;
+        try{
+            capacidad = Integer.parseInt(capacidadStr);
+        } catch(NumberFormatException e){
+            Dialogos.M1("La capacidad debe ser un número entero válido");
+            return;
+        }
         try {
             if (aulaEditando == null) gestionAulas.crearAula(nombre, capacidad, ubicacion, tipo, modalidad);
             else gestionAulas.actualizarAula(aulaEditando, nombre, capacidad, ubicacion, tipo, modalidad);
-            cargarAulas();
+            SistemaEventBus.notificar(Evento.AULAS);
             panelFormularioAula.setVisible(false);
             panelFormularioAula.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
@@ -496,7 +507,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (grupoEditando == null) gestionGrupos.crearGrupo(nombre, grado);
             else gestionGrupos.actualizarGrupo(grupoEditando, nombre, grado);
-            cargarGrupos();
+            SistemaEventBus.notificar(Evento.GRUPOS);
             panelFormularioGrupo.setVisible(false);
             panelFormularioGrupo.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
@@ -514,7 +525,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (recreoEditando == null) gestionRecreos.crearRecreo(franja, desc.isBlank() ? "Recreo" : desc, periodo);
             else gestionRecreos.actualizarRecreo(recreoEditando, franja, desc.isBlank() ? "Recreo" : desc, periodo);
-            cargarRecreos();
+            SistemaEventBus.notificar(Evento.RECREOS);
             panelFormularioRecreo.setVisible(false);
             panelFormularioRecreo.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
@@ -528,7 +539,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (gradoEditando == null) gestionGrados.crearGrado(nombre, nivel);
             else gestionGrados.actualizarGrado(gradoEditando, nombre, nivel);
-            cargarGrados();
+            SistemaEventBus.notificar(Evento.GRADOS);
             panelFormularioGrado.setVisible(false);
             panelFormularioGrado.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
@@ -542,7 +553,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (turnoEditando == null) gestionTurnos.crearTurno(nombre);
             else gestionTurnos.actualizarTurno(turnoEditando, nombre);
-            cargarTurnos();
+            SistemaEventBus.notificar(Evento.TURNOS);
             panelFormularioTurno.setVisible(false);
             panelFormularioTurno.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }

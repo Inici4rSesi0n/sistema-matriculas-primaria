@@ -19,15 +19,32 @@ public class GestionMatriculas {
         this.repo = repo;
     }
 
-    public void matricularEstudiante(Estudiante estudiante, PeriodoAcademico periodo, Grupo grupo, List<Asignatura> asignaturas, String fecha, EstadoMatricula estado) {
-        if (estudiante == null || periodo == null || grupo == null) throw new IllegalArgumentException("Estudiante, periodo y grupo son obligatorios.");
-        if (repo.buscarPorEstudianteYPeriodo(estudiante.getCodigo(), periodo.getNombre()).isPresent()) throw new IllegalArgumentException("El estudiante ya está matriculado en ese periodo.");
+    public void matricularEstudiante(Estudiante estudiante, PeriodoAcademico periodo, Grupo grupo,
+                                     List<Asignatura> asignaturas, String fecha, EstadoMatricula estado) {
+        if (estudiante == null || periodo == null || grupo == null)
+            throw new IllegalArgumentException("Estudiante, periodo y grupo son obligatorios.");
+        if (repo.buscarPorEstudianteYPeriodo(estudiante.getCodigo(), periodo.getNombre()).isPresent())
+            throw new IllegalArgumentException("El estudiante ya está matriculado en ese periodo.");
         repo.agregar(new Matricula(estudiante, periodo, grupo, asignaturas, fecha, estado));
     }
 
     public List<Matricula> listarTodas() { return repo.listarTodos(); }
-    public Matricula buscarMatricula(String codigoEstudiante, String nombrePeriodo) { return repo.buscarPorEstudianteYPeriodo(codigoEstudiante, nombrePeriodo).orElse(null); }
-    public List<Matricula> listarPorGrupo(String nombreGrupo) { return repo.buscarPorGrupo(nombreGrupo); }
+
+    public Matricula buscarMatricula(String codigoEstudiante, String nombrePeriodo) {
+        return repo.buscarPorEstudianteYPeriodo(codigoEstudiante, nombrePeriodo).orElse(null);
+    }
+
+    public List<Matricula> listarPorGrupo(String nombreGrupo) {
+        return repo.buscarPorGrupo(nombreGrupo);
+    }
+
+    /**
+     * Persiste los cambios de la matrícula (estado, fecha, etc).
+     */
+    public void actualizar(Matricula matricula) {
+        if (matricula == null) throw new IllegalArgumentException("La matrícula no puede ser nula.");
+        repo.actualizar(matricula, matricula);
+    }
 
     public void actualizarEstado(Matricula matricula, EstadoMatricula nuevoEstado) {
         if (nuevoEstado == null) throw new IllegalArgumentException("El estado no puede ser nulo.");

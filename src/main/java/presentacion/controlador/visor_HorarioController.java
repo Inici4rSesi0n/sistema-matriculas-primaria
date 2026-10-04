@@ -48,6 +48,8 @@ public class visor_HorarioController implements Initializable {
     private GestionPeriodos gestionPeriodos;
     private GestionHorario gestionHorario;
 
+    private ObservableList<Evento> listaHorario;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         gestionGrupos = SpringContext.getBean(GestionGrupos.class);
@@ -133,8 +135,9 @@ public class visor_HorarioController implements Initializable {
         }
 
         List<Evento> eventos = gestionHorario.obtenerHorarioCompleto(grupo, periodo);
-        ObservableList<Evento> lista = FXCollections.observableArrayList(eventos);
-        tablaHorario.setItems(lista);
+        listaHorario = FXCollections.observableArrayList(eventos);
+        tablaHorario.setItems(listaHorario);
+        tablaHorario.refresh();
     }
 
     @FXML

@@ -90,4 +90,18 @@ class GestionRecreosTest {
 
         verify(repoMock).eliminar(aEliminar);
     }
+
+    @Test
+    void actualizarRecreo_debeModificarMismaReferencia() {
+        PeriodoAcademico periodo = new PeriodoAcademico("2026-I", "2026-01-01", "2026-12-31", "Activo");
+        FranjaHoraria franja = new FranjaHoraria("Lunes", "10:00", "10:30");
+        Recreo original = new Recreo(franja, "Recreo", periodo);
+
+        FranjaHoraria nuevaFranja = new FranjaHoraria("Martes", "11:00", "11:30");
+        casoUso.actualizarRecreo(original, nuevaFranja, "Descanso", periodo);
+
+        assertEquals("Descanso", original.getDescripcion());
+        assertEquals("Martes", original.getDiaSemana());
+        verify(repoMock).actualizar(original, original);
+    }
 }

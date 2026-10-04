@@ -95,4 +95,14 @@ class GestionGradosTest {
 
         verify(repoMock).eliminar(aEliminar);
     }
+
+    @Test
+    void actualizarGrado_debeModificarMismaReferencia() {
+        Grado original = new Grado("1er Grado", "Primaria");
+        casoUso.actualizarGrado(original, "2do Grado", "Secundaria");
+
+        assertEquals("2do Grado", original.getNombre());
+        assertEquals("Secundaria", original.getNivel());
+        verify(repoMock).actualizar(original, original);
+    }
 }

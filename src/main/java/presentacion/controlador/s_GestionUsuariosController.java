@@ -118,6 +118,7 @@ public class s_GestionUsuariosController implements Initializable {
     private void cargarUsuarios() {
         listaUsuarios = FXCollections.observableArrayList(gestionUsuarios.listarTodos());
         tablaUsuarios.setItems(listaUsuarios);
+        tablaUsuarios.refresh();
     }
 
     @FXML

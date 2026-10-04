@@ -1,20 +1,15 @@
 package aplicacion.casosdeuso;
-
 import dominio.modelo.Turno;
 import dominio.puerto.repositorio.RepositorioTurnos;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-
 /**
  *
  * @author inici4rsesi0n
  */
 @Service
 public class GestionTurnos {
-
     private final RepositorioTurnos repo;
-
     public GestionTurnos(RepositorioTurnos repo) {
         this.repo = repo;
     }
@@ -30,8 +25,8 @@ public class GestionTurnos {
 
     public void actualizarTurno(Turno original, String nuevoNombre) {
         if (nuevoNombre == null || nuevoNombre.isBlank()) throw new IllegalArgumentException("El nombre del turno no puede estar vacío.");
-        Turno actualizado = new Turno(nuevoNombre);
-        repo.actualizar(original, actualizado);
+        original.setNombre(nuevoNombre);
+        repo.actualizar(original, original);
     }
 
     public void eliminarTurno(Turno turno) { repo.eliminar(turno); }

@@ -1,11 +1,8 @@
 package aplicacion.casosdeuso;
-
 import dominio.modelo.PeriodoAcademico;
 import dominio.puerto.repositorio.RepositorioPeriodos;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-
 /**
  *
  * @author inici4rsesi0n
@@ -34,8 +31,11 @@ public class GestionPeriodos {
         if (nuevoNombre == null || nuevoNombre.isBlank()) throw new IllegalArgumentException("El nuevo nombre no puede estar vacío.");
         if (nuevaFechaInicio == null || nuevaFechaInicio.isBlank()) throw new IllegalArgumentException("La nueva fecha de inicio no puede estar vacía.");
         if (nuevaFechaFin == null || nuevaFechaFin.isBlank()) throw new IllegalArgumentException("La nueva fecha de fin no puede estar vacía.");
-        PeriodoAcademico actualizado = new PeriodoAcademico(nuevoNombre, nuevaFechaInicio, nuevaFechaFin, (nuevoEstado != null && !nuevoEstado.isBlank()) ? nuevoEstado : "Activo");
-        repo.actualizar(original, actualizado);
+        original.setNombre(nuevoNombre);
+        original.setFechaInicio(nuevaFechaInicio);
+        original.setFechaFin(nuevaFechaFin);
+        original.setEstado(nuevoEstado);
+        repo.actualizar(original, original);
     }
 
     public void eliminarPeriodo(PeriodoAcademico periodo) { repo.eliminar(periodo); }

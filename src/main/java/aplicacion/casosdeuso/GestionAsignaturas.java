@@ -3,7 +3,6 @@ import dominio.modelo.Asignatura;
 import dominio.puerto.repositorio.RepositorioAsignaturas;
 import org.springframework.stereotype.Service;
 import java.util.List;
-
 /**
  *
  * @author inici4rsesi0n
@@ -33,8 +32,8 @@ public class GestionAsignaturas {
         if (nuevoNombre == null || nuevoNombre.isBlank()) {
             throw new IllegalArgumentException("El nuevo nombre no puede estar vacío.");
         }
-        Asignatura actualizada = new Asignatura(nuevoNombre);
-        repo.actualizar(original, actualizada);
+        original.setNombre(nuevoNombre);
+        repo.actualizar(original, original);
     }
     public void eliminarAsignatura(Asignatura asignatura) {
         repo.eliminar(asignatura);
