@@ -40,11 +40,15 @@ class GestionClasesTest {
         periodo = new PeriodoAcademico("2026-I", "2026-01-01", "2026-12-31", "Activo");
     }
 
+    // ============ Creación: flujo feliz ============
+
     @Test
     void crearClase_debeGuardarClaseCorrectamente() {
         casoUso.crearClase("Lunes", "08:00", "10:00", asignatura, docente, grupo, aula, periodo);
         verify(repoMock).agregar(any(Clase.class));
     }
+
+    // ============ Validaciones de campos obligatorios ============
 
     @Test
     void crearClase_debeLanzarExcepcionSiDiaVacio() {
@@ -94,6 +98,49 @@ class GestionClasesTest {
                 () -> casoUso.crearClase("Lunes", "08:00", "10:00", asignatura, docente, grupo, aula, null));
     }
 
+    // ============ B6: Validación de conflictos al crear ============
+
+    @Test
+    void crearClase_debeFallarSiDocenteTieneConflicto() {
+        when(repoMock.existeConflictoDocente(eq("D001"), eq("Lunes"), eq("08:00"), eq("10:00"), isNull()))
+                .thenReturn(true);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> casoUso.crearClase("Lunes", "08:00", "10:00", asignatura, docente, grupo, aula, periodo));
+
+        assertTrue(ex.getMessage().contains("docente"),
+                "El mensaje debe mencionar al docente. Fue: " + ex.getMessage());
+        verify(repoMock, never()).agregar(any());
+    }
+
+    @Test
+    void crearClase_debeFallarSiAulaTieneConflicto() {
+        when(repoMock.existeConflictoAula(eq("Aula 101"), eq("Lunes"), eq("08:00"), eq("10:00"), isNull()))
+                .thenReturn(true);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> casoUso.crearClase("Lunes", "08:00", "10:00", asignatura, docente, grupo, aula, periodo));
+
+        assertTrue(ex.getMessage().contains("aula"),
+                "El mensaje debe mencionar el aula. Fue: " + ex.getMessage());
+        verify(repoMock, never()).agregar(any());
+    }
+
+    @Test
+    void crearClase_debeFallarSiGrupoTieneConflicto() {
+        when(repoMock.existeConflictoGrupo(eq("1A"), eq("1er Grado"), eq("Lunes"), eq("08:00"), eq("10:00"), isNull()))
+                .thenReturn(true);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> casoUso.crearClase("Lunes", "08:00", "10:00", asignatura, docente, grupo, aula, periodo));
+
+        assertTrue(ex.getMessage().contains("grupo"),
+                "El mensaje debe mencionar el grupo. Fue: " + ex.getMessage());
+        verify(repoMock, never()).agregar(any());
+    }
+
+    // ============ Consultas ============
+
     @Test
     void listarClases_debeRetornarListaCompleta() {
         FranjaHoraria franja = new FranjaHoraria("Lunes", "08:00", "10:00");
@@ -119,24 +166,6 @@ class GestionClasesTest {
     }
 
     @Test
-    void existeDocenteEnHorario_debeRetornarTrueSiExiste() {
-        when(repoMock.existeDocenteEnHorario("D001", "Lunes", "08:00", "10:00")).thenReturn(true);
-
-        boolean resultado = casoUso.existeDocenteEnHorario("D001", "Lunes", "08:00", "10:00");
-
-        assertTrue(resultado);
-    }
-
-    @Test
-    void existeDocenteEnHorario_debeRetornarFalseSiNoExiste() {
-        when(repoMock.existeDocenteEnHorario("D001", "Lunes", "08:00", "10:00")).thenReturn(false);
-
-        boolean resultado = casoUso.existeDocenteEnHorario("D001", "Lunes", "08:00", "10:00");
-
-        assertFalse(resultado);
-    }
-
-    @Test
     void buscarClase_debeRetornarClaseSiExiste() {
         FranjaHoraria franja = new FranjaHoraria("Lunes", "08:00", "10:00");
         Clase esperada = new Clase(franja, periodo, asignatura, docente, grupo, aula);
@@ -158,6 +187,8 @@ class GestionClasesTest {
         assertNull(resultado);
     }
 
+    // ============ B6: Actualización excluyendo la propia clase ============
+
     @Test
     void actualizarClase_debeActualizarCorrectamente() {
         FranjaHoraria franjaOriginal = new FranjaHoraria("Lunes", "08:00", "10:00");
@@ -167,6 +198,35 @@ class GestionClasesTest {
 
         verify(repoMock).actualizar(eq(original), any(Clase.class));
     }
+
+    @Test
+    void actualizarClase_debeExcluirLaPropiaClaseDeLaValidacion() {
+        FranjaHoraria franjaOriginal = new FranjaHoraria("Lunes", "08:00", "10:00");
+        Clase original = new Clase(franjaOriginal, periodo, asignatura, docente, grupo, aula);
+
+        casoUso.actualizarClase(original, "Martes", "09:00", "11:00", asignatura, docente, grupo, aula, periodo);
+
+        // Debe invocar los 3 métodos de validación pasando "original" como clase a excluir
+        verify(repoMock).existeConflictoDocente(eq("D001"), eq("Martes"), eq("09:00"), eq("11:00"), eq(original));
+        verify(repoMock).existeConflictoAula(eq("Aula 101"), eq("Martes"), eq("09:00"), eq("11:00"), eq(original));
+        verify(repoMock).existeConflictoGrupo(eq("1A"), eq("1er Grado"), eq("Martes"), eq("09:00"), eq("11:00"), eq(original));
+    }
+
+    @Test
+    void actualizarClase_debeFallarSiHayConflictoConOtraClase() {
+        FranjaHoraria franjaOriginal = new FranjaHoraria("Lunes", "08:00", "10:00");
+        Clase original = new Clase(franjaOriginal, periodo, asignatura, docente, grupo, aula);
+
+        when(repoMock.existeConflictoDocente(eq("D001"), eq("Martes"), eq("09:00"), eq("11:00"), eq(original)))
+                .thenReturn(true);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.actualizarClase(original, "Martes", "09:00", "11:00", asignatura, docente, grupo, aula, periodo));
+
+        verify(repoMock, never()).actualizar(any(), any());
+    }
+
+    // ============ Eliminación ============
 
     @Test
     void eliminarClase_debeEliminarCorrectamente() {

@@ -43,15 +43,6 @@ public class AdaptadorRepositorioClases implements RepositorioClases, Recargable
     }
 
     @Override
-    public boolean existeDocenteEnHorario(String codigoDocente, String dia, String horaInicio, String horaFin) {
-        return lista.stream().anyMatch(c -> c.getDocente() != null
-                && c.getDocente().getCodigo().equals(codigoDocente)
-                && c.getDiaSemana().equals(dia)
-                && c.getHoraInicio().equals(horaInicio)
-                && c.getHoraFin().equals(horaFin));
-    }
-
-    @Override
     public Optional<Clase> buscarClase(String nombreGrado, String nombreGrupo, String dia, String horaInicio, String horaFin) {
         return lista.stream()
                 .filter(c -> c.getGrupo() != null && c.getGrupo().getGrado() != null)
@@ -61,6 +52,45 @@ public class AdaptadorRepositorioClases implements RepositorioClases, Recargable
                         && c.getHoraInicio().equals(horaInicio)
                         && c.getHoraFin().equals(horaFin))
                 .findFirst();
+    }
+
+    @Override
+    public boolean existeConflictoDocente(String codigoDocente, String dia, String horaInicio, String horaFin, Clase claseExcluida) {
+        return lista.stream()
+                .filter(c -> c != claseExcluida)
+                .filter(c -> c.getDocente() != null)
+                .anyMatch(c -> c.getDocente().getCodigo().equalsIgnoreCase(codigoDocente)
+                        && c.getDiaSemana().equalsIgnoreCase(dia)
+                        && haySolapamiento(c.getHoraInicio(), c.getHoraFin(), horaInicio, horaFin));
+    }
+
+    @Override
+    public boolean existeConflictoAula(String nombreAula, String dia, String horaInicio, String horaFin, Clase claseExcluida) {
+        return lista.stream()
+                .filter(c -> c != claseExcluida)
+                .filter(c -> c.getAula() != null)
+                .anyMatch(c -> c.getAula().getNombre().equalsIgnoreCase(nombreAula)
+                        && c.getDiaSemana().equalsIgnoreCase(dia)
+                        && haySolapamiento(c.getHoraInicio(), c.getHoraFin(), horaInicio, horaFin));
+    }
+
+    @Override
+    public boolean existeConflictoGrupo(String nombreGrupo, String nombreGrado, String dia, String horaInicio, String horaFin, Clase claseExcluida) {
+        return lista.stream()
+                .filter(c -> c != claseExcluida)
+                .filter(c -> c.getGrupo() != null && c.getGrupo().getGrado() != null)
+                .anyMatch(c -> c.getGrupo().getNombre().equalsIgnoreCase(nombreGrupo)
+                        && c.getGrupo().getGrado().getNombre().equalsIgnoreCase(nombreGrado)
+                        && c.getDiaSemana().equalsIgnoreCase(dia)
+                        && haySolapamiento(c.getHoraInicio(), c.getHoraFin(), horaInicio, horaFin));
+    }
+
+    /**
+     * Dos franjas se solapan si inicioA &lt; finB Y inicioB &lt; finA.
+     * Válido para formato HH:mm (comparación lexicográfica consistente).
+     */
+    private boolean haySolapamiento(String inicioA, String finA, String inicioB, String finB) {
+        return inicioA.compareTo(finB) < 0 && inicioB.compareTo(finA) < 0;
     }
 
     @Override
@@ -85,9 +115,10 @@ public class AdaptadorRepositorioClases implements RepositorioClases, Recargable
     private void guardar() {
         ManejadorPersistencia.guardar(new ArrayList<>(lista), ARCHIVO);
     }
+
     @Override
     public void recargar() {
         List<Clase> cargada = ManejadorPersistencia.cargar(ARCHIVO);
-        this.lista = (cargada != null)?new ArrayList<>(cargada):new ArrayList<>();
+        this.lista = (cargada != null) ? new ArrayList<>(cargada) : new ArrayList<>();
     }
 }
