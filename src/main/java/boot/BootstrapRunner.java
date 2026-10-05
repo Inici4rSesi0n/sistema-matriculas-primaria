@@ -24,7 +24,6 @@ public class BootstrapRunner {
         this.repositoriosRecargables = repositoriosRecargables;
         this.bootstrapUseCase = bootstrapUseCase;
     }
-
     public void inicializar(Stage stage) {
         Object repoAdmin = ManejadorPersistencia.cargar("administradores.bin");
 
@@ -44,9 +43,6 @@ public class BootstrapRunner {
 
                 bootstrapUseCase.inicializarSistema(controller);
 
-                for (Recargable repositorio : repositoriosRecargables) {
-                    repositorio.recargar();
-                }
                 repoAdmin = ManejadorPersistencia.cargar("administradores.bin");
                 if (repoAdmin == null) {
                     throw new RuntimeException("No se pudo inicializar el sistema.");
@@ -54,6 +50,12 @@ public class BootstrapRunner {
             } catch (Exception e) {
                 throw new RuntimeException("No se pudo cargar la ventana de configuración inicial.", e);
             }
+        } else {
+            bootstrapUseCase.inicializarSistema(null);
+        }
+        for (Recargable repositorio : repositoriosRecargables) {
+            repositorio.recargar();
         }
     }
+
 }

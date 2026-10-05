@@ -1,5 +1,4 @@
 package aplicacion.casosdeuso;
-
 import aplicacion.puerto.ProveedorDatosIniciales;
 import dominio.modelo.Administrador;
 import dominio.modelo.FranjaHoraria;
@@ -11,10 +10,8 @@ import dominio.puerto.externo.HashProvider;
 import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.externo.ServicioInicializacion;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  *
  * @author inici4rsesi0n
@@ -39,19 +36,15 @@ public class BootstrapUseCase {
         this.logger = logger;
         this.inicializacion = inicializacion;
     }
-
     public void inicializarSistema(ProveedorDatosIniciales proveedor) {
         List<Administrador> administradores = inicializacion.cargar(ARCHIVO_ADMINISTRADORES);
-
         if (administradores == null || administradores.isEmpty()) {
             logger.info("No se encontraron administradores. Iniciando configuración inicial del sistema.");
             if (proveedor == null) {
                 throw new IllegalArgumentException("El proveedor de datos del administrador no puede ser nulo");
             }
-
             Administrador admin = crearAdministrador(proveedor);
             logger.info("Administrador {} creado correctamente.", admin.getCodigo());
-
             try {
                 inicializacion.generarKeystore(proveedor.getContrasenaMaestra());
                 inicializacion.recargarClave();
@@ -60,16 +53,14 @@ public class BootstrapUseCase {
                 logger.error("Error al generar el keystore", e);
                 throw e;
             }
-
             administradores = new ArrayList<>();
             administradores.add(admin);
             inicializacion.guardar(new ArrayList<>(administradores), ARCHIVO_ADMINISTRADORES);
-
-            inicializarCatalogos();
-            logger.info("Catálogos inicializados exitosamente.");
         } else {
             logger.info("Sistema ya inicializado. Se encontraron {} administradores.", administradores.size());
         }
+        inicializarCatalogos();
+        logger.info("Catálogos verificados/inicializados.");
     }
 
     private Administrador crearAdministrador(ProveedorDatosIniciales proveedor) {
