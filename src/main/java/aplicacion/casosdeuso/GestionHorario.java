@@ -46,7 +46,7 @@ public class GestionHorario {
 
     private List<Recreo> obtenerRecreosDelPeriodo(PeriodoAcademico periodo) {
         return repoRecreos.listarTodos().stream()
-                .filter(r -> periodo.equals(r.getPeriodo()))
+                .filter(r -> r.aplicaEn(periodo))
                 .toList();
     }
 }

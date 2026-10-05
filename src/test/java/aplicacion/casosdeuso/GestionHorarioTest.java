@@ -59,7 +59,7 @@ class GestionHorarioTest {
         Clase clase = new Clase(franjaClase, periodo, asignatura, docente, grupo, aula);
 
         FranjaHoraria franjaRecreo = new FranjaHoraria("Lunes", "10:00", "10:30");
-        Recreo recreo = new Recreo(franjaRecreo, "Recreo", periodo);
+        Recreo recreo = new Recreo(franjaRecreo, "Recreo", List.of(periodo));
 
         when(repoClases.listarTodos()).thenReturn(List.of(clase));
         when(repoRecreos.listarTodos()).thenReturn(List.of(recreo));
@@ -94,8 +94,8 @@ class GestionHorarioTest {
     void obtenerHorarioCompleto_debeFiltrarRecreosPorPeriodo() {
         PeriodoAcademico otroPeriodo = new PeriodoAcademico("2026-II", "2026-07-01", "2026-12-31", "Activo");
         FranjaHoraria franja = new FranjaHoraria("Lunes", "10:00", "10:30");
-        Recreo recreoCorrecto = new Recreo(franja, "Recreo", periodo);
-        Recreo recreoOtroPeriodo = new Recreo(franja, "Recreo", otroPeriodo);
+        Recreo recreoCorrecto = new Recreo(franja, "Recreo", List.of(periodo));
+        Recreo recreoOtroPeriodo = new Recreo(franja, "Recreo", List.of(otroPeriodo));
 
         when(repoClases.listarTodos()).thenReturn(List.of());
         when(repoRecreos.listarTodos()).thenReturn(List.of(recreoCorrecto, recreoOtroPeriodo));

@@ -24,7 +24,8 @@ class GestionRecreosTest {
     private LoggerPort loggerMock;
     private GestionRecreos casoUso;
     private FranjaHoraria franja;
-    private PeriodoAcademico periodo;
+    private PeriodoAcademico periodoA;
+    private PeriodoAcademico periodoB;
 
     @BeforeEach
     void setUp() {
@@ -32,64 +33,88 @@ class GestionRecreosTest {
         loggerMock = mock(LoggerPort.class);
         casoUso = new GestionRecreos(repoMock, loggerMock);
         franja = new FranjaHoraria("Lunes", "10:00", "10:30");
-        periodo = new PeriodoAcademico("2026-I", "2026-01-01", "2026-12-31", "Activo");
+        periodoA = new PeriodoAcademico("2026-I", "2026-01-01", "2026-06-30", "Activo");
+        periodoB = new PeriodoAcademico("2026-II", "2026-07-01", "2026-12-31", "Activo");
     }
 
     @Test
-    void crearRecreo_debeGuardarRecreoCorrectamente() {
-        casoUso.crearRecreo(franja, "Recreo", periodo);
+    void crearRecreo_debeGuardarConListaDePeriodos() {
+        casoUso.crearRecreo(franja, "Recreo", List.of(periodoA));
         verify(repoMock).agregar(any(Recreo.class));
     }
 
     @Test
-    void buscarPorDescripcion_debeRetornarRecreoSiExiste() {
-        Recreo esperado = new Recreo(franja, "Recreo", periodo);
+    void crearRecreo_debeGuardarConMultiplesPeriodos() {
+        casoUso.crearRecreo(franja, "Recreo", List.of(periodoA, periodoB));
+        verify(repoMock).agregar(any(Recreo.class));
+    }
+
+    @Test
+    void crearRecreo_debeFallarSiFranjaNula() {
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.crearRecreo(null, "Recreo", List.of(periodoA)));
+    }
+
+    @Test
+    void crearRecreo_debeFallarSiListaVacia() {
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.crearRecreo(franja, "Recreo", List.of()));
+    }
+
+    @Test
+    void buscarPorDescripcion_debeRetornarSiExiste() {
+        Recreo esperado = new Recreo(franja, "Recreo", List.of(periodoA));
         when(repoMock.buscarPorDescripcion("Recreo")).thenReturn(Optional.of(esperado));
         assertEquals(esperado, casoUso.buscarPorDescripcion("Recreo"));
     }
 
     @Test
     void buscarPorDescripcion_debeRetornarNullSiNoExiste() {
-        when(repoMock.buscarPorDescripcion("Inexistente")).thenReturn(Optional.empty());
-        assertNull(casoUso.buscarPorDescripcion("Inexistente"));
+        when(repoMock.buscarPorDescripcion("X")).thenReturn(Optional.empty());
+        assertNull(casoUso.buscarPorDescripcion("X"));
     }
 
     @Test
     void listarTodos_debeRetornarListaCompleta() {
         List<Recreo> lista = List.of(
-                new Recreo(franja, "Recreo", periodo),
-                new Recreo(new FranjaHoraria("Martes", "10:00", "10:30"), "Recreo", periodo));
+                new Recreo(franja, "Recreo A", List.of(periodoA)),
+                new Recreo(new FranjaHoraria("Martes", "10:00", "10:30"), "Recreo B", List.of(periodoA)));
         when(repoMock.listarTodos()).thenReturn(lista);
         assertEquals(2, casoUso.listarTodos().size());
         verify(repoMock).listarTodos();
     }
 
     @Test
-    void actualizarRecreo_debeActualizarCorrectamente() {
-        Recreo original = new Recreo(franja, "Viejo", periodo);
+    void actualizarRecreo_debeModificarMismaReferencia() {
+        Recreo original = new Recreo(franja, "Viejo", List.of(periodoA));
         FranjaHoraria nuevaFranja = new FranjaHoraria("Lunes", "11:00", "11:30");
-        casoUso.actualizarRecreo(original, nuevaFranja, "Nuevo", periodo);
-        verify(repoMock).actualizar(eq(original), any(Recreo.class));
+        casoUso.actualizarRecreo(original, nuevaFranja, "Nuevo", List.of(periodoA, periodoB));
+        assertEquals("Nuevo", original.getDescripcion());
+        assertEquals("11:00", original.getHoraInicio());
+        assertEquals(2, original.getPeriodos().size());
+        verify(repoMock).actualizar(original, original);
+    }
+
+    @Test
+    void aplicarA_debeAsociarPeriodoYActualizar() {
+        Recreo recreo = new Recreo(franja, "Recreo", List.of(periodoA));
+        casoUso.aplicarA(recreo, periodoB);
+        assertTrue(recreo.aplicaEn(periodoB));
+        verify(repoMock).actualizar(recreo, recreo);
+    }
+
+    @Test
+    void removerDe_debeQuitarPeriodoYActualizar() {
+        Recreo recreo = new Recreo(franja, "Recreo", List.of(periodoA, periodoB));
+        casoUso.removerDe(recreo, periodoA);
+        assertFalse(recreo.aplicaEn(periodoA));
+        verify(repoMock).actualizar(recreo, recreo);
     }
 
     @Test
     void eliminarRecreo_debeEliminarCorrectamente() {
-        Recreo aEliminar = new Recreo(franja, "Recreo", periodo);
+        Recreo aEliminar = new Recreo(franja, "Recreo", List.of(periodoA));
         casoUso.eliminarRecreo(aEliminar);
         verify(repoMock).eliminar(aEliminar);
-    }
-
-    @Test
-    void actualizarRecreo_debeModificarMismaReferencia() {
-        PeriodoAcademico p = new PeriodoAcademico("2026-I", "2026-01-01", "2026-12-31", "Activo");
-        FranjaHoraria f = new FranjaHoraria("Lunes", "10:00", "10:30");
-        Recreo original = new Recreo(f, "Recreo", p);
-
-        FranjaHoraria nuevaFranja = new FranjaHoraria("Martes", "11:00", "11:30");
-        casoUso.actualizarRecreo(original, nuevaFranja, "Descanso", p);
-
-        assertEquals("Descanso", original.getDescripcion());
-        assertEquals("Martes", original.getDiaSemana());
-        verify(repoMock).actualizar(original, original);
     }
 }

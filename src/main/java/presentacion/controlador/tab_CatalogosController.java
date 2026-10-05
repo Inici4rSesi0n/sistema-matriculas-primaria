@@ -336,7 +336,7 @@ public class tab_CatalogosController implements Initializable {
                 recreoEditando = r;
                 recargarComboPeriodosRecreo();
                 cmbDiaRecreo.setValue(r.getDiaSemana());
-                cmbPeriodoRecreo.setValue(r.getPeriodo() != null ? r.getPeriodo().getNombre() : null);
+                cmbPeriodoRecreo.setValue(!r.getPeriodos().isEmpty() ? r.getPeriodos().get(0).getNombre() : null);
                 txtInicioRecreo.setText(r.getHoraInicio());
                 txtFinRecreo.setText(r.getHoraFin());
                 txtDescripcionRecreo.setText(r.getDescripcion());
@@ -523,8 +523,8 @@ public class tab_CatalogosController implements Initializable {
         if (periodo == null) { Dialogos.M1("Periodo no encontrado."); return; }
         FranjaHoraria franja = new FranjaHoraria(dia, inicio, fin);
         try {
-            if (recreoEditando == null) gestionRecreos.crearRecreo(franja, desc.isBlank() ? "Recreo" : desc, periodo);
-            else gestionRecreos.actualizarRecreo(recreoEditando, franja, desc.isBlank() ? "Recreo" : desc, periodo);
+            if (recreoEditando == null) gestionRecreos.crearRecreo(franja, desc.isBlank() ? "Recreo" : desc, java.util.List.of(periodo));
+            else gestionRecreos.actualizarRecreo(recreoEditando, franja, desc.isBlank() ? "Recreo" : desc, java.util.List.of(periodo));
             SistemaEventBus.notificar(TipoEvento.RECREOS);
             panelFormularioRecreo.setVisible(false);
             panelFormularioRecreo.setManaged(false);

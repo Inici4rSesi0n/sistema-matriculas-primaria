@@ -86,13 +86,9 @@ public class BootstrapUseCase {
                 || contrasena == null) {
             throw new IllegalArgumentException("Todos los campos del administrador son obligatorios");
         }
-
-        // hashProvider.generarHash limpia el array internamente
         String hash = hashProvider.generarHash(contrasena);
-
         return new Administrador(codigo, hash, dni, nombre, apellido, 30);
     }
-
     private void inicializarCatalogos() {
         inicializarTurnos();
         inicializarGrados();
@@ -122,14 +118,18 @@ public class BootstrapUseCase {
             inicializacion.guardar(new ArrayList<>(grados), ARCHIVO_GRADOS);
         }
     }
-
     private void inicializarRecreos() {
         List<Recreo> recreos = inicializacion.cargar(ARCHIVO_RECREOS);
         if (recreos == null || recreos.isEmpty()) {
             recreos = new ArrayList<>();
-            PeriodoAcademico periodo = new PeriodoAcademico("2026-I", "2026-01-01", "2026-12-31", "Activo");
+            List<PeriodoAcademico> periodos = inicializacion.cargar(ARCHIVO_PERIODOS);
+            if (periodos == null || periodos.isEmpty()) {
+                periodos = new ArrayList<>();
+                periodos.add(new PeriodoAcademico("2026-I", "2026-01-01", "2026-12-31", "Activo"));
+                inicializacion.guardar(new ArrayList<>(periodos), ARCHIVO_PERIODOS);
+            }
             FranjaHoraria franja = new FranjaHoraria("Lunes", "10:15", "10:45");
-            recreos.add(new Recreo(franja, "Recreo", periodo));
+            recreos.add(new Recreo(franja, "Recreo", List.of(periodos.get(0))));
             inicializacion.guardar(new ArrayList<>(recreos), ARCHIVO_RECREOS);
         }
     }
