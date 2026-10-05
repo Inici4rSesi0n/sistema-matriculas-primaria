@@ -14,7 +14,7 @@
 
 <TabPane fx:id="tabPaneAsignaciones" xmlns="http://javafx.com/javafx/23.0.1"
          xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="presentacion.controlador.tab_AsignacionesController"
+         fx:controller="presentacion.controlador.TabAsignacionesController"
          styleClass="seccion-tabpane">
     <tabs>
         <Tab fx:id="tabAsignacionDocente" text="Asignación Docente" closable="false">

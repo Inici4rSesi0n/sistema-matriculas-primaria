@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class tab_AsignacionesController implements Initializable {
+public class TabAsignacionesController implements Initializable {
 
     private final GestionDocentes gestionDocentes;
     private final GestionAsignaturas gestionAsignaturas;
@@ -75,7 +75,7 @@ public class tab_AsignacionesController implements Initializable {
     private ObservableList<TutorItem> listaTutores;
     private ObservableList<CoordinacionItem> listaCoordinaciones;
 
-    public tab_AsignacionesController(GestionDocentes gestionDocentes,
+    public TabAsignacionesController(GestionDocentes gestionDocentes,
                                       GestionAsignaturas gestionAsignaturas,
                                       GestionGrupos gestionGrupos,
                                       GestionUsuarios gestionUsuarios,

@@ -18,7 +18,7 @@
 
 <TabPane fx:id="tabPaneHorarios" xmlns="http://javafx.com/javafx/23.0.1"
          xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="presentacion.controlador.tab_HorariosController"
+         fx:controller="presentacion.controlador.TabHorariosController"
          styleClass="seccion-tabpane">
     <tabs>
         <Tab fx:id="tabClases" text="Clases" closable="false">

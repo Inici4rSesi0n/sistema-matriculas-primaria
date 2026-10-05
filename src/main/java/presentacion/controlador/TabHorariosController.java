@@ -53,7 +53,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class tab_HorariosController implements Initializable {
+public class TabHorariosController implements Initializable {
 
     private final GestionClases gestionClases;
     private final GestionAsignaturas gestionAsignaturas;
@@ -83,7 +83,7 @@ public class tab_HorariosController implements Initializable {
     private ObservableList<Clase> listaClases;
     private Clase claseEditando;
 
-    public tab_HorariosController(GestionClases gestionClases,
+    public TabHorariosController(GestionClases gestionClases,
                                   GestionAsignaturas gestionAsignaturas,
                                   GestionDocentes gestionDocentes,
                                   GestionGrupos gestionGrupos,

@@ -19,8 +19,8 @@ public class SeccionGestionAcademicaController implements Initializable {
     @FXML private StackPane contenedorCategorias;
 
     @FXML private tab_CatalogosController tabPaneCatalogosController;
-    @FXML private tab_AsignacionesController tabPaneAsignacionesController;
-    @FXML private tab_HorariosController tabPaneHorariosController;
+    @FXML private TabAsignacionesController tabPaneAsignacionesController;
+    @FXML private TabHorariosController tabPaneHorariosController;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
