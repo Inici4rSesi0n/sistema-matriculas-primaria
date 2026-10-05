@@ -1,86 +1,80 @@
 package aplicacion.casosdeuso;
-
 import dominio.modelo.Usuario;
 import org.springframework.stereotype.Service;
-
 /**
- * Servicio central de reglas de visibilidad por rol.
- * Es el ÚNICO lugar donde se define qué ve cada rol.
- *
- * Dos dimensiones de permisos:
- *   - esSeccionVisible   : secciones del dashboard (menú lateral)
- *   - puedeAccederPortal : portales de la pantalla principal (Ingreso, Trámites, Matrícula)
  *
  * @author inici4rsesi0n
  */
 @Service
 public class GestionPermisos {
-
-    /** Visibilidad de secciones del dashboard (menú lateral). */
-    public boolean esSeccionVisible(Usuario.Rol rol, String seccion) {
-        if (rol == null || seccion == null) return false;
-        switch (seccion) {
-            case "MisCursos":
-            case "MiHorario":
-            case "Calificaciones":
-                return rol == Usuario.Rol.ADMINISTRADOR
-                        || rol == Usuario.Rol.DOCENTE
-                        || rol == Usuario.Rol.ESTUDIANTE
-                        || rol == Usuario.Rol.PADRE;
-
-            case "SubirMaterial":
-            case "RegistrarAsistencia":
-                return rol == Usuario.Rol.ADMINISTRADOR
-                        || rol == Usuario.Rol.DOCENTE;
-
-            case "Tramites":
-            case "Matricula":
-                return rol == Usuario.Rol.ADMINISTRADOR
-                        || rol == Usuario.Rol.SECRETARIO
-                        || rol == Usuario.Rol.ESTUDIANTE
-                        || rol == Usuario.Rol.PADRE;
-
-            case "GestionUsuarios":
-                return rol == Usuario.Rol.ADMINISTRADOR
-                        || rol == Usuario.Rol.DIRECTOR;
-
-            case "GestionAcademica":
-            case "Reportes":
-                return rol == Usuario.Rol.ADMINISTRADOR
-                        || rol == Usuario.Rol.DIRECTOR
-                        || rol == Usuario.Rol.COORDINADOR;
-
-            case "ConfiguracionSistema":
-                return rol == Usuario.Rol.ADMINISTRADOR;
-
-            default:
-                return false;
+    public enum SeccionMenu {
+        MIS_CURSOS("MisCursos"),
+        MI_HORARIO("MiHorario"),
+        CALIFICACIONES("Calificaciones"),
+        SUBIR_MATERIAL("SubirMaterial"),
+        REGISTRAR_ASISTENCIA("RegistrarAsistencia"),
+        TRAMITES("Tramites"),
+        MATRICULA("Matricula"),
+        GESTION_USUARIOS("GestionUsuarios"),
+        GESTION_ACADEMICA("GestionAcademica"),
+        REPORTES("Reportes"),
+        CONFIGURACION_SISTEMA("ConfiguracionSistema");
+        private final String codigo;
+        SeccionMenu(String codigo) {
+            this.codigo = codigo;
+        }
+        public String getCodigo() {
+            return codigo;
         }
     }
+    public boolean esSeccionVisible(Usuario.Rol rol, SeccionMenu seccion) {
+        if (rol == null || seccion == null) return false;
+        return switch (seccion) {
+            case MIS_CURSOS, MI_HORARIO, CALIFICACIONES ->
+                    rol == Usuario.Rol.ADMINISTRADOR
+                            || rol == Usuario.Rol.DOCENTE
+                            || rol == Usuario.Rol.ESTUDIANTE
+                            || rol == Usuario.Rol.PADRE;
 
-    /**
-     * Acceso a los portales de la pantalla principal.
-     * Preserva el comportamiento histórico de FxMainController.
-     */
+            case SUBIR_MATERIAL, REGISTRAR_ASISTENCIA ->
+                    rol == Usuario.Rol.ADMINISTRADOR
+                            || rol == Usuario.Rol.DOCENTE;
+
+            case TRAMITES, MATRICULA ->
+                    rol == Usuario.Rol.ADMINISTRADOR
+                            || rol == Usuario.Rol.SECRETARIO
+                            || rol == Usuario.Rol.ESTUDIANTE
+                            || rol == Usuario.Rol.PADRE;
+
+            case GESTION_USUARIOS ->
+                    rol == Usuario.Rol.ADMINISTRADOR
+                            || rol == Usuario.Rol.DIRECTOR;
+
+            case GESTION_ACADEMICA, REPORTES ->
+                    rol == Usuario.Rol.ADMINISTRADOR
+                            || rol == Usuario.Rol.DIRECTOR
+                            || rol == Usuario.Rol.COORDINADOR;
+
+            case CONFIGURACION_SISTEMA ->
+                    rol == Usuario.Rol.ADMINISTRADOR;
+        };
+    }
     public boolean puedeAccederPortal(Usuario.Rol rol, String portal) {
         if (rol == null || portal == null) return false;
-        switch (portal) {
-            case "INGRESO":
-                return rol == Usuario.Rol.ADMINISTRADOR
-                        || rol == Usuario.Rol.DIRECTOR
-                        || rol == Usuario.Rol.SECRETARIO
-                        || rol == Usuario.Rol.COORDINADOR
-                        || rol == Usuario.Rol.DOCENTE
-                        || rol == Usuario.Rol.ESTUDIANTE;
+        return switch (portal) {
+            case "INGRESO" ->
+                    rol == Usuario.Rol.ADMINISTRADOR
+                            || rol == Usuario.Rol.DIRECTOR
+                            || rol == Usuario.Rol.SECRETARIO
+                            || rol == Usuario.Rol.COORDINADOR
+                            || rol == Usuario.Rol.DOCENTE
+                            || rol == Usuario.Rol.ESTUDIANTE;
 
-            case "TRAMITES":
-            case "MATRICULA":
-                return rol == Usuario.Rol.ESTUDIANTE
-                        || rol == Usuario.Rol.PADRE
-                        || rol == Usuario.Rol.SECRETARIO;
-
-            default:
-                return false;
-        }
+            case "TRAMITES", "MATRICULA" ->
+                    rol == Usuario.Rol.ESTUDIANTE
+                            || rol == Usuario.Rol.PADRE
+                            || rol == Usuario.Rol.SECRETARIO;
+            default -> false;
+        };
     }
 }

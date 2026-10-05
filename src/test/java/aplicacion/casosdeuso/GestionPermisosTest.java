@@ -1,78 +1,59 @@
 package aplicacion.casosdeuso;
-
+import aplicacion.casosdeuso.GestionPermisos.SeccionMenu;
 import dominio.modelo.Usuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
-
 /**
  *
  * @author inici4rsesi0n
  */
 class GestionPermisosTest {
-
     private GestionPermisos gestionPermisos;
-
     @BeforeEach
     void setUp() {
         gestionPermisos = new GestionPermisos();
     }
-
-    // ============ esSeccionVisible (dashboard) ============
-
     @Test
     void administrador_debeVerTodasLasSecciones() {
         Usuario.Rol rol = Usuario.Rol.ADMINISTRADOR;
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "MisCursos"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "MiHorario"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "Calificaciones"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "SubirMaterial"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "RegistrarAsistencia"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "Tramites"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "Matricula"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "GestionUsuarios"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "GestionAcademica"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "Reportes"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "ConfiguracionSistema"));
+        for (SeccionMenu s : SeccionMenu.values()) {
+            assertTrue(gestionPermisos.esSeccionVisible(rol, s),
+                    "ADMINISTRADOR debe ver la sección " + s);
+        }
     }
 
     @Test
     void docente_debeVerSoloSeccionesPermitidas() {
         Usuario.Rol rol = Usuario.Rol.DOCENTE;
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "MisCursos"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "SubirMaterial"));
-        assertFalse(gestionPermisos.esSeccionVisible(rol, "GestionUsuarios"));
-        assertFalse(gestionPermisos.esSeccionVisible(rol, "ConfiguracionSistema"));
-        assertFalse(gestionPermisos.esSeccionVisible(rol, "Tramites"));
+        assertTrue(gestionPermisos.esSeccionVisible(rol, SeccionMenu.MIS_CURSOS));
+        assertTrue(gestionPermisos.esSeccionVisible(rol, SeccionMenu.SUBIR_MATERIAL));
+        assertFalse(gestionPermisos.esSeccionVisible(rol, SeccionMenu.GESTION_USUARIOS));
+        assertFalse(gestionPermisos.esSeccionVisible(rol, SeccionMenu.CONFIGURACION_SISTEMA));
+        assertFalse(gestionPermisos.esSeccionVisible(rol, SeccionMenu.TRAMITES));
     }
 
     @Test
     void estudiante_debeVerSoloSeccionesPermitidas() {
         Usuario.Rol rol = Usuario.Rol.ESTUDIANTE;
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "Calificaciones"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "Matricula"));
-        assertFalse(gestionPermisos.esSeccionVisible(rol, "SubirMaterial"));
-        assertFalse(gestionPermisos.esSeccionVisible(rol, "GestionUsuarios"));
+        assertTrue(gestionPermisos.esSeccionVisible(rol, SeccionMenu.CALIFICACIONES));
+        assertTrue(gestionPermisos.esSeccionVisible(rol, SeccionMenu.MATRICULA));
+        assertFalse(gestionPermisos.esSeccionVisible(rol, SeccionMenu.SUBIR_MATERIAL));
+        assertFalse(gestionPermisos.esSeccionVisible(rol, SeccionMenu.GESTION_USUARIOS));
     }
 
     @Test
     void padre_debeVerSoloSeccionesPermitidas() {
         Usuario.Rol rol = Usuario.Rol.PADRE;
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "Tramites"));
-        assertTrue(gestionPermisos.esSeccionVisible(rol, "Matricula"));
-        assertFalse(gestionPermisos.esSeccionVisible(rol, "GestionAcademica"));
-        assertFalse(gestionPermisos.esSeccionVisible(rol, "SubirMaterial"));
-    }
-
-    @Test
-    void seccionInexistente_debeRetornarFalse() {
-        assertFalse(gestionPermisos.esSeccionVisible(Usuario.Rol.ADMINISTRADOR, "SeccionInventada"));
+        assertTrue(gestionPermisos.esSeccionVisible(rol, SeccionMenu.TRAMITES));
+        assertTrue(gestionPermisos.esSeccionVisible(rol, SeccionMenu.MATRICULA));
+        assertFalse(gestionPermisos.esSeccionVisible(rol, SeccionMenu.GESTION_ACADEMICA));
+        assertFalse(gestionPermisos.esSeccionVisible(rol, SeccionMenu.SUBIR_MATERIAL));
     }
 
     @Test
     void esSeccionVisible_conRolNulo_debeRetornarFalse() {
-        assertFalse(gestionPermisos.esSeccionVisible(null, "MisCursos"));
+        assertFalse(gestionPermisos.esSeccionVisible(null, SeccionMenu.MIS_CURSOS));
     }
 
     @Test
@@ -80,7 +61,15 @@ class GestionPermisosTest {
         assertFalse(gestionPermisos.esSeccionVisible(Usuario.Rol.ADMINISTRADOR, null));
     }
 
-    // ============ puedeAccederPortal (pantalla principal) ============
+    @Test
+    void seccionMenu_codigos_debenSerUnicos() {
+        java.util.Set<String> codigos = new java.util.HashSet<>();
+        for (SeccionMenu s : SeccionMenu.values()) {
+            assertTrue(codigos.add(s.getCodigo()),
+                    "Código duplicado en SeccionMenu: " + s.getCodigo());
+        }
+    }
+
 
     @Test
     void puedeAccederPortal_ingreso_paraRolesAutorizados() {

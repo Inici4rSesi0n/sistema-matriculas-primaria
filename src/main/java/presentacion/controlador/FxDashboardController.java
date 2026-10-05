@@ -1,5 +1,5 @@
 package presentacion.controlador;
-
+import aplicacion.casosdeuso.GestionPermisos.SeccionMenu;
 import aplicacion.casosdeuso.GestionAsignaturas;
 import aplicacion.casosdeuso.GestionDocentes;
 import aplicacion.casosdeuso.GestionEstudiantes;
@@ -72,19 +72,17 @@ public class FxDashboardController implements Initializable {
         if (usuario == null) return;
         Usuario.Rol rol = usuario.getRol();
 
-        btnMisCursos.setVisible(gestionPermisos.esSeccionVisible(rol, "MisCursos"));
-        btnMiHorario.setVisible(gestionPermisos.esSeccionVisible(rol, "MiHorario"));
-        btnCalificaciones.setVisible(gestionPermisos.esSeccionVisible(rol, "Calificaciones"));
-        btnSubirMaterial.setVisible(gestionPermisos.esSeccionVisible(rol, "SubirMaterial"));
-        btnRegistrarAsistencia.setVisible(gestionPermisos.esSeccionVisible(rol, "RegistrarAsistencia"));
-
-        btnTramites.setVisible(gestionPermisos.esSeccionVisible(rol, "Tramites"));
-        btnMatricula.setVisible(gestionPermisos.esSeccionVisible(rol, "Matricula"));
-
-        btnGestionUsuarios.setVisible(gestionPermisos.esSeccionVisible(rol, "GestionUsuarios"));
-        btnGestionAcademica.setVisible(gestionPermisos.esSeccionVisible(rol, "GestionAcademica"));
-        btnReportes.setVisible(gestionPermisos.esSeccionVisible(rol, "Reportes"));
-        btnConfiguracionSistema.setVisible(gestionPermisos.esSeccionVisible(rol, "ConfiguracionSistema"));
+        btnMisCursos.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.MIS_CURSOS));
+        btnMiHorario.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.MI_HORARIO));
+        btnCalificaciones.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.CALIFICACIONES));
+        btnSubirMaterial.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.SUBIR_MATERIAL));
+        btnRegistrarAsistencia.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.REGISTRAR_ASISTENCIA));
+        btnTramites.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.TRAMITES));
+        btnMatricula.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.MATRICULA));
+        btnGestionUsuarios.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.GESTION_USUARIOS));
+        btnGestionAcademica.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.GESTION_ACADEMICA));
+        btnReportes.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.REPORTES));
+        btnConfiguracionSistema.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.CONFIGURACION_SISTEMA));
 
         lblUsuarioHeader.setText(usuario.getNombre() + " " + usuario.getApellido());
         lblBienvenida.setText("Bienvenido, " + usuario.getNombre() + ". Rol: " + rol);
