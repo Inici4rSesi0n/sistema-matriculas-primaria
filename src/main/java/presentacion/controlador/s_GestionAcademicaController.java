@@ -5,11 +5,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.StackPane;
-
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 /**
  *
  * @author inici4rsesi0n
  */
+@Component
+@Scope("prototype")
 public class s_GestionAcademicaController implements Initializable {
 
     @FXML private ComboBox<String> cmbCategoria;

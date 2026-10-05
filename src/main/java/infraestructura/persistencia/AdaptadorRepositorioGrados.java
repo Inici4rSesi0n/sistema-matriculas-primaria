@@ -37,6 +37,14 @@ public class AdaptadorRepositorioGrados implements RepositorioGrados, Recargable
     }
 
     @Override
+    public Optional<Grado> buscarPorNombreYNivel(String nombre, String nivel) {
+        return lista.stream()
+                .filter(g -> g.getNombre().equalsIgnoreCase(nombre)
+                        && g.getNivel().equalsIgnoreCase(nivel))
+                .findFirst();
+    }
+
+    @Override
     public List<Grado> listarTodos() {
         return new ArrayList<>(lista);
     }
@@ -58,9 +66,10 @@ public class AdaptadorRepositorioGrados implements RepositorioGrados, Recargable
     private void guardar() {
         ManejadorPersistencia.guardar(new ArrayList<>(lista), ARCHIVO);
     }
+
     @Override
     public void recargar() {
         List<Grado> cargada = ManejadorPersistencia.cargar(ARCHIVO);
-        this.lista = (cargada != null)?new ArrayList<>(cargada):new ArrayList<>();
+        this.lista = (cargada != null) ? new ArrayList<>(cargada) : new ArrayList<>();
     }
 }

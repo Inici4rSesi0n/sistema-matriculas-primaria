@@ -1,11 +1,11 @@
 package presentacion.controlador;
 
 import aplicacion.casosdeuso.AutenticarUsuario;
+import dominio.modelo.Usuario;
+import infraestructura.seguridad.UtilLimpieza;
 import presentacion.dialogos.Dialogos;
 import presentacion.estadousuario.SesionUsuario;
-import infraestructura.configuracion.SpringContext;
-import infraestructura.seguridad.UtilLimpieza;
-import dominio.modelo.Usuario;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -19,11 +19,19 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  *
  * @author inici4rsesi0n
  */
+@Component
+@Scope("prototype")
 public class FxLoginController implements Initializable {
+
+    private final AutenticarUsuario autenticarUsuario;
+
     @FXML private TextField txtCodigo;
     @FXML private PasswordField txtPassword;
     @FXML private TextField txtPasswordRevealed;
@@ -32,9 +40,14 @@ public class FxLoginController implements Initializable {
     @FXML private Button btnRegresar;
     @FXML private CheckBox chkMantenerSesion;
     @FXML private ImageView imgLogo;
+
     private String modo;
     private Usuario usuarioAutenticado;
     private boolean regresando = false;
+
+    public FxLoginController(AutenticarUsuario autenticarUsuario) {
+        this.autenticarUsuario = autenticarUsuario;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -87,7 +100,6 @@ public class FxLoginController implements Initializable {
             return;
         }
         try {
-            AutenticarUsuario autenticarUsuario = SpringContext.getBean(AutenticarUsuario.class);
             Usuario usuario = autenticarUsuario.ejecutar(codigo, contraseña);
             if (usuario != null) {
                 this.usuarioAutenticado = usuario;

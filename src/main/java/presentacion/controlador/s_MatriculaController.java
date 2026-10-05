@@ -1,17 +1,16 @@
 package presentacion.controlador;
-import presentacion.dialogos.Dialogos;
-import presentacion.eventos.SistemaEventBus;
-import presentacion.eventos.TipoEvento;
-import infraestructura.configuracion.SpringContext;
-import aplicacion.casosdeuso.GestionMatriculas;
 import aplicacion.casosdeuso.GestionEstudiantes;
-import aplicacion.casosdeuso.GestionPeriodos;
 import aplicacion.casosdeuso.GestionGrupos;
+import aplicacion.casosdeuso.GestionMatriculas;
+import aplicacion.casosdeuso.GestionPeriodos;
+import dominio.modelo.EstadoMatricula;
 import dominio.modelo.Estudiante;
 import dominio.modelo.Grupo;
 import dominio.modelo.Matricula;
 import dominio.modelo.PeriodoAcademico;
-import dominio.modelo.EstadoMatricula;
+import presentacion.dialogos.Dialogos;
+import presentacion.eventos.SistemaEventBus;
+import presentacion.eventos.TipoEvento;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -20,16 +19,30 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 /**
  *
  * @author inici4rsesi0n
  */
+@Component
+@Scope("prototype")
 public class s_MatriculaController implements Initializable {
+
+    private final GestionMatriculas gestionMatriculas;
+    private final GestionEstudiantes gestionEstudiantes;
+    private final GestionPeriodos gestionPeriodos;
+    private final GestionGrupos gestionGrupos;
 
     @FXML private TableView<Matricula> tablaMatriculas;
     @FXML private TableColumn<Matricula, Integer> colNumMatricula;
@@ -46,18 +59,18 @@ public class s_MatriculaController implements Initializable {
     private ObservableList<Matricula> listaMatriculas;
     private Matricula matriculaEditando;
 
-    private GestionMatriculas gestionMatriculas;
-    private GestionEstudiantes gestionEstudiantes;
-    private GestionPeriodos gestionPeriodos;
-    private GestionGrupos gestionGrupos;
+    public s_MatriculaController(GestionMatriculas gestionMatriculas,
+                                 GestionEstudiantes gestionEstudiantes,
+                                 GestionPeriodos gestionPeriodos,
+                                 GestionGrupos gestionGrupos) {
+        this.gestionMatriculas = gestionMatriculas;
+        this.gestionEstudiantes = gestionEstudiantes;
+        this.gestionPeriodos = gestionPeriodos;
+        this.gestionGrupos = gestionGrupos;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionMatriculas = SpringContext.getBean(GestionMatriculas.class);
-        gestionEstudiantes = SpringContext.getBean(GestionEstudiantes.class);
-        gestionPeriodos = SpringContext.getBean(GestionPeriodos.class);
-        gestionGrupos = SpringContext.getBean(GestionGrupos.class);
-
         configurarTabla();
         configurarColumnaAcciones();
         cargarDatosIniciales();
@@ -68,7 +81,6 @@ public class s_MatriculaController implements Initializable {
         SistemaEventBus.suscribir(TipoEvento.PERIODOS, this::recargarDesdeEvento);
     }
 
-    /** Refresco completo: tabla + combos (si el formulario está visible). */
     private void recargarDesdeEvento() {
         if (panelFormularioMatricula.isVisible()) {
             recargarCombos();
@@ -94,7 +106,6 @@ public class s_MatriculaController implements Initializable {
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
     }
 
-    /** Formato: "nombre (grado)" para eliminar ambigüedad. */
     private String formatearGrupo(Grupo g) {
         if (g == null) return "";
         String grado = (g.getGrado() != null) ? g.getGrado().getNombre() : "Sin grado";
@@ -213,7 +224,6 @@ public class s_MatriculaController implements Initializable {
             if (matriculaEditando == null) {
                 gestionMatriculas.matricularEstudiante(estudiante, periodo, grupo, null, fecha, estado);
             } else {
-                // B1 fix: actualizar la matrícula una sola vez
                 matriculaEditando.setEstado(estado);
                 matriculaEditando.setFecha(fecha);
                 gestionMatriculas.actualizar(matriculaEditando);
@@ -225,9 +235,6 @@ public class s_MatriculaController implements Initializable {
         }
     }
 
-    /**
-     * B2 fix: parsea "1A (1er Grado)" para buscar el grupo sin ambigüedad.
-     */
     private Grupo parsearGrupo(String texto) {
         int idx = texto.lastIndexOf(" (");
         if (idx < 0) return null;
@@ -257,7 +264,7 @@ public class s_MatriculaController implements Initializable {
 
     private void eliminarMatricula(Matricula matricula) {
         if (Dialogos.confirmar("Confirmar eliminación", "¿Está seguro de eliminar la matricula de " +
-                    matricula.getEstudiante().getCodigo()+ "?")) {
+                matricula.getEstudiante().getCodigo() + "?")) {
             try {
                 gestionMatriculas.eliminarMatricula(matricula);
                 SistemaEventBus.notificar(TipoEvento.MATRICULAS);

@@ -1,12 +1,13 @@
 package presentacion.controlador;
+
+import aplicacion.casosdeuso.GestionUsuarios;
 import aplicacion.dto.CrearUsuarioCommand;
+import dominio.modelo.Usuario;
+import dominio.puerto.externo.HashProvider;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
-import infraestructura.configuracion.SpringContext;
-import dominio.modelo.Usuario;
-import aplicacion.casosdeuso.GestionUsuarios;
-import dominio.puerto.externo.HashProvider;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -14,16 +15,31 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  *
  * @author inici4rsesi0n
  */
+@Component
+@Scope("prototype")
 public class s_GestionUsuariosController implements Initializable {
+
+    private final GestionUsuarios gestionUsuarios;
+    private final HashProvider hashProvider;
+
     @FXML private TableView<Usuario> tablaUsuarios;
     @FXML private TableColumn<Usuario, String> colCodigo;
     @FXML private TableColumn<Usuario, String> colNombre;
@@ -42,21 +58,24 @@ public class s_GestionUsuariosController implements Initializable {
     @FXML private Button btnNuevoUsuario;
     @FXML private Button btnGuardar;
     @FXML private Button btnCancelar;
+
     private ObservableList<Usuario> listaUsuarios;
     private Usuario usuarioEditando;
-    private GestionUsuarios gestionUsuarios;
-    private HashProvider hashProvider;
+
+    public s_GestionUsuariosController(GestionUsuarios gestionUsuarios, HashProvider hashProvider) {
+        this.gestionUsuarios = gestionUsuarios;
+        this.hashProvider = hashProvider;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionUsuarios = SpringContext.getBean(GestionUsuarios.class);
-        hashProvider = SpringContext.getBean(HashProvider.class);
         configurarTabla();
         configurarColumnaAcciones();
         configurarComboRoles();
         SistemaEventBus.suscribir(TipoEvento.USUARIOS, this::cargarUsuarios);
-        cargarUsuarios(); 
+        cargarUsuarios();
     }
+
     private void configurarTabla() {
         colCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -219,8 +238,8 @@ public class s_GestionUsuariosController implements Initializable {
     }
 
     private void eliminarUsuario(Usuario usuario) {
-        if (Dialogos.confirmar("Confirmar eliminación", "¿Está seguro de eliminar al usuario " + 
-                    usuario.getCodigo() + "?")) {
+        if (Dialogos.confirmar("Confirmar eliminación", "¿Está seguro de eliminar al usuario " +
+                usuario.getCodigo() + "?")) {
             try {
                 gestionUsuarios.eliminarUsuario(usuario);
                 SistemaEventBus.notificar(TipoEvento.USUARIOS);

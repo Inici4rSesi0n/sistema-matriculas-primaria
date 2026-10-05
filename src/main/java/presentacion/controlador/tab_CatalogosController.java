@@ -1,8 +1,9 @@
 package presentacion.controlador;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import presentacion.dialogos.Dialogos;
-import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionAsignaturas;
 import aplicacion.casosdeuso.GestionAulas;
 import aplicacion.casosdeuso.GestionGrados;
@@ -44,6 +45,8 @@ import javafx.util.StringConverter;
  *
  * @author inici4rsesi0n
  */
+@Component
+@Scope("prototype")
 public class tab_CatalogosController implements Initializable {
     @FXML private TabPane tabPaneCatalogos;
     @FXML private Tab tabAsignaturas, tabPeriodos, tabAulas, tabGrupos, tabRecreos, tabGrados, tabTurnos;
@@ -121,25 +124,31 @@ public class tab_CatalogosController implements Initializable {
     private Recreo recreoEditando;
     private Grado gradoEditando;
     private Turno turnoEditando;
-
-    private GestionAsignaturas gestionAsignaturas;
-    private GestionPeriodos gestionPeriodos;
-    private GestionAulas gestionAulas;
-    private GestionGrupos gestionGrupos;
-    private GestionRecreos gestionRecreos;
-    private GestionGrados gestionGrados;
-    private GestionTurnos gestionTurnos;
+    private final GestionAsignaturas gestionAsignaturas;
+    private final GestionPeriodos gestionPeriodos;
+    private final GestionAulas gestionAulas;
+    private final GestionGrupos gestionGrupos;
+    private final GestionRecreos gestionRecreos;
+    private final GestionGrados gestionGrados;
+    private final GestionTurnos gestionTurnos;
+    public tab_CatalogosController(GestionAsignaturas gestionAsignaturas,
+                                   GestionPeriodos gestionPeriodos,
+                                   GestionAulas gestionAulas,
+                                   GestionGrupos gestionGrupos,
+                                   GestionRecreos gestionRecreos,
+                                   GestionGrados gestionGrados,
+                                   GestionTurnos gestionTurnos) {
+        this.gestionAsignaturas = gestionAsignaturas;
+        this.gestionPeriodos = gestionPeriodos;
+        this.gestionAulas = gestionAulas;
+        this.gestionGrupos = gestionGrupos;
+        this.gestionRecreos = gestionRecreos;
+        this.gestionGrados = gestionGrados;
+        this.gestionTurnos = gestionTurnos;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionAsignaturas = SpringContext.getBean(GestionAsignaturas.class);
-        gestionPeriodos = SpringContext.getBean(GestionPeriodos.class);
-        gestionAulas = SpringContext.getBean(GestionAulas.class);
-        gestionGrupos = SpringContext.getBean(GestionGrupos.class);
-        gestionRecreos = SpringContext.getBean(GestionRecreos.class);
-        gestionGrados = SpringContext.getBean(GestionGrados.class);
-        gestionTurnos = SpringContext.getBean(GestionTurnos.class);
-
         configurarCombos();
         configurarTablas();
         cargarDatos();
@@ -333,7 +342,7 @@ public class tab_CatalogosController implements Initializable {
                 grupoEditando = g;
                 recargarComboGrados();
                 txtNombreGrupo.setText(g.getNombre());
-                cmbGradoGrupo.setValue(g.getGrado() != null ? g.getGrado().getNombre() : null);
+                cmbGradoGrupo.setValue(g.getGrado() != null ? formatearGrado(g.getGrado()) : null);
                 panelFormularioGrupo.setVisible(true);
                 panelFormularioGrupo.setManaged(true);
             }
@@ -389,7 +398,7 @@ public class tab_CatalogosController implements Initializable {
         cmbGradoGrupo.getItems().clear();
         cmbGradoGrupo.getItems().add("Seleccione un grado");
         for (Grado g : gestionGrados.listarTodos()) {
-            cmbGradoGrupo.getItems().add(g.getNombre());
+            cmbGradoGrupo.getItems().add(formatearGrado(g));
         }
         cmbGradoGrupo.getSelectionModel().selectFirst();
     }
@@ -506,7 +515,7 @@ public class tab_CatalogosController implements Initializable {
         String nombre = txtNombreGrupo.getText().trim();
         String gradoNombre = cmbGradoGrupo.getValue();
         if (nombre.isBlank() || gradoNombre == null || gradoNombre.startsWith("Seleccione")) { Dialogos.info("Todos los campos son obligatorios."); return; }
-        Grado grado = gestionGrados.buscarPorNombre(gradoNombre);
+        Grado grado = parsearGrado(gradoNombre);
         if (grado == null) { Dialogos.info("El grado seleccionado no existe."); return; }
         try {
             if (grupoEditando == null) gestionGrupos.crearGrupo(nombre, grado);
@@ -588,6 +597,20 @@ public class tab_CatalogosController implements Initializable {
         } catch (IllegalArgumentException e) { Dialogos.info(e.getMessage()); }
     }
     @FXML private void handleCancelarTurno() { panelFormularioTurno.setVisible(false); panelFormularioTurno.setManaged(false); }
+
+    private String formatearGrado(Grado g) {
+        if (g == null) return "";
+        String nivel = (g.getNivel() != null) ? g.getNivel() : "Sin nivel";
+        return g.getNombre() + " (" + nivel + ")";
+    }
+    private Grado parsearGrado(String texto) {
+        if (texto == null) return null;
+        int idx = texto.lastIndexOf(" (");
+        if (idx < 0) return gestionGrados.buscarPorNombre(texto);
+        String nombre = texto.substring(0, idx).trim();
+        String nivel = texto.substring(idx + 2, texto.length() - 1).trim();
+        return gestionGrados.buscarPorNombreYNivel(nombre, nivel);
+    }
 
     public TabPane getTabPane() {
         return tabPaneCatalogos;

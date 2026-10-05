@@ -7,4 +7,5 @@ import java.util.Optional;
  */
 public interface RepositorioGrados extends Repositorio<Grado> {
     Optional<Grado> buscarPorNombre(String nombre);
+    Optional<Grado> buscarPorNombreYNivel(String nombre, String nivel);
 }

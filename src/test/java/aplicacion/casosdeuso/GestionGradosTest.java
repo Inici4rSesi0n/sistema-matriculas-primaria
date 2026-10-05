@@ -31,7 +31,7 @@ class GestionGradosTest {
 
     @Test
     void crearGrado_debeGuardarCuandoNoExiste() {
-        when(repoMock.buscarPorNombre("1er Grado")).thenReturn(Optional.empty());
+        when(repoMock.buscarPorNombreYNivel("1er Grado", "Primaria")).thenReturn(Optional.empty());
         casoUso.crearGrado("1er Grado", "Primaria");
         verify(repoMock).agregar(any(Grado.class));
     }
@@ -50,9 +50,17 @@ class GestionGradosTest {
 
     @Test
     void crearGrado_debeFallarSiDuplicado() {
-        when(repoMock.buscarPorNombre("1er Grado")).thenReturn(Optional.of(new Grado("1er Grado", "Primaria")));
+        when(repoMock.buscarPorNombreYNivel("1er Grado", "Primaria"))
+                .thenReturn(Optional.of(new Grado("1er Grado", "Primaria")));
         assertThrows(IllegalArgumentException.class, () -> casoUso.crearGrado("1er Grado", "Primaria"));
         verify(repoMock, never()).agregar(any());
+    }
+
+    @Test
+    void crearGrado_debePermitirMismoNombreConDistintoNivel() {
+        when(repoMock.buscarPorNombreYNivel("1er Grado", "Secundaria")).thenReturn(Optional.empty());
+        casoUso.crearGrado("1er Grado", "Secundaria");
+        verify(repoMock).agregar(any(Grado.class));
     }
 
     @Test
@@ -66,6 +74,13 @@ class GestionGradosTest {
     void buscarPorNombre_debeRetornarNullSiNoExiste() {
         when(repoMock.buscarPorNombre("X")).thenReturn(Optional.empty());
         assertNull(casoUso.buscarPorNombre("X"));
+    }
+
+    @Test
+    void buscarPorNombreYNivel_debeRetornarSiExiste() {
+        Grado esperado = new Grado("1er Grado", "Primaria");
+        when(repoMock.buscarPorNombreYNivel("1er Grado", "Primaria")).thenReturn(Optional.of(esperado));
+        assertEquals(esperado, casoUso.buscarPorNombreYNivel("1er Grado", "Primaria"));
     }
 
     @Test

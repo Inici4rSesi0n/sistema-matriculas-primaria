@@ -1,9 +1,5 @@
 package presentacion.controlador;
 
-import presentacion.dialogos.Dialogos;
-import presentacion.eventos.SistemaEventBus;
-import presentacion.eventos.TipoEvento;
-import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionAsignaturas;
 import aplicacion.casosdeuso.GestionAulas;
 import aplicacion.casosdeuso.GestionClases;
@@ -16,6 +12,11 @@ import dominio.modelo.Clase;
 import dominio.modelo.Docente;
 import dominio.modelo.Grupo;
 import dominio.modelo.PeriodoAcademico;
+import infraestructura.configuracion.SpringFxmlLoader;
+import presentacion.dialogos.Dialogos;
+import presentacion.eventos.SistemaEventBus;
+import presentacion.eventos.TipoEvento;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -43,11 +44,24 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  *
  * @author inici4rsesi0n
  */
+@Component
+@Scope("prototype")
 public class tab_HorariosController implements Initializable {
+
+    private final GestionClases gestionClases;
+    private final GestionAsignaturas gestionAsignaturas;
+    private final GestionDocentes gestionDocentes;
+    private final GestionGrupos gestionGrupos;
+    private final GestionAulas gestionAulas;
+    private final GestionPeriodos gestionPeriodos;
+    private final SpringFxmlLoader fxmlLoader;
 
     @FXML private TabPane tabPaneHorarios;
     @FXML private Tab tabClases;
@@ -68,26 +82,28 @@ public class tab_HorariosController implements Initializable {
 
     private ObservableList<Clase> listaClases;
     private Clase claseEditando;
-    private GestionClases gestionClases;
-    private GestionAsignaturas gestionAsignaturas;
-    private GestionDocentes gestionDocentes;
-    private GestionGrupos gestionGrupos;
-    private GestionAulas gestionAulas;
-    private GestionPeriodos gestionPeriodos;
+
+    public tab_HorariosController(GestionClases gestionClases,
+                                  GestionAsignaturas gestionAsignaturas,
+                                  GestionDocentes gestionDocentes,
+                                  GestionGrupos gestionGrupos,
+                                  GestionAulas gestionAulas,
+                                  GestionPeriodos gestionPeriodos,
+                                  SpringFxmlLoader fxmlLoader) {
+        this.gestionClases = gestionClases;
+        this.gestionAsignaturas = gestionAsignaturas;
+        this.gestionDocentes = gestionDocentes;
+        this.gestionGrupos = gestionGrupos;
+        this.gestionAulas = gestionAulas;
+        this.gestionPeriodos = gestionPeriodos;
+        this.fxmlLoader = fxmlLoader;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionClases = SpringContext.getBean(GestionClases.class);
-        gestionAsignaturas = SpringContext.getBean(GestionAsignaturas.class);
-        gestionDocentes = SpringContext.getBean(GestionDocentes.class);
-        gestionGrupos = SpringContext.getBean(GestionGrupos.class);
-        gestionAulas = SpringContext.getBean(GestionAulas.class);
-        gestionPeriodos = SpringContext.getBean(GestionPeriodos.class);
-
         configurarTablaClases();
         cargarClases();
 
-        // Suscripciones
         SistemaEventBus.suscribir(TipoEvento.CLASES, this::cargarClases);
         SistemaEventBus.suscribir(TipoEvento.GRUPOS, this::recargarDesdeEvento);
         SistemaEventBus.suscribir(TipoEvento.DOCENTES, this::recargarDesdeEvento);
@@ -96,7 +112,6 @@ public class tab_HorariosController implements Initializable {
         SistemaEventBus.suscribir(TipoEvento.ASIGNATURAS, this::recargarDesdeEvento);
     }
 
-    /** Refresco completo: tabla + combos (si el formulario está visible). */
     private void recargarDesdeEvento() {
         if (panelFormularioClase.isVisible()) {
             recargarComboClases();
@@ -265,7 +280,7 @@ public class tab_HorariosController implements Initializable {
     @FXML
     private void handleVerHorario() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/visor_Horario.fxml"));
+            FXMLLoader loader = fxmlLoader.crearLoader("/fxml/visor_Horario.fxml");
             Parent root = loader.load();
 
             Stage stage = new Stage();

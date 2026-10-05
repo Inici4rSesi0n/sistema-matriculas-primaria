@@ -1,5 +1,6 @@
 package dominio.modelo;
 import java.io.Serializable;
+import java.util.Objects;
 /**
  *
  * @author inici4rsesi0n
@@ -8,7 +9,6 @@ public class Grado implements Serializable {
     private static final long serialVersionUID = 1L;
     private String nombre;
     private String nivel;
-
     protected Grado() {}
     public Grado(String nombre, String nivel) {
         if (nombre == null || nombre.isBlank()) {
@@ -29,11 +29,15 @@ public class Grado implements Serializable {
         if (this == o) return true;
         if (!(o instanceof Grado)) return false;
         Grado grado = (Grado) o;
-        return nombre != null && nombre.equalsIgnoreCase(grado.nombre);
+        return nombre != null && nivel != null
+                && nombre.equalsIgnoreCase(grado.nombre)
+                && nivel.equalsIgnoreCase(grado.nivel);
     }
     @Override
     public int hashCode() {
-        return nombre != null ? nombre.toLowerCase().hashCode() : 0;
+        return Objects.hash(
+                nombre != null ? nombre.toLowerCase() : null,
+                nivel != null ? nivel.toLowerCase() : null);
     }
     @Override
     public String toString() {

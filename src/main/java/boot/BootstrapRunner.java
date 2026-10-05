@@ -1,5 +1,7 @@
 package boot;
+
 import aplicacion.casosdeuso.BootstrapUseCase;
+import infraestructura.configuracion.SpringFxmlLoader;
 import infraestructura.persistencia.ManejadorPersistencia;
 import infraestructura.persistencia.Recargable;
 import javafx.fxml.FXMLLoader;
@@ -9,7 +11,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import presentacion.controlador.BootstrapController;
 import org.springframework.stereotype.Component;
+
 import java.util.List;
+
 /**
  *
  * @author inici4rsesi0n
@@ -19,18 +23,22 @@ public class BootstrapRunner {
 
     private final List<Recargable> repositoriosRecargables;
     private final BootstrapUseCase bootstrapUseCase;
+    private final SpringFxmlLoader fxmlLoader;
 
-    public BootstrapRunner(List<Recargable> repositoriosRecargables, BootstrapUseCase bootstrapUseCase) {
+    public BootstrapRunner(List<Recargable> repositoriosRecargables,
+                           BootstrapUseCase bootstrapUseCase,
+                           SpringFxmlLoader fxmlLoader) {
         this.repositoriosRecargables = repositoriosRecargables;
         this.bootstrapUseCase = bootstrapUseCase;
+        this.fxmlLoader = fxmlLoader;
     }
+
     public void inicializar(Stage stage) {
         Object repoAdmin = ManejadorPersistencia.cargar("administradores.bin");
 
         if (repoAdmin == null) {
             try {
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/fxml/ConfiguracionInicial.fxml"));
+                FXMLLoader loader = fxmlLoader.crearLoader("/fxml/ConfiguracionInicial.fxml");
                 Parent root = loader.load();
                 BootstrapController controller = loader.getController();
 
@@ -53,9 +61,9 @@ public class BootstrapRunner {
         } else {
             bootstrapUseCase.inicializarSistema(null);
         }
+
         for (Recargable repositorio : repositoriosRecargables) {
             repositorio.recargar();
         }
     }
-
 }

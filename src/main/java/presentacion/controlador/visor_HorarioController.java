@@ -1,16 +1,15 @@
 package presentacion.controlador;
 
-import presentacion.dialogos.Dialogos;
-import presentacion.eventos.SistemaEventBus;
-import presentacion.eventos.TipoEvento;
-import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionGrupos;
-import aplicacion.casosdeuso.GestionPeriodos;
 import aplicacion.casosdeuso.GestionHorario;
+import aplicacion.casosdeuso.GestionPeriodos;
 import dominio.modelo.Clase;
 import dominio.modelo.Evento;
 import dominio.modelo.Grupo;
 import dominio.modelo.PeriodoAcademico;
+import presentacion.dialogos.Dialogos;
+import presentacion.eventos.SistemaEventBus;
+import presentacion.eventos.TipoEvento;
 
 import java.net.URL;
 import java.util.List;
@@ -27,11 +26,20 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  *
  * @author inici4rsesi0n
  */
+@Component
+@Scope("prototype")
 public class visor_HorarioController implements Initializable {
+
+    private final GestionGrupos gestionGrupos;
+    private final GestionPeriodos gestionPeriodos;
+    private final GestionHorario gestionHorario;
 
     @FXML private ComboBox<String> cmbGrupoVisor;
     @FXML private ComboBox<String> cmbPeriodoVisor;
@@ -48,22 +56,21 @@ public class visor_HorarioController implements Initializable {
     @FXML private TableColumn<Evento, String> colAulaHorario;
     @FXML private TableColumn<Evento, String> colDescripcion;
 
-    private GestionGrupos gestionGrupos;
-    private GestionPeriodos gestionPeriodos;
-    private GestionHorario gestionHorario;
-
     private ObservableList<Evento> listaHorario;
+
+    public visor_HorarioController(GestionGrupos gestionGrupos,
+                                   GestionPeriodos gestionPeriodos,
+                                   GestionHorario gestionHorario) {
+        this.gestionGrupos = gestionGrupos;
+        this.gestionPeriodos = gestionPeriodos;
+        this.gestionHorario = gestionHorario;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionGrupos = SpringContext.getBean(GestionGrupos.class);
-        gestionPeriodos = SpringContext.getBean(GestionPeriodos.class);
-        gestionHorario = SpringContext.getBean(GestionHorario.class);
-
         configurarCombos();
         configurarTabla();
 
-        // Suscripciones: si el horario ya está generado, se auto-refresca
         SistemaEventBus.suscribir(TipoEvento.CLASES, this::refrescarSiVisible);
         SistemaEventBus.suscribir(TipoEvento.RECREOS, this::refrescarSiVisible);
     }
@@ -123,7 +130,6 @@ public class visor_HorarioController implements Initializable {
         });
     }
 
-    /** Refresca la tabla si el horario ya fue generado. */
     private void refrescarSiVisible() {
         if (listaHorario != null && !listaHorario.isEmpty()) {
             generarHorarioActual();

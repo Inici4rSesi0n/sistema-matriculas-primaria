@@ -1,5 +1,6 @@
 package presentacion.controlador;
-
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import aplicacion.puerto.ProveedorDatosIniciales;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
@@ -9,6 +10,8 @@ import javafx.scene.control.TextField;
  *
  * @author inici4rsesi0n
  */
+@Component
+@Scope("prototype")
 public class BootstrapController implements ProveedorDatosIniciales {
     @FXML private TextField campoCodigo;
     @FXML private TextField campoNombre;

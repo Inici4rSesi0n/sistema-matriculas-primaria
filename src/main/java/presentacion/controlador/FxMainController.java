@@ -1,15 +1,17 @@
 package presentacion.controlador;
+
+import aplicacion.casosdeuso.GestionPermisos;
+import dominio.modelo.Usuario;
+import infraestructura.configuracion.SpringFxmlLoader;
 import presentacion.animaciones.AnimacionesMain;
 import presentacion.dialogos.Dialogos;
 import presentacion.estadousuario.SesionUsuario;
-import dominio.modelo.Usuario;
-import infraestructura.configuracion.SpringContext;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
-import aplicacion.casosdeuso.GestionPermisos;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -24,11 +26,21 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  *
  * @author inici4rsesi0n
  */
+@Component
+@Scope("prototype")
 public class FxMainController implements Initializable {
+
+    private final GestionPermisos gestionPermisos;
+    private final SpringFxmlLoader fxmlLoader;
+
     @FXML private Button btnPortalIngreso;
     @FXML private Button btnPortalTramites;
     @FXML private Button btnPortalMatricula;
@@ -37,27 +49,34 @@ public class FxMainController implements Initializable {
     @FXML private Label lblConectado;
     @FXML private Label lblUsuarioConectado;
     @FXML private MenuButton menuIdioma;
+
     private Timeline timelineWiredAcademy;
     private Timeline timelineConectado;
-    private GestionPermisos gestionPermisos;
-    private final Map<String, URL> rutasVistas = new ConcurrentHashMap<>();
+    private final Map<String, String> rutasVistas = new ConcurrentHashMap<>();
+
+    public FxMainController(GestionPermisos gestionPermisos, SpringFxmlLoader fxmlLoader) {
+        this.gestionPermisos = gestionPermisos;
+        this.fxmlLoader = fxmlLoader;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionPermisos = SpringContext.getBean(GestionPermisos.class);
         timelineWiredAcademy = AnimacionesMain.crearTimelinePulso(lblWiredAcademy);
         timelineConectado = AnimacionesMain.crearTimelinePulso(lblConectado);
+
         menuIdioma.getItems().addAll(
-            new MenuItem("Español"),
-            new MenuItem("English")
+                new MenuItem("Español"),
+                new MenuItem("English")
         );
+
         actualizarIndicadorSesion();
         precargarRutas();
     }
 
     private void precargarRutas() {
-        rutasVistas.put("main", getClass().getResource("/fxml/main.fxml"));
-        rutasVistas.put("login", getClass().getResource("/fxml/login.fxml"));
-        rutasVistas.put("dashboard", getClass().getResource("/fxml/dashboard.fxml"));
+        rutasVistas.put("main", "/fxml/main.fxml");
+        rutasVistas.put("login", "/fxml/login.fxml");
+        rutasVistas.put("dashboard", "/fxml/dashboard.fxml");
     }
 
     @FXML
@@ -83,14 +102,14 @@ public class FxMainController implements Initializable {
     }
 
     private void abrirLogin(String modo) {
-        URL ruta = rutasVistas.get("login");
+        String ruta = rutasVistas.get("login");
         if (ruta == null) {
             Dialogos.info("Ventana de login no disponible.");
             return;
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(ruta);
+            FXMLLoader loader = fxmlLoader.crearLoader(ruta);
             Parent root = loader.load();
             FxLoginController controller = loader.getController();
 
@@ -136,14 +155,14 @@ public class FxMainController implements Initializable {
     }
 
     private void navegarAVista(String vistaKey, Stage ventanaActual, Usuario usuario) {
-        URL ruta = rutasVistas.get(vistaKey);
+        String ruta = rutasVistas.get(vistaKey);
         if (ruta == null) {
             Dialogos.info("Vista no disponible: " + vistaKey);
             return;
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(ruta);
+            FXMLLoader loader = fxmlLoader.crearLoader(ruta);
             Parent root = loader.load();
             Object controller = loader.getController();
 

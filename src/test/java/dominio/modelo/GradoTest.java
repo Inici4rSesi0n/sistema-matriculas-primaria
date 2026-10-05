@@ -19,32 +19,27 @@ class GradoTest {
 
     @Test
     void constructor_debeLanzarExcepcionSiNombreNulo() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new Grado(null, "Primaria"));
+        assertThrows(IllegalArgumentException.class, () -> new Grado(null, "Primaria"));
     }
 
     @Test
     void constructor_debeLanzarExcepcionSiNombreVacio() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new Grado("", "Primaria"));
+        assertThrows(IllegalArgumentException.class, () -> new Grado("", "Primaria"));
     }
 
     @Test
     void constructor_debeLanzarExcepcionSiNombreBlanco() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new Grado("   ", "Primaria"));
+        assertThrows(IllegalArgumentException.class, () -> new Grado("   ", "Primaria"));
     }
 
     @Test
     void constructor_debeLanzarExcepcionSiNivelNulo() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new Grado("1er Grado", null));
+        assertThrows(IllegalArgumentException.class, () -> new Grado("1er Grado", null));
     }
 
     @Test
     void constructor_debeLanzarExcepcionSiNivelVacio() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new Grado("1er Grado", ""));
+        assertThrows(IllegalArgumentException.class, () -> new Grado("1er Grado", ""));
     }
 
     @Test
@@ -66,7 +61,7 @@ class GradoTest {
 
     @Test
     void equals_debeIgnorarMayusculas() {
-        Grado g1 = new Grado("1er grado", "Primaria");
+        Grado g1 = new Grado("1er grado", "primaria");
         Grado g2 = new Grado("1er Grado", "Primaria");
         assertEquals(g1, g2);
     }
@@ -79,9 +74,23 @@ class GradoTest {
     }
 
     @Test
-    void hashCode_debeSerIgualParaNombresIgualesIgnorandoMayusculas() {
-        Grado g1 = new Grado("1er grado", "Primaria");
+    void equals_debeRetornarFalsoSiNivelesDiferentes() {
+        Grado g1 = new Grado("1er Grado", "Primaria");
         Grado g2 = new Grado("1er Grado", "Secundaria");
+        assertNotEquals(g1, g2);
+    }
+
+    @Test
+    void hashCode_debeSerIgualParaGradosEquivalentes() {
+        Grado g1 = new Grado("1er grado", "primaria");
+        Grado g2 = new Grado("1er Grado", "Primaria");
         assertEquals(g1.hashCode(), g2.hashCode());
+    }
+
+    @Test
+    void hashCode_debeSerDiferenteSiNivelesDiferentes() {
+        Grado g1 = new Grado("1er Grado", "Primaria");
+        Grado g2 = new Grado("1er Grado", "Secundaria");
+        assertNotEquals(g1.hashCode(), g2.hashCode());
     }
 }

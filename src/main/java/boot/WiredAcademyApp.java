@@ -1,8 +1,7 @@
 package boot;
 
-import infraestructura.persistencia.ManejadorPersistencia;
+import infraestructura.configuracion.SpringFxmlLoader;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -28,7 +27,9 @@ public class WiredAcademyApp extends Application {
     public void start(Stage stage) throws Exception {
         contextoSpring.getBean(BootstrapRunner.class).inicializar(stage);
 
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/main.fxml"));
+        SpringFxmlLoader fxmlLoader = contextoSpring.getBean(SpringFxmlLoader.class);
+        Parent root = fxmlLoader.cargar("/fxml/main.fxml");
+
         Scene scene = new Scene(root, 1200, 800);
         stage.setTitle("WiredAcademy · Ecosistema Educativo Digital");
         stage.setScene(scene);

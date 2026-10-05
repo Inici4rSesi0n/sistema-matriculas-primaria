@@ -1,9 +1,5 @@
 package presentacion.controlador;
 
-import presentacion.eventos.SistemaEventBus;
-import presentacion.eventos.TipoEvento;
-import presentacion.dialogos.Dialogos;
-import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionAsignaturas;
 import aplicacion.casosdeuso.GestionDocentes;
 import aplicacion.casosdeuso.GestionGrados;
@@ -15,6 +11,10 @@ import dominio.modelo.Docente;
 import dominio.modelo.Grado;
 import dominio.modelo.Grupo;
 import dominio.modelo.Usuario;
+import presentacion.dialogos.Dialogos;
+import presentacion.eventos.SistemaEventBus;
+import presentacion.eventos.TipoEvento;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +33,22 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  *
  * @author inici4rsesi0n
  */
+@Component
+@Scope("prototype")
 public class tab_AsignacionesController implements Initializable {
+
+    private final GestionDocentes gestionDocentes;
+    private final GestionAsignaturas gestionAsignaturas;
+    private final GestionGrupos gestionGrupos;
+    private final GestionUsuarios gestionUsuarios;
+    private final GestionGrados gestionGrados;
 
     @FXML private TabPane tabPaneAsignaciones;
     @FXML private Tab tabAsignacionDocente, tabAsignacionCoordinacion;
@@ -60,24 +71,24 @@ public class tab_AsignacionesController implements Initializable {
     @FXML private ComboBox<String> cmbCoordinador, cmbGradoCoordinacion;
     @FXML private Button btnAsignarCoordinacion;
 
-    private GestionDocentes gestionDocentes;
-    private GestionAsignaturas gestionAsignaturas;
-    private GestionGrupos gestionGrupos;
-    private GestionUsuarios gestionUsuarios;
-    private GestionGrados gestionGrados;
-
     private ObservableList<AsignacionItem> listaAsignacionesDocente;
     private ObservableList<TutorItem> listaTutores;
     private ObservableList<CoordinacionItem> listaCoordinaciones;
 
+    public tab_AsignacionesController(GestionDocentes gestionDocentes,
+                                      GestionAsignaturas gestionAsignaturas,
+                                      GestionGrupos gestionGrupos,
+                                      GestionUsuarios gestionUsuarios,
+                                      GestionGrados gestionGrados) {
+        this.gestionDocentes = gestionDocentes;
+        this.gestionAsignaturas = gestionAsignaturas;
+        this.gestionGrupos = gestionGrupos;
+        this.gestionUsuarios = gestionUsuarios;
+        this.gestionGrados = gestionGrados;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gestionDocentes = SpringContext.getBean(GestionDocentes.class);
-        gestionAsignaturas = SpringContext.getBean(GestionAsignaturas.class);
-        gestionGrupos = SpringContext.getBean(GestionGrupos.class);
-        gestionUsuarios = SpringContext.getBean(GestionUsuarios.class);
-        gestionGrados = SpringContext.getBean(GestionGrados.class);
-
         configurarCombos();
         configurarTablaAsignacionesDocente();
         configurarTablaTutores();
@@ -149,7 +160,7 @@ public class tab_AsignacionesController implements Initializable {
         cmbGradoCoordinacion.getItems().clear();
         cmbGradoCoordinacion.getItems().add("Seleccione un grado");
         for (Grado g : gestionGrados.listarTodos()) {
-            cmbGradoCoordinacion.getItems().add(g.getNombre());
+            cmbGradoCoordinacion.getItems().add(g.getNombre() + " (" + g.getNivel() + ")");
         }
         cmbGradoCoordinacion.getSelectionModel().selectFirst();
     }
@@ -350,7 +361,7 @@ public class tab_AsignacionesController implements Initializable {
             Dialogos.info("El usuario seleccionado no es un coordinador.");
             return;
         }
-        Grado g = gestionGrados.buscarPorNombre(gradoSel);
+        Grado g = parsearGrado(gradoSel);
         if (g == null) {
             Dialogos.info("Grado no encontrado.");
             return;
@@ -362,6 +373,15 @@ public class tab_AsignacionesController implements Initializable {
         } catch (IllegalArgumentException e) {
             Dialogos.info(e.getMessage());
         }
+    }
+
+    private Grado parsearGrado(String texto) {
+        if (texto == null) return null;
+        int idx = texto.lastIndexOf(" (");
+        if (idx < 0) return gestionGrados.buscarPorNombre(texto);
+        String nombre = texto.substring(0, idx).trim();
+        String nivel = texto.substring(idx + 2, texto.length() - 1).trim();
+        return gestionGrados.buscarPorNombreYNivel(nombre, nivel);
     }
 
     public TabPane getTabPane() {
