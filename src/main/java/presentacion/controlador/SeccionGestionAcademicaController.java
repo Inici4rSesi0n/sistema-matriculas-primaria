@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class s_GestionAcademicaController implements Initializable {
+public class SeccionGestionAcademicaController implements Initializable {
 
     @FXML private ComboBox<String> cmbCategoria;
     @FXML private StackPane contenedorCategorias;

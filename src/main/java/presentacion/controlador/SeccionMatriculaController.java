@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class s_MatriculaController implements Initializable {
+public class SeccionMatriculaController implements Initializable {
 
     private final GestionMatriculas gestionMatriculas;
     private final GestionEstudiantes gestionEstudiantes;
@@ -59,7 +59,7 @@ public class s_MatriculaController implements Initializable {
     private ObservableList<Matricula> listaMatriculas;
     private Matricula matriculaEditando;
 
-    public s_MatriculaController(GestionMatriculas gestionMatriculas,
+    public SeccionMatriculaController(GestionMatriculas gestionMatriculas,
                                  GestionEstudiantes gestionEstudiantes,
                                  GestionPeriodos gestionPeriodos,
                                  GestionGrupos gestionGrupos) {

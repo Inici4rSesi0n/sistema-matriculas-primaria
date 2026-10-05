@@ -100,7 +100,7 @@
                 </graphic>
             </Button>
             
-            <Button fx:id="btnMatricula" styleClass="sidebar-btn" userData="s_Matricula" onAction="#cargarSeccion">
+            <Button fx:id="btnMatricula" styleClass="sidebar-btn" userData="seccion_matricula" onAction="#cargarSeccion">
                 <graphic>
                     <HBox alignment="CENTER_LEFT" spacing="12.0">
                         <Label text="🎓" styleClass="emoji-icon" />
@@ -113,7 +113,7 @@
             
             <Label styleClass="sidebar-section-title" text="⚙️ Administración del Sistema" />
             
-            <Button fx:id="btnGestionUsuarios" styleClass="sidebar-btn" userData="s_GestionUsuarios" onAction="#cargarSeccion">
+            <Button fx:id="btnGestionUsuarios" styleClass="sidebar-btn" userData="seccion_gestion_usuarios" onAction="#cargarSeccion">
                 <graphic>
                     <HBox alignment="CENTER_LEFT" spacing="12.0">
                         <Label text="👥" styleClass="emoji-icon" />
@@ -122,7 +122,7 @@
                 </graphic>
             </Button>
             
-            <Button fx:id="btnGestionAcademica" styleClass="sidebar-btn" userData="s_GestionAcademica" onAction="#cargarSeccion">
+            <Button fx:id="btnGestionAcademica" styleClass="sidebar-btn" userData="seccion_gestion_academica" onAction="#cargarSeccion">
                 <graphic>
                     <HBox alignment="CENTER_LEFT" spacing="12.0">
                         <Label text="🏫" styleClass="emoji-icon" />

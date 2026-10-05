@@ -79,9 +79,9 @@ public class DashboardController implements Initializable {
     }
 
     private void precargarRutas() {
-        rutasVistas.put("s_GestionUsuarios", "/fxml/s_GestionUsuarios.fxml");
-        rutasVistas.put("s_GestionAcademica", "/fxml/s_GestionAcademica.fxml");
-        rutasVistas.put("s_Matricula", "/fxml/s_Matricula.fxml");
+        rutasVistas.put("seccion_gestion_usuarios", "/fxml/seccion_gestion_usuarios.fxml");
+        rutasVistas.put("seccion_gestion_academica", "/fxml/seccion_gestion_academica.fxml");
+        rutasVistas.put("seccion_matricula", "/fxml/seccion_matricula.fxml");
     }
 
     public void setUsuario(Usuario usuario) {

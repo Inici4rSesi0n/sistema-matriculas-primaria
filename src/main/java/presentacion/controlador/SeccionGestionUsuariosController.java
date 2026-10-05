@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class s_GestionUsuariosController implements Initializable {
+public class SeccionGestionUsuariosController implements Initializable {
 
     private final GestionUsuarios gestionUsuarios;
     private final HashProvider hashProvider;
@@ -62,7 +62,7 @@ public class s_GestionUsuariosController implements Initializable {
     private ObservableList<Usuario> listaUsuarios;
     private Usuario usuarioEditando;
 
-    public s_GestionUsuariosController(GestionUsuarios gestionUsuarios, HashProvider hashProvider) {
+    public SeccionGestionUsuariosController(GestionUsuarios gestionUsuarios, HashProvider hashProvider) {
         this.gestionUsuarios = gestionUsuarios;
         this.hashProvider = hashProvider;
     }
