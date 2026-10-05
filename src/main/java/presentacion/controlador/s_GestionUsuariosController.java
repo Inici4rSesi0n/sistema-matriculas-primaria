@@ -1,4 +1,5 @@
 package presentacion.controlador;
+import aplicacion.dto.CrearUsuarioCommand;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
@@ -171,7 +172,9 @@ public class s_GestionUsuariosController implements Initializable {
             if (usuarioEditando == null) {
                 char[] contrasena = contrasenaTexto.toCharArray();
                 String hash = hashProvider.generarHash(contrasena);
-                gestionUsuarios.agregarUsuario(codigo, hash, dni, nombre, apellido, edad, rol, null);
+                CrearUsuarioCommand cmd = new CrearUsuarioCommand(
+                        codigo, hash, dni, nombre, apellido, edad, rol, null);
+                gestionUsuarios.agregarUsuario(cmd);
             } else {
                 if (!codigo.equals(usuarioEditando.getCodigo())) {
                     Dialogos.info("No se puede modificar el código de un usuario existente.");

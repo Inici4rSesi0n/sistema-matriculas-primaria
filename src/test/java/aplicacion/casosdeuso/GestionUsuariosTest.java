@@ -1,5 +1,5 @@
 package aplicacion.casosdeuso;
-
+import aplicacion.dto.CrearUsuarioCommand;
 import aplicacion.servicio.BuscadorUsuario;
 import dominio.modelo.*;
 import dominio.puerto.externo.LoggerPort;
@@ -42,7 +42,6 @@ class GestionUsuariosTest {
         repoPad = mock(RepositorioPadres.class);
         loggerPort = mock(LoggerPort.class);
 
-        // Buscador real usando los repos mockeados (mantiene compatibilidad con tests existentes)
         buscadorUsuario = new BuscadorUsuario(repoAdmin, repoDir, repoDoc, repoEst, repoSec, repoCoord, repoPad);
 
         casoUso = new GestionUsuarios(repoAdmin, repoDir, repoDoc, repoEst, repoSec, repoCoord, repoPad,
@@ -53,9 +52,8 @@ class GestionUsuariosTest {
     void agregarUsuario_administrador_debeGuardar() {
         when(repoAdmin.buscarPorCodigo("A001")).thenReturn(Optional.empty());
         mockListarTodosVacios();
-
-        casoUso.agregarUsuario("A001", "hash", "111", "Admin", "Uno", 30, Usuario.Rol.ADMINISTRADOR, null);
-
+        casoUso.agregarUsuario(new CrearUsuarioCommand(
+            "A001", "hash", "111", "Admin", "Uno", 30, Usuario.Rol.ADMINISTRADOR, null));
         verify(repoAdmin).agregar(any(Administrador.class));
     }
 
@@ -64,7 +62,8 @@ class GestionUsuariosTest {
         when(repoDoc.buscarPorCodigo("D001")).thenReturn(Optional.empty());
         mockListarTodosVacios();
 
-        casoUso.agregarUsuario("D001", "hash", "111", "Doc", "Uno", 30, Usuario.Rol.DOCENTE, "Matemáticas");
+        casoUso.agregarUsuario(new CrearUsuarioCommand(
+            "D001", "hash", "111", "Doc", "Uno", 30, Usuario.Rol.DOCENTE, "Matemáticas"));
 
         verify(repoDoc).agregar(any(Docente.class));
     }
@@ -73,9 +72,9 @@ class GestionUsuariosTest {
     void agregarUsuario_codigoDuplicado_debeLanzarExcepcion() {
         when(repoAdmin.buscarPorCodigo("A001"))
                 .thenReturn(Optional.of(new Administrador("A001", "hash", "111", "Admin", "Uno", 30)));
-
         assertThrows(IllegalArgumentException.class,
-                () -> casoUso.agregarUsuario("A001", "hash", "222", "Otro", "Dos", 35, Usuario.Rol.ADMINISTRADOR, null));
+            () -> casoUso.agregarUsuario(new CrearUsuarioCommand(
+                    "A001", "hash", "222", "Otro", "Dos", 35, Usuario.Rol.ADMINISTRADOR, null)));
     }
 
     @Test

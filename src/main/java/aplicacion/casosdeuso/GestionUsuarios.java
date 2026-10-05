@@ -1,4 +1,5 @@
 package aplicacion.casosdeuso;
+import aplicacion.dto.CrearUsuarioCommand;
 import aplicacion.servicio.BuscadorUsuario;
 import dominio.modelo.*;
 import dominio.puerto.externo.LoggerPort;
@@ -56,25 +57,33 @@ public class GestionUsuarios {
     public boolean existeDni(String dni, Usuario excluir) {
         return listarTodos().stream().anyMatch(u -> u.getDni().equalsIgnoreCase(dni) && !u.equals(excluir));
     }
-
-    public void agregarUsuario(String codigo, String hash, String dni, String nombre, String apellido,
-                               int edad, Usuario.Rol rol, String especialidad) {
-        validarUnicidad(codigo, dni, null);
-        switch (rol) {
-            case ADMINISTRADOR -> repoAdmin.agregar(new Administrador(codigo, hash, dni, nombre, apellido, edad));
-            case DIRECTOR -> repoDir.agregar(new Director(codigo, hash, dni, nombre, apellido, edad));
-            case SECRETARIO -> repoSec.agregar(new Secretario(codigo, hash, dni, nombre, apellido, edad));
-            case COORDINADOR -> repoCoord.agregar(new CoordinadorAcademico(codigo, hash, dni, nombre, apellido, edad));
+    public void agregarUsuario(CrearUsuarioCommand cmd) {
+        validarUnicidad(cmd.codigo(), cmd.dni(), null);
+        switch (cmd.rol()) {
+            case ADMINISTRADOR -> repoAdmin.agregar(new Administrador(
+                    cmd.codigo(), cmd.hash(), cmd.dni(), cmd.nombre(), cmd.apellido(), cmd.edad()));
+            case DIRECTOR -> repoDir.agregar(new Director(
+                    cmd.codigo(), cmd.hash(), cmd.dni(), cmd.nombre(), cmd.apellido(), cmd.edad()));
+            case SECRETARIO -> repoSec.agregar(new Secretario(
+                    cmd.codigo(), cmd.hash(), cmd.dni(), cmd.nombre(), cmd.apellido(), cmd.edad()));
+            case COORDINADOR -> repoCoord.agregar(new CoordinadorAcademico(
+                    cmd.codigo(), cmd.hash(), cmd.dni(), cmd.nombre(), cmd.apellido(), cmd.edad()));
             case DOCENTE -> {
-                String esp = (especialidad != null && !especialidad.isBlank()) ? especialidad : "Sin asignar";
-                repoDoc.agregar(new Docente(codigo, hash, dni, nombre, apellido, edad, esp, new ArrayList<>()));
+                String esp = (cmd.especialidad() != null && !cmd.especialidad().isBlank())
+                        ? cmd.especialidad() : "Sin asignar";
+                repoDoc.agregar(new Docente(
+                        cmd.codigo(), cmd.hash(), cmd.dni(), cmd.nombre(), cmd.apellido(),
+                        cmd.edad(), esp, new ArrayList<>()));
             }
-            case ESTUDIANTE -> repoEst.agregar(new Estudiante(codigo, hash, dni, nombre, apellido, edad));
-            case PADRE -> repoPad.agregar(new Padre(codigo, hash, dni, nombre, apellido, edad, new ArrayList<>()));
+            case ESTUDIANTE -> repoEst.agregar(new Estudiante(
+                    cmd.codigo(), cmd.hash(), cmd.dni(), cmd.nombre(), cmd.apellido(), cmd.edad()));
+            case PADRE -> repoPad.agregar(new Padre(
+                    cmd.codigo(), cmd.hash(), cmd.dni(), cmd.nombre(), cmd.apellido(),
+                    cmd.edad(), new ArrayList<>()));
         }
         logger.audit(String.format(
                 "op=CREATE entity=%s id=%s | nombre=%s %s dni=%s",
-                rol, codigo, nombre, apellido, dni));
+                cmd.rol(), cmd.codigo(), cmd.nombre(), cmd.apellido(), cmd.dni()));
     }
 
     public void actualizarUsuario(Usuario usuario) {
