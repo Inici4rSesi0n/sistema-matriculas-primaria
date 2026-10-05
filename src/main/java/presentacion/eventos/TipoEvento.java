@@ -5,7 +5,7 @@ package presentacion.eventos;
  *
  * @author inici4rsesi0n
  */
-public enum Evento {
+public enum TipoEvento {
     USUARIOS,
     GRUPOS,
     ASIGNATURAS,

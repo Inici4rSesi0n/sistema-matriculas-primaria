@@ -1,6 +1,8 @@
 package presentacion.controlador;
-import java.util.List;
+
 import presentacion.dialogos.Dialogos;
+import presentacion.eventos.SistemaEventBus;
+import presentacion.eventos.TipoEvento;
 import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionAsignaturas;
 import aplicacion.casosdeuso.GestionAulas;
@@ -16,7 +18,9 @@ import dominio.modelo.Grupo;
 import dominio.modelo.PeriodoAcademico;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -38,11 +42,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 /**
  *
  * @author inici4rsesi0n
  */
 public class tab_HorariosController implements Initializable {
+
     @FXML private TabPane tabPaneHorarios;
     @FXML private Tab tabClases;
     @FXML private TableView<Clase> tablaClases;
@@ -79,6 +85,22 @@ public class tab_HorariosController implements Initializable {
         gestionPeriodos = SpringContext.getBean(GestionPeriodos.class);
 
         configurarTablaClases();
+        cargarClases();
+
+        // Suscripciones
+        SistemaEventBus.suscribir(TipoEvento.CLASES, this::cargarClases);
+        SistemaEventBus.suscribir(TipoEvento.GRUPOS, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(TipoEvento.DOCENTES, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(TipoEvento.AULAS, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(TipoEvento.PERIODOS, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(TipoEvento.ASIGNATURAS, this::recargarDesdeEvento);
+    }
+
+    /** Refresco completo: tabla + combos (si el formulario está visible). */
+    private void recargarDesdeEvento() {
+        if (panelFormularioClase.isVisible()) {
+            recargarComboClases();
+        }
         cargarClases();
     }
 
@@ -124,9 +146,11 @@ public class tab_HorariosController implements Initializable {
     }
 
     private void cargarClases() {
-        listaClases = FXCollections.observableArrayList(gestionClases.listarClases());
-        tablaClases.setItems(listaClases);
-        tablaClases.refresh();
+        Platform.runLater(() -> {
+            listaClases = FXCollections.observableArrayList(gestionClases.listarClases());
+            tablaClases.setItems(listaClases);
+            tablaClases.refresh();
+        });
     }
 
     private void recargarComboClases() {
@@ -178,13 +202,20 @@ public class tab_HorariosController implements Initializable {
         if (respuesta != 0) return;
         try {
             gestionClases.eliminarClase(c);
-            cargarClases();
+            SistemaEventBus.notificar(TipoEvento.CLASES);
         } catch (IllegalArgumentException e) {
             Dialogos.M1(e.getMessage());
         }
     }
 
-    @FXML private void handleNuevaClase() { claseEditando = null; recargarComboClases(); limpiarFormularioClase(); panelFormularioClase.setVisible(true); panelFormularioClase.setManaged(true); }
+    @FXML private void handleNuevaClase() {
+        claseEditando = null;
+        recargarComboClases();
+        limpiarFormularioClase();
+        panelFormularioClase.setVisible(true);
+        panelFormularioClase.setManaged(true);
+    }
+
     @FXML private void handleGuardarClase() {
         String dia = cmbDiaClase.getValue();
         String inicio = txtInicioClase.getText().trim();
@@ -214,14 +245,23 @@ public class tab_HorariosController implements Initializable {
         }
 
         try {
-            if (claseEditando == null) gestionClases.crearClase(dia, inicio, fin, asig, doc, grupo, aula, periodo);
-            else gestionClases.actualizarClase(claseEditando, dia, inicio, fin, asig, doc, grupo, aula, periodo);
-            cargarClases();
+            if (claseEditando == null) {
+                gestionClases.crearClase(dia, inicio, fin, asig, doc, grupo, aula, periodo);
+            } else {
+                gestionClases.actualizarClase(claseEditando, dia, inicio, fin, asig, doc, grupo, aula, periodo);
+            }
+            SistemaEventBus.notificar(TipoEvento.CLASES);
             panelFormularioClase.setVisible(false);
             panelFormularioClase.setManaged(false);
-        } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
+        } catch (IllegalArgumentException e) {
+            Dialogos.M1(e.getMessage());
+        }
     }
-    @FXML private void handleCancelarClase() { panelFormularioClase.setVisible(false); panelFormularioClase.setManaged(false); }
+
+    @FXML private void handleCancelarClase() {
+        panelFormularioClase.setVisible(false);
+        panelFormularioClase.setManaged(false);
+    }
 
     @FXML
     private void handleVerHorario() {
@@ -263,11 +303,13 @@ public class tab_HorariosController implements Initializable {
         cmbAulaClase.getSelectionModel().selectFirst();
         cmbPeriodoClase.getSelectionModel().selectFirst();
     }
+
     private String formatearGrupo(Grupo g) {
         if (g == null) return "";
         String grado = (g.getGrado() != null) ? g.getGrado().getNombre() : "Sin grado";
         return g.getNombre() + " (" + grado + ")";
     }
+
     private Grupo parsearGrupo(String texto) {
         int idx = texto.lastIndexOf(" (");
         if (idx < 0) return null;

@@ -1,6 +1,8 @@
 package presentacion.controlador;
 
 import presentacion.dialogos.Dialogos;
+import presentacion.eventos.SistemaEventBus;
+import presentacion.eventos.TipoEvento;
 import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionMatriculas;
 import aplicacion.casosdeuso.GestionEstudiantes;
@@ -15,6 +17,7 @@ import dominio.modelo.EstadoMatricula;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -61,6 +64,19 @@ public class s_MatriculaController implements Initializable {
         configurarTabla();
         configurarColumnaAcciones();
         cargarDatosIniciales();
+
+        SistemaEventBus.suscribir(TipoEvento.MATRICULAS, this::cargarMatriculas);
+        SistemaEventBus.suscribir(TipoEvento.GRUPOS, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(TipoEvento.ESTUDIANTES, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(TipoEvento.PERIODOS, this::recargarDesdeEvento);
+    }
+
+    /** Refresco completo: tabla + combos (si el formulario está visible). */
+    private void recargarDesdeEvento() {
+        if (panelFormularioMatricula.isVisible()) {
+            recargarCombos();
+        }
+        cargarMatriculas();
     }
 
     private void configurarTabla() {
@@ -154,9 +170,11 @@ public class s_MatriculaController implements Initializable {
     }
 
     private void cargarMatriculas() {
-        listaMatriculas = FXCollections.observableArrayList(gestionMatriculas.listarTodas());
-        tablaMatriculas.setItems(listaMatriculas);
-        tablaMatriculas.refresh();
+        Platform.runLater(() -> {
+            listaMatriculas = FXCollections.observableArrayList(gestionMatriculas.listarTodas());
+            tablaMatriculas.setItems(listaMatriculas);
+            tablaMatriculas.refresh();
+        });
     }
 
     @FXML
@@ -203,7 +221,7 @@ public class s_MatriculaController implements Initializable {
                 matriculaEditando.setFecha(fecha);
                 gestionMatriculas.actualizar(matriculaEditando);
             }
-            cargarMatriculas();
+            SistemaEventBus.notificar(TipoEvento.MATRICULAS);
             limpiarFormulario();
         } catch (IllegalArgumentException e) {
             Dialogos.M1(e.getMessage());
@@ -246,7 +264,7 @@ public class s_MatriculaController implements Initializable {
         if (respuesta == 0) {
             try {
                 gestionMatriculas.eliminarMatricula(matricula);
-                cargarMatriculas();
+                SistemaEventBus.notificar(TipoEvento.MATRICULAS);
             } catch (IllegalArgumentException e) {
                 Dialogos.M1(e.getMessage());
             }

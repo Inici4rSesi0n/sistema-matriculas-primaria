@@ -1,6 +1,6 @@
 package presentacion.controlador;
 import presentacion.eventos.SistemaEventBus;
-import presentacion.eventos.Evento;
+import presentacion.eventos.TipoEvento;
 import presentacion.dialogos.Dialogos;
 import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionAsignaturas;
@@ -140,13 +140,13 @@ public class tab_CatalogosController implements Initializable {
         configurarCombos();
         configurarTablas();
         cargarDatos();
-        SistemaEventBus.suscribir(Evento.ASIGNATURAS, this::cargarAsignaturas);
-        SistemaEventBus.suscribir(Evento.PERIODOS, this::cargarPeriodos);
-        SistemaEventBus.suscribir(Evento.AULAS, this::cargarAulas);
-        SistemaEventBus.suscribir(Evento.GRUPOS, this::cargarGrupos);
-        SistemaEventBus.suscribir(Evento.RECREOS, this::cargarRecreos);
-        SistemaEventBus.suscribir(Evento.GRADOS, this::cargarGrados);
-        SistemaEventBus.suscribir(Evento.TURNOS, this::cargarTurnos);
+        SistemaEventBus.suscribir(TipoEvento.ASIGNATURAS, this::cargarAsignaturas);
+        SistemaEventBus.suscribir(TipoEvento.PERIODOS, this::cargarPeriodos);
+        SistemaEventBus.suscribir(TipoEvento.AULAS, this::cargarAulas);
+        SistemaEventBus.suscribir(TipoEvento.GRUPOS, this::cargarGrupos);
+        SistemaEventBus.suscribir(TipoEvento.RECREOS, this::cargarRecreos);
+        SistemaEventBus.suscribir(TipoEvento.GRADOS, this::cargarGrados);
+        SistemaEventBus.suscribir(TipoEvento.TURNOS, this::cargarTurnos);
     }
 
     private void configurarCombos() {
@@ -367,13 +367,13 @@ public class tab_CatalogosController implements Initializable {
         if (respuesta != 0) return;
         try {
             switch (tipo) {
-                case "asignatura" -> { gestionAsignaturas.eliminarAsignatura((Asignatura) obj); SistemaEventBus.notificar(Evento.ASIGNATURAS); }
-                case "periodo"    -> { gestionPeriodos.eliminarPeriodo((PeriodoAcademico) obj); SistemaEventBus.notificar(Evento.PERIODOS); }
-                case "aula"       -> { gestionAulas.eliminarAula((Aula) obj); SistemaEventBus.notificar(Evento.AULAS); }
-                case "grupo"      -> { gestionGrupos.eliminarGrupo((Grupo) obj); SistemaEventBus.notificar(Evento.GRUPOS); }
-                case "recreo"     -> { gestionRecreos.eliminarRecreo((Recreo) obj); SistemaEventBus.notificar(Evento.RECREOS); }
-                case "grado"      -> { gestionGrados.eliminarGrado((Grado) obj); SistemaEventBus.notificar(Evento.GRADOS); }
-                case "turno"      -> { gestionTurnos.eliminarTurno((Turno) obj); SistemaEventBus.notificar(Evento.TURNOS); }
+                case "asignatura" -> { gestionAsignaturas.eliminarAsignatura((Asignatura) obj); SistemaEventBus.notificar(TipoEvento.ASIGNATURAS); }
+                case "periodo"    -> { gestionPeriodos.eliminarPeriodo((PeriodoAcademico) obj); SistemaEventBus.notificar(TipoEvento.PERIODOS); }
+                case "aula"       -> { gestionAulas.eliminarAula((Aula) obj); SistemaEventBus.notificar(TipoEvento.AULAS); }
+                case "grupo"      -> { gestionGrupos.eliminarGrupo((Grupo) obj); SistemaEventBus.notificar(TipoEvento.GRUPOS); }
+                case "recreo"     -> { gestionRecreos.eliminarRecreo((Recreo) obj); SistemaEventBus.notificar(TipoEvento.RECREOS); }
+                case "grado"      -> { gestionGrados.eliminarGrado((Grado) obj); SistemaEventBus.notificar(TipoEvento.GRADOS); }
+                case "turno"      -> { gestionTurnos.eliminarTurno((Turno) obj); SistemaEventBus.notificar(TipoEvento.TURNOS); }
             }
             cargarDatos();
         } catch (IllegalArgumentException e) {
@@ -452,7 +452,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (asignaturaEditando == null) gestionAsignaturas.crearAsignatura(nombre);
             else gestionAsignaturas.actualizarAsignatura(asignaturaEditando, nombre);
-            SistemaEventBus.notificar(Evento.ASIGNATURAS);
+            SistemaEventBus.notificar(TipoEvento.ASIGNATURAS);
             panelFormularioAsignatura.setVisible(false);
             panelFormularioAsignatura.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
@@ -468,7 +468,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (periodoEditando == null) gestionPeriodos.crearPeriodo(nombre, inicio.toString(), fin.toString(), estado);
             else gestionPeriodos.actualizarPeriodo(periodoEditando, nombre, inicio.toString(), fin.toString(), estado);
-            SistemaEventBus.notificar(Evento.PERIODOS);
+            SistemaEventBus.notificar(TipoEvento.PERIODOS);
             panelFormularioPeriodo.setVisible(false);
             panelFormularioPeriodo.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
@@ -490,7 +490,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (aulaEditando == null) gestionAulas.crearAula(nombre, capacidad, ubicacion, tipo, modalidad);
             else gestionAulas.actualizarAula(aulaEditando, nombre, capacidad, ubicacion, tipo, modalidad);
-            SistemaEventBus.notificar(Evento.AULAS);
+            SistemaEventBus.notificar(TipoEvento.AULAS);
             panelFormularioAula.setVisible(false);
             panelFormularioAula.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
@@ -507,7 +507,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (grupoEditando == null) gestionGrupos.crearGrupo(nombre, grado);
             else gestionGrupos.actualizarGrupo(grupoEditando, nombre, grado);
-            SistemaEventBus.notificar(Evento.GRUPOS);
+            SistemaEventBus.notificar(TipoEvento.GRUPOS);
             panelFormularioGrupo.setVisible(false);
             panelFormularioGrupo.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
@@ -525,7 +525,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (recreoEditando == null) gestionRecreos.crearRecreo(franja, desc.isBlank() ? "Recreo" : desc, periodo);
             else gestionRecreos.actualizarRecreo(recreoEditando, franja, desc.isBlank() ? "Recreo" : desc, periodo);
-            SistemaEventBus.notificar(Evento.RECREOS);
+            SistemaEventBus.notificar(TipoEvento.RECREOS);
             panelFormularioRecreo.setVisible(false);
             panelFormularioRecreo.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
@@ -539,7 +539,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (gradoEditando == null) gestionGrados.crearGrado(nombre, nivel);
             else gestionGrados.actualizarGrado(gradoEditando, nombre, nivel);
-            SistemaEventBus.notificar(Evento.GRADOS);
+            SistemaEventBus.notificar(TipoEvento.GRADOS);
             panelFormularioGrado.setVisible(false);
             panelFormularioGrado.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
@@ -553,7 +553,7 @@ public class tab_CatalogosController implements Initializable {
         try {
             if (turnoEditando == null) gestionTurnos.crearTurno(nombre);
             else gestionTurnos.actualizarTurno(turnoEditando, nombre);
-            SistemaEventBus.notificar(Evento.TURNOS);
+            SistemaEventBus.notificar(TipoEvento.TURNOS);
             panelFormularioTurno.setVisible(false);
             panelFormularioTurno.setManaged(false);
         } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }

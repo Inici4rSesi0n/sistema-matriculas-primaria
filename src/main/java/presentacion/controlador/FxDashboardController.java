@@ -7,11 +7,14 @@ import aplicacion.casosdeuso.GestionGrupos;
 import aplicacion.casosdeuso.GestionPermisos;
 import dominio.modelo.Usuario;
 import infraestructura.configuracion.SpringContext;
+import presentacion.eventos.SistemaEventBus;
+import presentacion.eventos.TipoEvento;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -45,6 +48,12 @@ public class FxDashboardController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         gestionPermisos = SpringContext.getBean(GestionPermisos.class);
         precargarRutas();
+
+        // Suscripciones: refrescar tarjetas cuando cambian las entidades
+        SistemaEventBus.suscribir(TipoEvento.ESTUDIANTES, this::actualizarTarjetas);
+        SistemaEventBus.suscribir(TipoEvento.DOCENTES, this::actualizarTarjetas);
+        SistemaEventBus.suscribir(TipoEvento.GRUPOS, this::actualizarTarjetas);
+        SistemaEventBus.suscribir(TipoEvento.ASIGNATURAS, this::actualizarTarjetas);
     }
 
     private void precargarRutas() {
@@ -90,11 +99,19 @@ public class FxDashboardController implements Initializable {
         }
     }
 
+    /**
+     * Actualiza los contadores de las tarjetas.
+     * Usa Platform.runLater para garantizar el refresco visual en el siguiente pulso.
+     * Si no hay usuario logueado, no hace nada (evita NPE en arranque).
+     */
     private void actualizarTarjetas() {
-        lblNumEstudiantes.setText(String.valueOf(SpringContext.getBean(GestionEstudiantes.class).listarTodos().size()));
-        lblNumDocentes.setText(String.valueOf(SpringContext.getBean(GestionDocentes.class).listarTodos().size()));
-        lblNumGrupos.setText(String.valueOf(SpringContext.getBean(GestionGrupos.class).listarTodos().size()));
-        lblNumAsignaturas.setText(String.valueOf(SpringContext.getBean(GestionAsignaturas.class).listarTodos().size()));
+        if (usuario == null) return;
+        Platform.runLater(() -> {
+            lblNumEstudiantes.setText(String.valueOf(SpringContext.getBean(GestionEstudiantes.class).listarTodos().size()));
+            lblNumDocentes.setText(String.valueOf(SpringContext.getBean(GestionDocentes.class).listarTodos().size()));
+            lblNumGrupos.setText(String.valueOf(SpringContext.getBean(GestionGrupos.class).listarTodos().size()));
+            lblNumAsignaturas.setText(String.valueOf(SpringContext.getBean(GestionAsignaturas.class).listarTodos().size()));
+        });
     }
 
     @FXML

@@ -1,10 +1,13 @@
 package presentacion.controlador;
 
 import presentacion.dialogos.Dialogos;
+import presentacion.eventos.SistemaEventBus;
+import presentacion.eventos.TipoEvento;
 import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionGrupos;
 import aplicacion.casosdeuso.GestionPeriodos;
 import aplicacion.casosdeuso.GestionHorario;
+import dominio.modelo.Clase;
 import dominio.modelo.Evento;
 import dominio.modelo.Grupo;
 import dominio.modelo.PeriodoAcademico;
@@ -12,6 +15,7 @@ import dominio.modelo.PeriodoAcademico;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -58,6 +62,10 @@ public class visor_HorarioController implements Initializable {
 
         configurarCombos();
         configurarTabla();
+
+        // Suscripciones: si el horario ya está generado, se auto-refresca
+        SistemaEventBus.suscribir(TipoEvento.CLASES, this::refrescarSiVisible);
+        SistemaEventBus.suscribir(TipoEvento.RECREOS, this::refrescarSiVisible);
     }
 
     private void configurarCombos() {
@@ -82,12 +90,12 @@ public class visor_HorarioController implements Initializable {
         colHoraFin.setCellValueFactory(new PropertyValueFactory<>("horaFin"));
         colTipo.setCellValueFactory(cell -> {
             Evento evento = cell.getValue();
-            String tipo = (evento instanceof dominio.modelo.Clase) ? "Clase" : "Recreo";
+            String tipo = (evento instanceof Clase) ? "Clase" : "Recreo";
             return new javafx.beans.property.SimpleStringProperty(tipo);
         });
         colAsignaturaHorario.setCellValueFactory(cell -> {
             Evento evento = cell.getValue();
-            if (evento instanceof dominio.modelo.Clase clase) {
+            if (evento instanceof Clase clase) {
                 return new javafx.beans.property.SimpleStringProperty(
                         clase.getAsignatura() != null ? clase.getAsignatura().getNombre() : "");
             }
@@ -95,7 +103,7 @@ public class visor_HorarioController implements Initializable {
         });
         colDocenteHorario.setCellValueFactory(cell -> {
             Evento evento = cell.getValue();
-            if (evento instanceof dominio.modelo.Clase clase) {
+            if (evento instanceof Clase clase) {
                 return new javafx.beans.property.SimpleStringProperty(
                         clase.getDocente() != null ? clase.getDocente().getNombreCompleto() : "");
             }
@@ -103,7 +111,7 @@ public class visor_HorarioController implements Initializable {
         });
         colAulaHorario.setCellValueFactory(cell -> {
             Evento evento = cell.getValue();
-            if (evento instanceof dominio.modelo.Clase clase) {
+            if (evento instanceof Clase clase) {
                 return new javafx.beans.property.SimpleStringProperty(
                         clase.getAula() != null ? clase.getAula().getNombre() : "");
             }
@@ -115,16 +123,34 @@ public class visor_HorarioController implements Initializable {
         });
     }
 
+    /** Refresca la tabla si el horario ya fue generado. */
+    private void refrescarSiVisible() {
+        if (listaHorario != null && !listaHorario.isEmpty()) {
+            generarHorarioActual();
+        }
+    }
+
     @FXML
     private void handleGenerarHorario() {
+        if (!validarSeleccion()) return;
+        generarHorarioActual();
+    }
+
+    private boolean validarSeleccion() {
         String grupoNombre = cmbGrupoVisor.getValue();
         String periodoNombre = cmbPeriodoVisor.getValue();
 
         if (grupoNombre == null || grupoNombre.startsWith("Seleccione")
                 || periodoNombre == null || periodoNombre.startsWith("Seleccione")) {
             Dialogos.M1("Seleccione un grupo y un periodo.");
-            return;
+            return false;
         }
+        return true;
+    }
+
+    private void generarHorarioActual() {
+        String grupoNombre = cmbGrupoVisor.getValue();
+        String periodoNombre = cmbPeriodoVisor.getValue();
 
         Grupo grupo = gestionGrupos.buscarPorNombre(grupoNombre);
         PeriodoAcademico periodo = gestionPeriodos.buscarPorNombre(periodoNombre);
@@ -135,9 +161,12 @@ public class visor_HorarioController implements Initializable {
         }
 
         List<Evento> eventos = gestionHorario.obtenerHorarioCompleto(grupo, periodo);
-        listaHorario = FXCollections.observableArrayList(eventos);
-        tablaHorario.setItems(listaHorario);
-        tablaHorario.refresh();
+
+        Platform.runLater(() -> {
+            listaHorario = FXCollections.observableArrayList(eventos);
+            tablaHorario.setItems(listaHorario);
+            tablaHorario.refresh();
+        });
     }
 
     @FXML

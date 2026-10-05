@@ -30,10 +30,20 @@ public class Docente extends Usuario {
         this.tutoria = null;
     }
     public String getEspecialidad() { return especialidad; }
-    public void setEspecialidad(String especialidad) { this.especialidad = especialidad; }
+    public void setEspecialidad(String especialidad){
+        if(especialidad==null || especialidad.isBlank()){
+            throw new IllegalArgumentException("La especialidad no puede ser nula o vacía");
+        }
+        this.especialidad = especialidad;
+    }
 
     public List<Asignatura> getAsignaturas() {
         return Collections.unmodifiableList(asignaturas);
+    }
+    public void setAsignaturas(List<Asignatura> asignaturas) {
+        this.asignaturas = (asignaturas != null)
+            ? new ArrayList<>(asignaturas)
+            : new ArrayList<>();
     }
     public void agregarAsignatura(Asignatura asignatura) {
         if (asignatura == null) throw new IllegalArgumentException("La asignatura no puede ser nula");

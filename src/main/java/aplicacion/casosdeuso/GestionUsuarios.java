@@ -11,7 +11,6 @@ import java.util.List;
  */
 @Service
 public class GestionUsuarios {
-
     private final RepositorioAdministradores repoAdmin;
     private final RepositorioDirectores repoDir;
     private final RepositorioDocentes repoDoc;
@@ -20,7 +19,6 @@ public class GestionUsuarios {
     private final RepositorioCoordinadores repoCoord;
     private final RepositorioPadres repoPad;
     private final LoggerPort logger;
-
     public GestionUsuarios(RepositorioAdministradores repoAdmin, RepositorioDirectores repoDir,
                            RepositorioDocentes repoDoc, RepositorioEstudiantes repoEst,
                            RepositorioSecretarios repoSec, RepositorioCoordinadores repoCoord,
@@ -83,6 +81,8 @@ public class GestionUsuarios {
     }
 
     public void actualizarUsuario(Usuario usuario) {
+        if (usuario == null) throw new IllegalArgumentException("El usuario no puede ser nulo");
+        String antes = usuario.toString();
         switch (usuario.getRol()) {
             case ADMINISTRADOR -> repoAdmin.actualizar((Administrador) usuario, (Administrador) usuario);
             case DIRECTOR -> repoDir.actualizar((Director) usuario, (Director) usuario);
@@ -92,7 +92,8 @@ public class GestionUsuarios {
             case COORDINADOR -> repoCoord.actualizar((CoordinadorAcademico) usuario, (CoordinadorAcademico) usuario);
             case PADRE -> repoPad.actualizar((Padre) usuario, (Padre) usuario);
         }
-        logger.info("Usuario {} ({}) actualizado.", usuario.getCodigo(), usuario.getRol());
+        logger.info("[AUDIT] Usuario {} actualizado. Antes: {} | Después: {}", 
+                usuario.getCodigo(), antes, usuario);
     }
 
     public void eliminarUsuario(Usuario usuario) {

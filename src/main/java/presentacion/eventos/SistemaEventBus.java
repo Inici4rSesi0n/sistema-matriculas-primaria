@@ -16,34 +16,34 @@ import java.util.Map;
  */
 public final class SistemaEventBus {
 
-    private static final Map<Evento, List<Runnable>> suscriptores = new EnumMap<>(Evento.class);
+    private static final Map<TipoEvento, List<Runnable>> suscriptores = new EnumMap<>(TipoEvento.class);
 
     private SistemaEventBus() {}
 
-    public static void suscribir(Evento evento, Runnable listener) {
+    public static void suscribir(TipoEvento evento, Runnable listener) {
         if (evento == null || listener == null) return;
         suscriptores.computeIfAbsent(evento, k -> new ArrayList<>()).add(listener);
     }
 
-    public static void desuscribir(Evento evento, Runnable listener) {
+    public static void desuscribir(TipoEvento evento, Runnable listener) {
         List<Runnable> lista = suscriptores.get(evento);
         if (lista != null) lista.remove(listener);
     }
 
-    public static void notificar(Evento... eventos) {
+    public static void notificar(TipoEvento... eventos) {
 
 
         if (eventos == null) return;
 
 
-        for (Evento e : eventos) notificar(e);
+        for (TipoEvento e : eventos) notificar(e);
 
 
     }
 
 
 
-    public static void notificar(Evento evento) {
+    public static void notificar(TipoEvento evento) {
         if (evento == null) return;
         List<Runnable> lista = suscriptores.get(evento);
         if (lista == null || lista.isEmpty()) return;

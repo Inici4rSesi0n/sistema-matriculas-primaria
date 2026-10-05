@@ -1,12 +1,14 @@
 package presentacion.controlador;
-
 import presentacion.dialogos.Dialogos;
+import presentacion.eventos.SistemaEventBus;
+import presentacion.eventos.TipoEvento;
 import infraestructura.configuracion.SpringContext;
 import dominio.modelo.Usuario;
 import aplicacion.casosdeuso.GestionUsuarios;
 import dominio.puerto.externo.HashProvider;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,13 +18,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-
 /**
  *
  * @author inici4rsesi0n
  */
 public class s_GestionUsuariosController implements Initializable {
-
     @FXML private TableView<Usuario> tablaUsuarios;
     @FXML private TableColumn<Usuario, String> colCodigo;
     @FXML private TableColumn<Usuario, String> colNombre;
@@ -30,7 +30,6 @@ public class s_GestionUsuariosController implements Initializable {
     @FXML private TableColumn<Usuario, String> colDni;
     @FXML private TableColumn<Usuario, String> colRol;
     @FXML private TableColumn<Usuario, Void> colAcciones;
-
     @FXML private VBox panelFormulario;
     @FXML private ComboBox<Usuario.Rol> cmbRol;
     @FXML private TextField txtCodigo;
@@ -42,7 +41,6 @@ public class s_GestionUsuariosController implements Initializable {
     @FXML private Button btnNuevoUsuario;
     @FXML private Button btnGuardar;
     @FXML private Button btnCancelar;
-
     private ObservableList<Usuario> listaUsuarios;
     private Usuario usuarioEditando;
     private GestionUsuarios gestionUsuarios;
@@ -55,7 +53,7 @@ public class s_GestionUsuariosController implements Initializable {
         configurarTabla();
         configurarColumnaAcciones();
         configurarComboRoles();
-        cargarUsuarios();
+        SistemaEventBus.suscribir(TipoEvento.USUARIOS, this::cargarUsuarios);
     }
 
     private void configurarTabla() {
@@ -116,9 +114,11 @@ public class s_GestionUsuariosController implements Initializable {
     }
 
     private void cargarUsuarios() {
-        listaUsuarios = FXCollections.observableArrayList(gestionUsuarios.listarTodos());
-        tablaUsuarios.setItems(listaUsuarios);
-        tablaUsuarios.refresh();
+        Platform.runLater(() -> {
+            listaUsuarios = FXCollections.observableArrayList(gestionUsuarios.listarTodos());
+            tablaUsuarios.setItems(listaUsuarios);
+            tablaUsuarios.refresh();
+        });
     }
 
     @FXML
@@ -192,11 +192,10 @@ public class s_GestionUsuariosController implements Initializable {
                 }
                 gestionUsuarios.actualizarUsuario(usuarioEditando);
             }
-
-            cargarUsuarios();
             limpiarFormulario();
             panelFormulario.setManaged(false);
             panelFormulario.setVisible(false);
+            SistemaEventBus.notificar(TipoEvento.USUARIOS);
         } catch (IllegalArgumentException e) {
             Dialogos.M1(e.getMessage());
         }
@@ -222,7 +221,7 @@ public class s_GestionUsuariosController implements Initializable {
         if (respuesta == 0) {
             try {
                 gestionUsuarios.eliminarUsuario(usuario);
-                cargarUsuarios();
+                SistemaEventBus.notificar(TipoEvento.USUARIOS);
             } catch (IllegalArgumentException e) {
                 Dialogos.M1(e.getMessage());
             }

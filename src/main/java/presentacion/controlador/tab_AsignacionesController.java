@@ -1,7 +1,7 @@
 package presentacion.controlador;
 
 import presentacion.eventos.SistemaEventBus;
-import presentacion.eventos.Evento;
+import presentacion.eventos.TipoEvento;
 import presentacion.dialogos.Dialogos;
 import infraestructura.configuracion.SpringContext;
 import aplicacion.casosdeuso.GestionAsignaturas;
@@ -91,11 +91,11 @@ public class tab_AsignacionesController implements Initializable {
             }
         });
 
-        SistemaEventBus.suscribir(Evento.GRUPOS, this::recargarDesdeEvento);
-        SistemaEventBus.suscribir(Evento.DOCENTES, this::recargarDesdeEvento);
-        SistemaEventBus.suscribir(Evento.ASIGNATURAS, this::recargarDesdeEvento);
-        SistemaEventBus.suscribir(Evento.GRADOS, this::recargarDesdeEvento);
-        SistemaEventBus.suscribir(Evento.USUARIOS, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(TipoEvento.GRUPOS, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(TipoEvento.DOCENTES, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(TipoEvento.ASIGNATURAS, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(TipoEvento.GRADOS, this::recargarDesdeEvento);
+        SistemaEventBus.suscribir(TipoEvento.USUARIOS, this::recargarDesdeEvento);
     }
 
     private void recargarDesdeEvento() {
@@ -177,7 +177,7 @@ public class tab_AsignacionesController implements Initializable {
                     Docente docente = gestionDocentes.buscarPorCodigo(item.getCodigoDocente());
                     if (docente != null) {
                         gestionDocentes.removerAsignatura(docente, item.getAsignatura());
-                        SistemaEventBus.notificar(Evento.DOCENTES);
+                        SistemaEventBus.notificar(TipoEvento.DOCENTES);
                     }
                 });
             }
@@ -215,7 +215,7 @@ public class tab_AsignacionesController implements Initializable {
                     TutorItem item = getTableView().getItems().get(getIndex());
                     Grupo grupo = item.getGrupo();
                     gestionGrupos.removerTutor(grupo);
-                    SistemaEventBus.notificar(Evento.GRUPOS, Evento.DOCENTES);
+                    SistemaEventBus.notificar(TipoEvento.GRUPOS, TipoEvento.DOCENTES);
                 });
             }
             @Override protected void updateItem(Void item, boolean empty) {
@@ -254,7 +254,7 @@ public class tab_AsignacionesController implements Initializable {
                     Grado grado = item.getGrado();
                     coord.removerGrado(grado);
                     gestionUsuarios.actualizarUsuario(coord);
-                    SistemaEventBus.notificar(Evento.USUARIOS, Evento.GRADOS);
+                    SistemaEventBus.notificar(TipoEvento.USUARIOS, TipoEvento.GRADOS);
                 });
             }
             @Override protected void updateItem(Void item, boolean empty) {
@@ -301,7 +301,7 @@ public class tab_AsignacionesController implements Initializable {
         }
         try {
             gestionDocentes.agregarAsignatura(docente, a);
-            SistemaEventBus.notificar(Evento.DOCENTES);
+            SistemaEventBus.notificar(TipoEvento.DOCENTES);
         } catch (IllegalArgumentException e) {
             Dialogos.M1(e.getMessage());
         }
@@ -329,7 +329,7 @@ public class tab_AsignacionesController implements Initializable {
         }
         try {
             gestionGrupos.asignarTutor(grupo, docente);
-            SistemaEventBus.notificar(Evento.GRUPOS, Evento.DOCENTES);
+            SistemaEventBus.notificar(TipoEvento.GRUPOS, TipoEvento.DOCENTES);
         } catch (IllegalArgumentException e) {
             Dialogos.M1(e.getMessage());
         }
@@ -358,7 +358,7 @@ public class tab_AsignacionesController implements Initializable {
         try {
             coord.agregarGrado(g);
             gestionUsuarios.actualizarUsuario(coord);
-            SistemaEventBus.notificar(Evento.USUARIOS, Evento.GRADOS);
+            SistemaEventBus.notificar(TipoEvento.USUARIOS, TipoEvento.GRADOS);
         } catch (IllegalArgumentException e) {
             Dialogos.M1(e.getMessage());
         }
