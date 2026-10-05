@@ -12,14 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class EventoTest {
 
     private FranjaHoraria franja;
-    private PeriodoAcademico periodo;
     private Evento evento;
 
     @BeforeEach
     void setUp() {
         franja = new FranjaHoraria("Lunes", "08:00", "10:00");
-        periodo = new PeriodoAcademico("2026-I", "2026-01-01", "2026-12-31", "Activo");
-        evento = new EventoConcreto(franja, periodo, "Clase de prueba");
+        evento = new EventoConcreto(franja, "Clase de prueba");
     }
 
     @Test
@@ -27,20 +25,13 @@ class EventoTest {
         assertEquals("Lunes", evento.getDiaSemana());
         assertEquals("08:00", evento.getHoraInicio());
         assertEquals("10:00", evento.getHoraFin());
-        assertEquals(periodo, evento.getPeriodo());
         assertEquals(franja, evento.getFranja());
     }
 
     @Test
     void constructor_debeLanzarExcepcionSiFranjaNula() {
         assertThrows(IllegalArgumentException.class,
-                () -> new EventoConcreto(null, periodo, "desc"));
-    }
-
-    @Test
-    void constructor_debeLanzarExcepcionSiPeriodoNulo() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new EventoConcreto(franja, null, "desc"));
+                () -> new EventoConcreto(null, "desc"));
     }
 
     @Test
@@ -52,13 +43,6 @@ class EventoTest {
     }
 
     @Test
-    void setPeriodo_debeActualizarPeriodo() {
-        PeriodoAcademico nuevoPeriodo = new PeriodoAcademico("2026-II", "2026-07-01", "2026-12-31", "Activo");
-        evento.setPeriodo(nuevoPeriodo);
-        assertEquals(nuevoPeriodo, evento.getPeriodo());
-    }
-
-    @Test
     void toString_debeIncluirDescripcionYFranja() {
         String texto = evento.toString();
         assertTrue(texto.contains("Clase de prueba"));
@@ -67,7 +51,7 @@ class EventoTest {
 
     @Test
     void toString_conDescripcionNulaDebeMostrarSinDescripcion() {
-        Evento eventoSinDesc = new EventoConcreto(franja, periodo, null);
+        Evento eventoSinDesc = new EventoConcreto(franja, null);
         String texto = eventoSinDesc.toString();
         assertTrue(texto.contains("Sin descripción"));
     }
@@ -75,8 +59,8 @@ class EventoTest {
     private static class EventoConcreto extends Evento {
         private String descripcion;
 
-        public EventoConcreto(FranjaHoraria franja, PeriodoAcademico periodo, String descripcion) {
-            super(franja, periodo);
+        public EventoConcreto(FranjaHoraria franja, String descripcion) {
+            super(franja);
             this.descripcion = descripcion;
         }
 
