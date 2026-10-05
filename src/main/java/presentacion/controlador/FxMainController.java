@@ -75,7 +75,7 @@ public class FxMainController implements Initializable {
             if (gestionPermisos.puedeAccederPortal(usuario.getRol(), modo)) {
                 navegarAVista("dashboard", (Stage) btnPortalIngreso.getScene().getWindow(), usuario);
             } else {
-                Dialogos.M1("No tiene permisos para acceder a este portal.");
+                Dialogos.info("No tiene permisos para acceder a este portal.");
             }
         } else {
             abrirLogin(modo);
@@ -85,7 +85,7 @@ public class FxMainController implements Initializable {
     private void abrirLogin(String modo) {
         URL ruta = rutasVistas.get("login");
         if (ruta == null) {
-            Dialogos.M1("Ventana de login no disponible.");
+            Dialogos.info("Ventana de login no disponible.");
             return;
         }
 
@@ -127,7 +127,7 @@ public class FxMainController implements Initializable {
                 mainStage.show();
             }
         } catch (IOException e) {
-            Dialogos.M1("No se pudo abrir la ventana de inicio de sesión.");
+            Dialogos.info("No se pudo abrir la ventana de inicio de sesión.");
             Stage mainStage = (Stage) btnPortalIngreso.getScene().getWindow();
             if (!mainStage.isShowing()) {
                 mainStage.show();
@@ -138,7 +138,7 @@ public class FxMainController implements Initializable {
     private void navegarAVista(String vistaKey, Stage ventanaActual, Usuario usuario) {
         URL ruta = rutasVistas.get(vistaKey);
         if (ruta == null) {
-            Dialogos.M1("Vista no disponible: " + vistaKey);
+            Dialogos.info("Vista no disponible: " + vistaKey);
             return;
         }
 
@@ -177,7 +177,7 @@ public class FxMainController implements Initializable {
             }
 
         } catch (IOException e) {
-            Dialogos.M1("No se pudo cargar la vista: " + vistaKey);
+            Dialogos.info("No se pudo cargar la vista: " + vistaKey);
         }
     }
 
@@ -185,7 +185,7 @@ public class FxMainController implements Initializable {
     private void handleCerrarSesion() {
         SesionUsuario.cerrarSesion();
         actualizarIndicadorSesion();
-        Dialogos.M1("Sesión cerrada correctamente.");
+        Dialogos.info("Sesión cerrada correctamente.");
     }
 
     private void actualizarIndicadorSesion() {

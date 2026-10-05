@@ -368,9 +368,7 @@ public class tab_CatalogosController implements Initializable {
     }
 
     private void eliminar(Object obj, String tipo) {
-        String mensaje = "¿Está seguro de eliminar este registro?";
-        int respuesta = Dialogos.M3("Confirmar eliminación", mensaje);
-        if (respuesta != 0) return;
+        if (!Dialogos.confirmar("Confirmar eliminación", "¿Está seguro de eliminar este registro?")) return;
         try {
             switch (tipo) {
                 case "asignatura" -> { gestionAsignaturas.eliminarAsignatura((Asignatura) obj); SistemaEventBus.notificar(TipoEvento.ASIGNATURAS); }
@@ -383,7 +381,7 @@ public class tab_CatalogosController implements Initializable {
             }
             cargarDatos();
         } catch (IllegalArgumentException e) {
-            Dialogos.M1(e.getMessage());
+            Dialogos.info(e.getMessage());
         }
     }
 
@@ -454,14 +452,14 @@ public class tab_CatalogosController implements Initializable {
     @FXML private void handleNuevaAsignatura() { asignaturaEditando = null; txtNombreAsignatura.clear(); panelFormularioAsignatura.setVisible(true); panelFormularioAsignatura.setManaged(true); }
     @FXML private void handleGuardarAsignatura() {
         String nombre = txtNombreAsignatura.getText().trim();
-        if (nombre.isBlank()) { Dialogos.M1("El nombre no puede estar vacío."); return; }
+        if (nombre.isBlank()) { Dialogos.info("El nombre no puede estar vacío."); return; }
         try {
             if (asignaturaEditando == null) gestionAsignaturas.crearAsignatura(nombre);
             else gestionAsignaturas.actualizarAsignatura(asignaturaEditando, nombre);
             SistemaEventBus.notificar(TipoEvento.ASIGNATURAS);
             panelFormularioAsignatura.setVisible(false);
             panelFormularioAsignatura.setManaged(false);
-        } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
+        } catch (IllegalArgumentException e) { Dialogos.info(e.getMessage()); }
     }
     @FXML private void handleCancelarAsignatura() { panelFormularioAsignatura.setVisible(false); panelFormularioAsignatura.setManaged(false); }
 
@@ -470,14 +468,14 @@ public class tab_CatalogosController implements Initializable {
         String nombre = txtNombrePeriodo.getText().trim();
         LocalDate inicio = dateFechaInicio.getValue(), fin = dateFechaFin.getValue();
         String estado = cmbEstadoPeriodo.getValue();
-        if (nombre.isBlank() || inicio == null || fin == null || estado == null) { Dialogos.M1("Todos los campos son obligatorios."); return; }
+        if (nombre.isBlank() || inicio == null || fin == null || estado == null) { Dialogos.info("Todos los campos son obligatorios."); return; }
         try {
             if (periodoEditando == null) gestionPeriodos.crearPeriodo(nombre, inicio.toString(), fin.toString(), estado);
             else gestionPeriodos.actualizarPeriodo(periodoEditando, nombre, inicio.toString(), fin.toString(), estado);
             SistemaEventBus.notificar(TipoEvento.PERIODOS);
             panelFormularioPeriodo.setVisible(false);
             panelFormularioPeriodo.setManaged(false);
-        } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
+        } catch (IllegalArgumentException e) { Dialogos.info(e.getMessage()); }
     }
     @FXML private void handleCancelarPeriodo() { panelFormularioPeriodo.setVisible(false); panelFormularioPeriodo.setManaged(false); }
 
@@ -485,12 +483,12 @@ public class tab_CatalogosController implements Initializable {
     @FXML private void handleGuardarAula() {
         String nombre = txtNombreAula.getText().trim(), capacidadStr = txtCapacidadAula.getText().trim(), ubicacion = txtUbicacionAula.getText().trim(), tipo = txtTipoAula.getText().trim();
         ModalidadAula modalidad = cmbModalidadAula.getValue();
-        if (nombre.isBlank() || capacidadStr.isBlank() || ubicacion.isBlank() || tipo.isBlank()) { Dialogos.M1("Todos los campos son obligatorios."); return; }
+        if (nombre.isBlank() || capacidadStr.isBlank() || ubicacion.isBlank() || tipo.isBlank()) { Dialogos.info("Todos los campos son obligatorios."); return; }
         int capacidad;
         try{
             capacidad = Integer.parseInt(capacidadStr);
         } catch(NumberFormatException e){
-            Dialogos.M1("La capacidad debe ser un número entero válido");
+            Dialogos.info("La capacidad debe ser un número entero válido");
             return;
         }
         try {
@@ -499,7 +497,7 @@ public class tab_CatalogosController implements Initializable {
             SistemaEventBus.notificar(TipoEvento.AULAS);
             panelFormularioAula.setVisible(false);
             panelFormularioAula.setManaged(false);
-        } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
+        } catch (IllegalArgumentException e) { Dialogos.info(e.getMessage()); }
     }
     @FXML private void handleCancelarAula() { panelFormularioAula.setVisible(false); panelFormularioAula.setManaged(false); }
 
@@ -507,16 +505,16 @@ public class tab_CatalogosController implements Initializable {
     @FXML private void handleGuardarGrupo() {
         String nombre = txtNombreGrupo.getText().trim();
         String gradoNombre = cmbGradoGrupo.getValue();
-        if (nombre.isBlank() || gradoNombre == null || gradoNombre.startsWith("Seleccione")) { Dialogos.M1("Todos los campos son obligatorios."); return; }
+        if (nombre.isBlank() || gradoNombre == null || gradoNombre.startsWith("Seleccione")) { Dialogos.info("Todos los campos son obligatorios."); return; }
         Grado grado = gestionGrados.buscarPorNombre(gradoNombre);
-        if (grado == null) { Dialogos.M1("El grado seleccionado no existe."); return; }
+        if (grado == null) { Dialogos.info("El grado seleccionado no existe."); return; }
         try {
             if (grupoEditando == null) gestionGrupos.crearGrupo(nombre, grado);
             else gestionGrupos.actualizarGrupo(grupoEditando, nombre, grado);
             SistemaEventBus.notificar(TipoEvento.GRUPOS);
             panelFormularioGrupo.setVisible(false);
             panelFormularioGrupo.setManaged(false);
-        } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
+        } catch (IllegalArgumentException e) { Dialogos.info(e.getMessage()); }
     }
     @FXML private void handleCancelarGrupo() { panelFormularioGrupo.setVisible(false); panelFormularioGrupo.setManaged(false); }
     @FXML private void handleNuevoRecreo() {
@@ -536,15 +534,15 @@ public class tab_CatalogosController implements Initializable {
         String fin = txtFinRecreo.getText().trim();
         String desc = txtDescripcionRecreo.getText().trim();
         if (dia == null || inicio.isBlank() || fin.isBlank()) {
-            Dialogos.M1("Todos los campos son obligatorios.");
+            Dialogos.info("Todos los campos son obligatorios.");
             return;
         }
         if (periodosRecreoTemporal.isEmpty()) {
-            Dialogos.M1("Debe asociar al menos un periodo al recreo.");
+            Dialogos.info("Debe asociar al menos un periodo al recreo.");
             return;
         }
         if (!inicio.matches("([01]\\d|2[0-3]):[0-5]\\d") || !fin.matches("([01]\\d|2[0-3]):[0-5]\\d")) {
-            Dialogos.M1("Formato de hora inválido. Use HH:mm (ej. 08:00, 14:30).");
+            Dialogos.info("Formato de hora inválido. Use HH:mm (ej. 08:00, 14:30).");
             return;
         }
         FranjaHoraria franja = new FranjaHoraria(dia, inicio, fin);
@@ -559,35 +557,35 @@ public class tab_CatalogosController implements Initializable {
             panelFormularioRecreo.setVisible(false);
             panelFormularioRecreo.setManaged(false);
         } catch (IllegalArgumentException e) {
-            Dialogos.M1(e.getMessage());
+            Dialogos.info(e.getMessage());
         }
     }
     @FXML private void handleCancelarRecreo() { panelFormularioRecreo.setVisible(false); panelFormularioRecreo.setManaged(false); }
     @FXML private void handleNuevoGrado() { gradoEditando = null; txtNombreGrado.clear(); txtNivelGrado.clear(); panelFormularioGrado.setVisible(true); panelFormularioGrado.setManaged(true); }
     @FXML private void handleGuardarGrado() {
         String nombre = txtNombreGrado.getText().trim(), nivel = txtNivelGrado.getText().trim();
-        if (nombre.isBlank() || nivel.isBlank()) { Dialogos.M1("El nombre y el nivel son obligatorios."); return; }
+        if (nombre.isBlank() || nivel.isBlank()) { Dialogos.info("El nombre y el nivel son obligatorios."); return; }
         try {
             if (gradoEditando == null) gestionGrados.crearGrado(nombre, nivel);
             else gestionGrados.actualizarGrado(gradoEditando, nombre, nivel);
             SistemaEventBus.notificar(TipoEvento.GRADOS);
             panelFormularioGrado.setVisible(false);
             panelFormularioGrado.setManaged(false);
-        } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
+        } catch (IllegalArgumentException e) { Dialogos.info(e.getMessage()); }
     }
     @FXML private void handleCancelarGrado() { panelFormularioGrado.setVisible(false); panelFormularioGrado.setManaged(false); }
 
     @FXML private void handleNuevoTurno() { turnoEditando = null; txtNombreTurno.clear(); panelFormularioTurno.setVisible(true); panelFormularioTurno.setManaged(true); }
     @FXML private void handleGuardarTurno() {
         String nombre = txtNombreTurno.getText().trim();
-        if (nombre.isBlank()) { Dialogos.M1("El nombre no puede estar vacío."); return; }
+        if (nombre.isBlank()) { Dialogos.info("El nombre no puede estar vacío."); return; }
         try {
             if (turnoEditando == null) gestionTurnos.crearTurno(nombre);
             else gestionTurnos.actualizarTurno(turnoEditando, nombre);
             SistemaEventBus.notificar(TipoEvento.TURNOS);
             panelFormularioTurno.setVisible(false);
             panelFormularioTurno.setManaged(false);
-        } catch (IllegalArgumentException e) { Dialogos.M1(e.getMessage()); }
+        } catch (IllegalArgumentException e) { Dialogos.info(e.getMessage()); }
     }
     @FXML private void handleCancelarTurno() { panelFormularioTurno.setVisible(false); panelFormularioTurno.setManaged(false); }
 
@@ -636,11 +634,11 @@ public class tab_CatalogosController implements Initializable {
 
         PeriodoAcademico periodo = gestionPeriodos.buscarPorNombre(nombrePeriodo);
         if (periodo == null) {
-            Dialogos.M1("Periodo no encontrado.");
+            Dialogos.info("Periodo no encontrado.");
             return;
         }
         if (periodosRecreoTemporal.contains(periodo)) {
-            Dialogos.M1("El periodo ya está asociado.");
+            Dialogos.info("El periodo ya está asociado.");
             return;
         }
         periodosRecreoTemporal.add(periodo);

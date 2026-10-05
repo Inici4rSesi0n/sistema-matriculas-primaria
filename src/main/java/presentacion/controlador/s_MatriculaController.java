@@ -1,5 +1,4 @@
 package presentacion.controlador;
-
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
@@ -13,7 +12,6 @@ import dominio.modelo.Grupo;
 import dominio.modelo.Matricula;
 import dominio.modelo.PeriodoAcademico;
 import dominio.modelo.EstadoMatricula;
-
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -27,7 +25,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-
 /**
  *
  * @author inici4rsesi0n
@@ -198,7 +195,7 @@ public class s_MatriculaController implements Initializable {
                 || periodoSeleccionado == null || periodoSeleccionado.startsWith("Seleccione")
                 || grupoSeleccionado == null || grupoSeleccionado.startsWith("Seleccione")
                 || estado == null) {
-            Dialogos.M1("Todos los campos son obligatorios.");
+            Dialogos.info("Todos los campos son obligatorios.");
             return;
         }
 
@@ -209,7 +206,7 @@ public class s_MatriculaController implements Initializable {
             Grupo grupo = parsearGrupo(grupoSeleccionado);
 
             if (estudiante == null || periodo == null || grupo == null) {
-                Dialogos.M1("Los datos seleccionados no son válidos.");
+                Dialogos.info("Los datos seleccionados no son válidos.");
                 return;
             }
 
@@ -224,7 +221,7 @@ public class s_MatriculaController implements Initializable {
             SistemaEventBus.notificar(TipoEvento.MATRICULAS);
             limpiarFormulario();
         } catch (IllegalArgumentException e) {
-            Dialogos.M1(e.getMessage());
+            Dialogos.info(e.getMessage());
         }
     }
 
@@ -259,14 +256,13 @@ public class s_MatriculaController implements Initializable {
     }
 
     private void eliminarMatricula(Matricula matricula) {
-        int respuesta = Dialogos.M3("Confirmar eliminación",
-                "¿Está seguro de eliminar la matrícula de " + matricula.getEstudiante().getCodigo() + "?");
-        if (respuesta == 0) {
+        if (Dialogos.confirmar("Confirmar eliminación", "¿Está seguro de eliminar la matricula de " +
+                    matricula.getEstudiante().getCodigo()+ "?")) {
             try {
                 gestionMatriculas.eliminarMatricula(matricula);
                 SistemaEventBus.notificar(TipoEvento.MATRICULAS);
             } catch (IllegalArgumentException e) {
-                Dialogos.M1(e.getMessage());
+                Dialogos.info(e.getMessage());
             }
         }
     }

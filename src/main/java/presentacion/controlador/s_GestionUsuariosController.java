@@ -150,7 +150,7 @@ public class s_GestionUsuariosController implements Initializable {
 
         if (rol == null || codigo.isBlank() || nombre.isBlank()
                 || apellido.isBlank() || dni.isBlank() || edadTexto.isBlank()) {
-            Dialogos.M1("Todos los campos obligatorios deben estar completos.");
+            Dialogos.info("Todos los campos obligatorios deben estar completos.");
             return;
         }
 
@@ -158,12 +158,12 @@ public class s_GestionUsuariosController implements Initializable {
         try {
             edad = Integer.parseInt(edadTexto);
         } catch (NumberFormatException e) {
-            Dialogos.M1("La edad debe ser un número válido.");
+            Dialogos.info("La edad debe ser un número válido.");
             return;
         }
 
         if (usuarioEditando == null && contrasenaTexto.isBlank()) {
-            Dialogos.M1("Debe asignar una contraseña al nuevo usuario.");
+            Dialogos.info("Debe asignar una contraseña al nuevo usuario.");
             return;
         }
 
@@ -174,11 +174,11 @@ public class s_GestionUsuariosController implements Initializable {
                 gestionUsuarios.agregarUsuario(codigo, hash, dni, nombre, apellido, edad, rol, null);
             } else {
                 if (!codigo.equals(usuarioEditando.getCodigo())) {
-                    Dialogos.M1("No se puede modificar el código de un usuario existente.");
+                    Dialogos.info("No se puede modificar el código de un usuario existente.");
                     return;
                 }
                 if (!dni.equals(usuarioEditando.getDni()) && gestionUsuarios.existeDni(dni, usuarioEditando)) {
-                    Dialogos.M1("Ya existe otro usuario con ese DNI.");
+                    Dialogos.info("Ya existe otro usuario con ese DNI.");
                     return;
                 }
 
@@ -197,7 +197,7 @@ public class s_GestionUsuariosController implements Initializable {
             panelFormulario.setVisible(false);
             SistemaEventBus.notificar(TipoEvento.USUARIOS);
         } catch (IllegalArgumentException e) {
-            Dialogos.M1(e.getMessage());
+            Dialogos.info(e.getMessage());
         }
     }
 
@@ -216,14 +216,13 @@ public class s_GestionUsuariosController implements Initializable {
     }
 
     private void eliminarUsuario(Usuario usuario) {
-        int respuesta = Dialogos.M3("Confirmar eliminación",
-                "¿Está seguro de eliminar al usuario " + usuario.getCodigo() + "?");
-        if (respuesta == 0) {
+        if (Dialogos.confirmar("Confirmar eliminación", "¿Está seguro de eliminar al usuario " + 
+                    usuario.getCodigo() + "?")) {
             try {
                 gestionUsuarios.eliminarUsuario(usuario);
                 SistemaEventBus.notificar(TipoEvento.USUARIOS);
             } catch (IllegalArgumentException e) {
-                Dialogos.M1(e.getMessage());
+                Dialogos.info(e.getMessage());
             }
         }
     }

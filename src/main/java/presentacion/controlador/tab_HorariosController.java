@@ -198,13 +198,12 @@ public class tab_HorariosController implements Initializable {
     }
 
     private void eliminar(Clase c) {
-        int respuesta = Dialogos.M3("Confirmar eliminación", "¿Está seguro de eliminar esta clase?");
-        if (respuesta != 0) return;
+        if (!Dialogos.confirmar("Confirmar eliminación", "¿Está seguro de eliminar esta clase?")) return;
         try {
             gestionClases.eliminarClase(c);
             SistemaEventBus.notificar(TipoEvento.CLASES);
         } catch (IllegalArgumentException e) {
-            Dialogos.M1(e.getMessage());
+            Dialogos.info(e.getMessage());
         }
     }
 
@@ -229,10 +228,10 @@ public class tab_HorariosController implements Initializable {
         if (dia == null || inicio.isBlank() || fin.isBlank() || asignaturaNombre == null || asignaturaNombre.startsWith("Seleccione")
                 || docenteSel == null || docenteSel.startsWith("Seleccione") || grupoNombre == null || grupoNombre.startsWith("Seleccione")
                 || aulaNombre == null || aulaNombre.startsWith("Seleccione") || periodoNombre == null || periodoNombre.startsWith("Seleccione")) {
-            Dialogos.M1("Todos los campos son obligatorios."); return;
+            Dialogos.info("Todos los campos son obligatorios."); return;
         }
         if (!inicio.matches("([01]\\d|2[0-3]):[0-5]\\d") || !fin.matches("([01]\\d|2[0-3]):[0-5]\\d")) {
-            Dialogos.M1("Formato de hora inválido. Use HH:mm (ej. 08:00, 14:30)."); return;
+            Dialogos.info("Formato de hora inválido. Use HH:mm (ej. 08:00, 14:30)."); return;
         }
 
         Asignatura asig = gestionAsignaturas.buscarAsignatura(asignaturaNombre);
@@ -241,7 +240,7 @@ public class tab_HorariosController implements Initializable {
         Aula aula = gestionAulas.buscarAula(aulaNombre);
         PeriodoAcademico periodo = gestionPeriodos.buscarPorNombre(periodoNombre);
         if (asig == null || doc == null || grupo == null || aula == null || periodo == null) {
-            Dialogos.M1("Datos inválidos."); return;
+            Dialogos.info("Datos inválidos."); return;
         }
 
         try {
@@ -254,7 +253,7 @@ public class tab_HorariosController implements Initializable {
             panelFormularioClase.setVisible(false);
             panelFormularioClase.setManaged(false);
         } catch (IllegalArgumentException e) {
-            Dialogos.M1(e.getMessage());
+            Dialogos.info(e.getMessage());
         }
     }
 
@@ -290,7 +289,7 @@ public class tab_HorariosController implements Initializable {
 
             stage.showAndWait();
         } catch (IOException e) {
-            Dialogos.M1("No se pudo abrir el visor de horario.");
+            Dialogos.info("No se pudo abrir el visor de horario.");
         }
     }
 

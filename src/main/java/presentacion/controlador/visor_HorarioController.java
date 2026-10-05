@@ -142,7 +142,7 @@ public class visor_HorarioController implements Initializable {
 
         if (grupoNombre == null || grupoNombre.startsWith("Seleccione")
                 || periodoNombre == null || periodoNombre.startsWith("Seleccione")) {
-            Dialogos.M1("Seleccione un grupo y un periodo.");
+            Dialogos.info("Seleccione un grupo y un periodo.");
             return false;
         }
         return true;
@@ -156,7 +156,7 @@ public class visor_HorarioController implements Initializable {
         PeriodoAcademico periodo = gestionPeriodos.buscarPorNombre(periodoNombre);
 
         if (grupo == null || periodo == null) {
-            Dialogos.M1("Grupo o periodo no encontrados.");
+            Dialogos.info("Grupo o periodo no encontrados.");
             return;
         }
 

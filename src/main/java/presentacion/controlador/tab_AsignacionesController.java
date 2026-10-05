@@ -285,25 +285,25 @@ public class tab_AsignacionesController implements Initializable {
         String asigSel = cmbAsignaturaDocente.getValue();
         if (docenteSel == null || docenteSel.startsWith("Seleccione")
                 || asigSel == null || asigSel.startsWith("Seleccione")) {
-            Dialogos.M1("Seleccione un docente y una asignatura.");
+            Dialogos.info("Seleccione un docente y una asignatura.");
             return;
         }
         String cod = docenteSel.split(" - ")[0];
         Docente docente = gestionDocentes.buscarPorCodigo(cod);
         if (docente == null) {
-            Dialogos.M1("Docente no encontrado.");
+            Dialogos.info("Docente no encontrado.");
             return;
         }
         Asignatura a = gestionAsignaturas.buscarAsignatura(asigSel);
         if (a == null) {
-            Dialogos.M1("Asignatura no encontrada.");
+            Dialogos.info("Asignatura no encontrada.");
             return;
         }
         try {
             gestionDocentes.agregarAsignatura(docente, a);
             SistemaEventBus.notificar(TipoEvento.DOCENTES);
         } catch (IllegalArgumentException e) {
-            Dialogos.M1(e.getMessage());
+            Dialogos.info(e.getMessage());
         }
     }
 
@@ -313,25 +313,25 @@ public class tab_AsignacionesController implements Initializable {
         String grupoSel = cmbGrupoTutor.getValue();
         if (docenteSel == null || docenteSel.startsWith("Seleccione")
                 || grupoSel == null || grupoSel.startsWith("Seleccione")) {
-            Dialogos.M1("Seleccione un docente y un grupo.");
+            Dialogos.info("Seleccione un docente y un grupo.");
             return;
         }
         String cod = docenteSel.split(" - ")[0];
         Docente docente = gestionDocentes.buscarPorCodigo(cod);
         if (docente == null) {
-            Dialogos.M1("Docente no encontrado.");
+            Dialogos.info("Docente no encontrado.");
             return;
         }
         Grupo grupo = gestionGrupos.buscarPorNombre(grupoSel);
         if (grupo == null) {
-            Dialogos.M1("Grupo no encontrado.");
+            Dialogos.info("Grupo no encontrado.");
             return;
         }
         try {
             gestionGrupos.asignarTutor(grupo, docente);
             SistemaEventBus.notificar(TipoEvento.GRUPOS, TipoEvento.DOCENTES);
         } catch (IllegalArgumentException e) {
-            Dialogos.M1(e.getMessage());
+            Dialogos.info(e.getMessage());
         }
     }
 
@@ -341,18 +341,18 @@ public class tab_AsignacionesController implements Initializable {
         String gradoSel = cmbGradoCoordinacion.getValue();
         if (coordSel == null || coordSel.startsWith("Seleccione")
                 || gradoSel == null || gradoSel.startsWith("Seleccione")) {
-            Dialogos.M1("Seleccione un coordinador y un grado.");
+            Dialogos.info("Seleccione un coordinador y un grado.");
             return;
         }
         String cod = coordSel.split(" - ")[0];
         Usuario u = gestionUsuarios.buscarPorCodigo(cod);
         if (!(u instanceof CoordinadorAcademico coord)) {
-            Dialogos.M1("El usuario seleccionado no es un coordinador.");
+            Dialogos.info("El usuario seleccionado no es un coordinador.");
             return;
         }
         Grado g = gestionGrados.buscarPorNombre(gradoSel);
         if (g == null) {
-            Dialogos.M1("Grado no encontrado.");
+            Dialogos.info("Grado no encontrado.");
             return;
         }
         try {
@@ -360,7 +360,7 @@ public class tab_AsignacionesController implements Initializable {
             gestionUsuarios.actualizarUsuario(coord);
             SistemaEventBus.notificar(TipoEvento.USUARIOS, TipoEvento.GRADOS);
         } catch (IllegalArgumentException e) {
-            Dialogos.M1(e.getMessage());
+            Dialogos.info(e.getMessage());
         }
     }
 

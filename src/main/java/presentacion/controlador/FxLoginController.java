@@ -83,7 +83,7 @@ public class FxLoginController implements Initializable {
         char[] contraseña = obtenerContrasena();
 
         if (codigo == null || codigo.isBlank() || contraseña == null || contraseña.length == 0) {
-            Dialogos.M1("Debe ingresar un código y una contraseña.");
+            Dialogos.info("Debe ingresar un código y una contraseña.");
             return;
         }
         try {
@@ -97,7 +97,7 @@ public class FxLoginController implements Initializable {
                 Stage stage = (Stage) btnLogin.getScene().getWindow();
                 stage.close();
             } else {
-                Dialogos.M1("Código o contraseña incorrectos.");
+                Dialogos.info("Código o contraseña incorrectos.");
             }
         } finally {
             UtilLimpieza.limpiarContraseña(contraseña);
