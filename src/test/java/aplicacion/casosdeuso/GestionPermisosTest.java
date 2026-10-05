@@ -19,6 +19,8 @@ class GestionPermisosTest {
         gestionPermisos = new GestionPermisos();
     }
 
+    // ============ esSeccionVisible (dashboard) ============
+
     @Test
     void administrador_debeVerTodasLasSecciones() {
         Usuario.Rol rol = Usuario.Rol.ADMINISTRADOR;
@@ -66,5 +68,74 @@ class GestionPermisosTest {
     @Test
     void seccionInexistente_debeRetornarFalse() {
         assertFalse(gestionPermisos.esSeccionVisible(Usuario.Rol.ADMINISTRADOR, "SeccionInventada"));
+    }
+
+    @Test
+    void esSeccionVisible_conRolNulo_debeRetornarFalse() {
+        assertFalse(gestionPermisos.esSeccionVisible(null, "MisCursos"));
+    }
+
+    @Test
+    void esSeccionVisible_conSeccionNula_debeRetornarFalse() {
+        assertFalse(gestionPermisos.esSeccionVisible(Usuario.Rol.ADMINISTRADOR, null));
+    }
+
+    // ============ puedeAccederPortal (pantalla principal) ============
+
+    @Test
+    void puedeAccederPortal_ingreso_paraRolesAutorizados() {
+        assertTrue(gestionPermisos.puedeAccederPortal(Usuario.Rol.ADMINISTRADOR, "INGRESO"));
+        assertTrue(gestionPermisos.puedeAccederPortal(Usuario.Rol.DIRECTOR, "INGRESO"));
+        assertTrue(gestionPermisos.puedeAccederPortal(Usuario.Rol.SECRETARIO, "INGRESO"));
+        assertTrue(gestionPermisos.puedeAccederPortal(Usuario.Rol.COORDINADOR, "INGRESO"));
+        assertTrue(gestionPermisos.puedeAccederPortal(Usuario.Rol.DOCENTE, "INGRESO"));
+        assertTrue(gestionPermisos.puedeAccederPortal(Usuario.Rol.ESTUDIANTE, "INGRESO"));
+    }
+
+    @Test
+    void puedeAccederPortal_ingreso_padreNoAutorizado() {
+        assertFalse(gestionPermisos.puedeAccederPortal(Usuario.Rol.PADRE, "INGRESO"));
+    }
+
+    @Test
+    void puedeAccederPortal_tramites_paraRolesAutorizados() {
+        assertTrue(gestionPermisos.puedeAccederPortal(Usuario.Rol.ESTUDIANTE, "TRAMITES"));
+        assertTrue(gestionPermisos.puedeAccederPortal(Usuario.Rol.PADRE, "TRAMITES"));
+        assertTrue(gestionPermisos.puedeAccederPortal(Usuario.Rol.SECRETARIO, "TRAMITES"));
+    }
+
+    @Test
+    void puedeAccederPortal_tramites_administradorNoAutorizado() {
+        assertFalse(gestionPermisos.puedeAccederPortal(Usuario.Rol.ADMINISTRADOR, "TRAMITES"));
+        assertFalse(gestionPermisos.puedeAccederPortal(Usuario.Rol.DOCENTE, "TRAMITES"));
+        assertFalse(gestionPermisos.puedeAccederPortal(Usuario.Rol.DIRECTOR, "TRAMITES"));
+    }
+
+    @Test
+    void puedeAccederPortal_matricula_paraRolesAutorizados() {
+        assertTrue(gestionPermisos.puedeAccederPortal(Usuario.Rol.ESTUDIANTE, "MATRICULA"));
+        assertTrue(gestionPermisos.puedeAccederPortal(Usuario.Rol.PADRE, "MATRICULA"));
+        assertTrue(gestionPermisos.puedeAccederPortal(Usuario.Rol.SECRETARIO, "MATRICULA"));
+    }
+
+    @Test
+    void puedeAccederPortal_matricula_administradorNoAutorizado() {
+        assertFalse(gestionPermisos.puedeAccederPortal(Usuario.Rol.ADMINISTRADOR, "MATRICULA"));
+        assertFalse(gestionPermisos.puedeAccederPortal(Usuario.Rol.DOCENTE, "MATRICULA"));
+    }
+
+    @Test
+    void puedeAccederPortal_portalInexistente_debeRetornarFalse() {
+        assertFalse(gestionPermisos.puedeAccederPortal(Usuario.Rol.ADMINISTRADOR, "PORTAL_RARO"));
+    }
+
+    @Test
+    void puedeAccederPortal_conRolNulo_debeRetornarFalse() {
+        assertFalse(gestionPermisos.puedeAccederPortal(null, "INGRESO"));
+    }
+
+    @Test
+    void puedeAccederPortal_conPortalNulo_debeRetornarFalse() {
+        assertFalse(gestionPermisos.puedeAccederPortal(Usuario.Rol.ADMINISTRADOR, null));
     }
 }

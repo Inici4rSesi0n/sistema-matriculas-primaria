@@ -3,11 +3,13 @@ import presentacion.animaciones.AnimacionesMain;
 import presentacion.dialogos.Dialogos;
 import presentacion.estadousuario.SesionUsuario;
 import dominio.modelo.Usuario;
+import infraestructura.configuracion.SpringContext;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
+import aplicacion.casosdeuso.GestionPermisos;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -27,7 +29,6 @@ import javafx.stage.StageStyle;
  * @author inici4rsesi0n
  */
 public class FxMainController implements Initializable {
-
     @FXML private Button btnPortalIngreso;
     @FXML private Button btnPortalTramites;
     @FXML private Button btnPortalMatricula;
@@ -36,22 +37,19 @@ public class FxMainController implements Initializable {
     @FXML private Label lblConectado;
     @FXML private Label lblUsuarioConectado;
     @FXML private MenuButton menuIdioma;
-
     private Timeline timelineWiredAcademy;
     private Timeline timelineConectado;
-
+    private GestionPermisos gestionPermisos;
     private final Map<String, URL> rutasVistas = new ConcurrentHashMap<>();
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        gestionPermisos = SpringContext.getBean(GestionPermisos.class);
         timelineWiredAcademy = AnimacionesMain.crearTimelinePulso(lblWiredAcademy);
         timelineConectado = AnimacionesMain.crearTimelinePulso(lblConectado);
-
         menuIdioma.getItems().addAll(
             new MenuItem("Español"),
             new MenuItem("English")
         );
-
         actualizarIndicadorSesion();
         precargarRutas();
     }
@@ -74,28 +72,13 @@ public class FxMainController implements Initializable {
     private void navegar(String modo) {
         if (SesionUsuario.isSesionActiva()) {
             Usuario usuario = SesionUsuario.getUsuarioActual();
-            if (tienePermiso(usuario, modo)) {
+            if (gestionPermisos.puedeAccederPortal(usuario.getRol(), modo)) {
                 navegarAVista("dashboard", (Stage) btnPortalIngreso.getScene().getWindow(), usuario);
             } else {
                 Dialogos.M1("No tiene permisos para acceder a este portal.");
             }
         } else {
             abrirLogin(modo);
-        }
-    }
-
-    private boolean tienePermiso(Usuario usuario, String modo) {
-        Usuario.Rol rol = usuario.getRol();
-        switch (modo) {
-            case "INGRESO":
-                return rol == Usuario.Rol.ADMINISTRADOR || rol == Usuario.Rol.DIRECTOR ||
-                       rol == Usuario.Rol.SECRETARIO || rol == Usuario.Rol.COORDINADOR ||
-                       rol == Usuario.Rol.DOCENTE || rol == Usuario.Rol.ESTUDIANTE;
-            case "TRAMITES":
-                return rol == Usuario.Rol.ESTUDIANTE || rol == Usuario.Rol.PADRE || rol == Usuario.Rol.SECRETARIO;
-            case "MATRICULA":
-                return rol == Usuario.Rol.ESTUDIANTE || rol == Usuario.Rol.PADRE || rol == Usuario.Rol.SECRETARIO;
-            default: return false;
         }
     }
 
