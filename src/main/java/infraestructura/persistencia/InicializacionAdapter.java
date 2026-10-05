@@ -24,7 +24,8 @@ import javax.crypto.spec.SecretKeySpec;
 public class InicializacionAdapter implements ServicioInicializacion {
 
     private static final String ARCHIVO_KEYSTORE = "data/keystore.jceks";
-    private static final String CLAVE_KEYSTORE = "S1st3maMatr1culas2026";
+    private static final String CLAVE_KEYSTORE =
+            System.getenv().getOrDefault("WIRED_KEYSTORE_PASSWORD", "S1st3maMatr1culas2026");
     private static final String ALIAS_CLAVE = "aes-key";
     private static final int ITERACIONES_PBKDF2 = 100000;
     private static final int LONGITUD_CLAVE_AES = 256;

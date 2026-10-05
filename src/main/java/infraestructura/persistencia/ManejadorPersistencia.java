@@ -22,7 +22,8 @@ import javax.crypto.spec.GCMParameterSpec;
 public class ManejadorPersistencia {
 
     private static final String KEYSTORE_FILE_NAME = "keystore.jceks";
-    private static final String KEYSTORE_PASSWORD = "S1st3maMatr1culas2026";
+    private static final String KEYSTORE_PASSWORD =
+            System.getenv().getOrDefault("WIRED_KEYSTORE_PASSWORD", "S1st3maMatr1culas2026");
     private static final String KEY_ALIAS = "aes-key";
     private static final int GCM_IV_LENGTH = 12;
     private static final int GCM_TAG_LENGTH = 128;

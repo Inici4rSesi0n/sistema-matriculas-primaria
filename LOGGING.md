@@ -3,7 +3,7 @@
 > Documento maestro de la estrategia de logging del proyecto.
 > Define qué se registra, cómo se registra y por qué.
 
-**Versión:** 1.0
+**Versión:** 1.1
 **Estado:** Activo
 **Última revisión:** 2026-10-05
 **Mantenedor:** inici4rsesi0n
@@ -127,7 +127,7 @@ Las siguientes operaciones **siempre** emiten log `AUDIT`. Todas residen en la c
 - `GestionGrados.*` → `CREATE` / `UPDATE` / `DELETE`
 - `GestionPeriodos.*` → `CREATE` / `UPDATE` / `DELETE`
 - `GestionTurnos.*` → `CREATE` / `UPDATE` / `DELETE`
-- `GestionRecreos.*` → `CREATE` / `UPDATE` / `DELETE`
+- `GestionRecreos.*` → `CREATE` / `UPDATE` / `DELETE` / `LINK` / `UNLINK`
 
 ### Clases y Matrículas
 - `GestionClases.crearClase` → `CREATE`
@@ -214,15 +214,14 @@ No emiten `AUDIT`. Solo notifican al `SistemaEventBus`, que registra automática
 ## 9. Archivos de Salida
 
 **Dev:** consola con todo visible.
-**Prod:** archivos rotados diariamente, retención 30 días.
+**Prod:** archivos rotados diariamente.
 
-```
-logs/
-├── wiredacademy.log              → todo (raíz)
-├── wiredacademy-audit.log        → solo AUDIT
-├── wiredacademy-error.log        → solo ERROR
-└── wiredacademy-eventbus.log     → solo EVENTBUS
-```
+| Archivo | Contenido | Retención |
+|---|---|---|
+| `wiredacademy.log` | Todo (raíz) | 30 días |
+| `wiredacademy-audit.log` | Solo `AUDIT` | 90 días |
+| `wiredacademy-error.log` | Solo `ERROR` | 30 días |
+| `wiredacademy-eventbus.log` | Solo `EVENTBUS` | 15 días |
 
 ### Consultas útiles
 
@@ -267,12 +266,58 @@ logger.audit(String.format(
 
 ---
 
-## 11. Evolución del Documento
+## 11. Decisiones Arquitectónicas Aceptadas
+
+Registro de decisiones de diseño conscientes que afectan al logging o al almacenamiento.
+
+### ADR-001 — Recreos atados a PeriodoAcademico
+
+**Decisión:** un `Recreo` puede asociarse a **múltiples** `PeriodoAcademico`.
+**Razón:** un mismo recreo (misma franja + descripción) se repite entre semestres. Evitar duplicación.
+**Alternativa rechazada:** recreos globales sin periodo (pierde flexibilidad).
+**Reevaluar si:** el 100% de las instituciones usa el mismo horario siempre.
+
+### ADR-002 — `equals` case-insensitive en entidades con nombre
+
+**Decisión:** `Grupo`, `Aula`, `Asignatura`, `Grado`, `PeriodoAcademico`, `Turno` usan `equalsIgnoreCase` sobre el nombre.
+**Razón:** evitar duplicados por diferencias de mayúsculas/minúsculas.
+**Excepción:** `Clase` y `Recreo` comparan por composición completa de sus partes.
+
+---
+
+## 12. Deuda Diferida a Post-BBDD
+
+Cambios identificados que **no se aplican ahora** porque la migración a base de datos los hará obsoletos o redundantes.
+
+### D2 — Contraseña del keystore
+
+**Estado actual (mitigado):**
+- Se lee de la variable de entorno `WIRED_KEYSTORE_PASSWORD`.
+- Fallback: `"S1st3maMatr1culas2026"` (solo desarrollo y compatibilidad).
+
+**Solución definitiva (diferida):**
+- Unificar la contraseña maestra (ingresada en el primer arranque) con la del keystore.
+- Requiere diálogo de arranque que solicite la contraseña maestra cada vez.
+- Requiere migración de keystores existentes.
+
+**Razón de la dilación:** la BBDD traerá autenticación nativa y hará obsoleto el keystore.
+
+### D9 — Persistencia real de la sesión
+
+**Estado actual:** `SesionUsuario` mantiene el estado en memoria.
+**Comportamiento:** marcar "Mantener sesión iniciada" no persiste entre reinicios.
+**Solución definitiva:** persistir el token de sesión en disco con cifrado + expiración.
+**Razón de la dilación:** la BBDD traerá tokens/sesiones nativos.
+
+---
+
+## 13. Evolución del Documento
 
 Este documento es **vivo**. Se actualiza cuando:
 - Se añade una nueva zona crítica con logging proactivo.
 - Se descubre un patrón útil de consulta de logs.
 - Se retira o añade una categoría de logger.
+- Se registra una decisión arquitectónica o deuda diferida.
 
 ---
 
