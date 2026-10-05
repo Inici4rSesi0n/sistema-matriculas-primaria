@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
     <property name="PATRON_CONSOLE" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
     <property name="PATRON_ARCHIVO" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
     <property name="DIRECTORIO_LOGS" value="./logs"/>
+
     <property name="ARCHIVO_LOG" value="${DIRECTORIO_LOGS}/wiredacademy.log"/>
     <property name="ARCHIVO_ERROR" value="${DIRECTORIO_LOGS}/wiredacademy-error.log"/>
+    <property name="ARCHIVO_AUDIT" value="${DIRECTORIO_LOGS}/wiredacademy-audit.log"/>
+    <property name="ARCHIVO_EVENTBUS" value="${DIRECTORIO_LOGS}/wiredacademy-eventbus.log"/>
 
+    <!-- ============================================================
+         DEV — todo a consola
+         ============================================================ -->
     <springProfile name="dev">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
@@ -18,9 +25,14 @@
             <appender-ref ref="CONSOLE"/>
         </root>
 
-        <logger name="WiredAcademy" level="TRACE"/>
+        <logger name="WiredAcademy.AUDIT" level="INFO"/>
+        <logger name="WiredAcademy.EVENTBUS" level="DEBUG"/>
+        <logger name="WiredAcademy.UI" level="TRACE"/>
     </springProfile>
 
+    <!-- ============================================================
+         PROD — archivos rotados por categoría
+         ============================================================ -->
     <springProfile name="prod">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
@@ -56,15 +68,56 @@
             </encoder>
         </appender>
 
+        <appender name="FILE_AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ARCHIVO_AUDIT}</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${DIRECTORIO_LOGS}/wiredacademy-audit-%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>90</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${PATRON_ARCHIVO}</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+        </appender>
+
+        <appender name="FILE_EVENTBUS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${ARCHIVO_EVENTBUS}</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${DIRECTORIO_LOGS}/wiredacademy-eventbus-%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>15</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${PATRON_ARCHIVO}</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+        </appender>
+
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
             <appender-ref ref="FILE_ERROR"/>
         </root>
 
-        <logger name="WiredAcademy" level="INFO"/>
+        <!-- AUDIT: archivo propio + raíz, retención 90 días -->
+        <logger name="WiredAcademy.AUDIT" level="INFO" additivity="false">
+            <appender-ref ref="FILE_AUDIT"/>
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <!-- EVENTBUS: archivo propio + raíz, retención 15 días -->
+        <logger name="WiredAcademy.EVENTBUS" level="INFO" additivity="false">
+            <appender-ref ref="FILE_EVENTBUS"/>
+            <appender-ref ref="FILE"/>
+        </logger>
+
+        <!-- UI: deshabilitado en producción -->
+        <logger name="WiredAcademy.UI" level="OFF"/>
     </springProfile>
 
+    <!-- ============================================================
+         PERFIL POR DEFECTO — solo consola
+         ============================================================ -->
     <springProfile name="!dev &amp; !prod">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
@@ -77,6 +130,8 @@
             <appender-ref ref="CONSOLE"/>
         </root>
 
-        <logger name="WiredAcademy" level="INFO"/>
+        <logger name="WiredAcademy.AUDIT" level="INFO"/>
+        <logger name="WiredAcademy.EVENTBUS" level="INFO"/>
     </springProfile>
+
 </configuration>
