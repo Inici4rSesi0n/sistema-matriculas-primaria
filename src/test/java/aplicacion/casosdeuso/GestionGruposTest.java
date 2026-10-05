@@ -4,6 +4,7 @@ import dominio.modelo.Docente;
 import dominio.modelo.Estudiante;
 import dominio.modelo.Grado;
 import dominio.modelo.Grupo;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioDocentes;
 import dominio.puerto.repositorio.RepositorioGrupos;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ class GestionGruposTest {
 
     private RepositorioGrupos repoMock;
     private RepositorioDocentes repoDocentesMock;
+    private LoggerPort loggerMock;
     private GestionGrupos casoUso;
     private Grado grado;
 
@@ -32,7 +34,8 @@ class GestionGruposTest {
     void setUp() {
         repoMock = mock(RepositorioGrupos.class);
         repoDocentesMock = mock(RepositorioDocentes.class);
-        casoUso = new GestionGrupos(repoMock, repoDocentesMock);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionGrupos(repoMock, repoDocentesMock, loggerMock);
         grado = new Grado("1er Grado", "Primaria");
     }
 
@@ -85,21 +88,17 @@ class GestionGruposTest {
         verify(repoMock).actualizar(eq(original), any(Grupo.class));
     }
 
-    // ============ B4: Preservar asociaciones al actualizar ============
     @Test
     void actualizarGrupo_debePreservarTutorYEstudiantesAlPersistir() {
-        // GIVEN: Grupo con tutor y estudiantes
         Grupo original = new Grupo("1A", grado);
         Docente tutor = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
         Estudiante estudiante = new Estudiante("E001", "hash", "222", "Ana", "Gomez", 10);
         original.asignarTutor(tutor);
         original.agregarEstudiante(estudiante);
 
-        // WHEN: Actualizamos nombre y grado
         Grado nuevoGrado = new Grado("2do Grado", "Primaria");
         casoUso.actualizarGrupo(original, "1B", nuevoGrado);
 
-        // THEN: El objeto persistido debe conservar tutor y estudiantes
         ArgumentCaptor<Grupo> captor = ArgumentCaptor.forClass(Grupo.class);
         verify(repoMock).actualizar(eq(original), captor.capture());
         Grupo persistido = captor.getValue();
@@ -118,7 +117,6 @@ class GestionGruposTest {
         verify(repoMock).eliminar(aEliminar);
     }
 
-    // ============ B5: Persistir docentes al asignar/remover tutor ============
     @Test
     void asignarTutor_debeAsignarDocenteYActualizarAmbos() {
         Grupo grupo = new Grupo("1A", grado);
@@ -137,7 +135,7 @@ class GestionGruposTest {
         Grupo grupo = new Grupo("1A", grado);
         Docente tutorAnterior = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
         Docente tutorNuevo = new Docente("D002", "hash", "222", "Maria", "Lopez", 35, "Ing", new ArrayList<>());
-        grupo.asignarTutor(tutorAnterior); // precondición
+        grupo.asignarTutor(tutorAnterior);
 
         casoUso.asignarTutor(grupo, tutorNuevo);
 
@@ -152,7 +150,7 @@ class GestionGruposTest {
     void removerTutor_debeQuitarDocenteYActualizarAmbos() {
         Grupo grupo = new Grupo("1A", grado);
         Docente tutor = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
-        grupo.asignarTutor(tutor); // precondición
+        grupo.asignarTutor(tutor);
 
         casoUso.removerTutor(grupo);
 
@@ -165,9 +163,7 @@ class GestionGruposTest {
     @Test
     void removerTutor_noDebeHacerNadaSiNoTieneTutor() {
         Grupo grupo = new Grupo("1A", grado);
-
         casoUso.removerTutor(grupo);
-
         verify(repoMock, never()).actualizar(any(), any());
         verify(repoDocentesMock, never()).actualizar(any(), any());
     }
