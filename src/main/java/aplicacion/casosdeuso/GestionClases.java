@@ -1,6 +1,7 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.*;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioClases;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +15,11 @@ import java.util.List;
 public class GestionClases {
 
     private final RepositorioClases repo;
+    private final LoggerPort logger;
 
-    public GestionClases(RepositorioClases repo) {
+    public GestionClases(RepositorioClases repo, LoggerPort logger) {
         this.repo = repo;
+        this.logger = logger;
     }
 
     public void crearClase(String diaSemana, String horaInicio, String horaFin,
@@ -26,7 +29,14 @@ public class GestionClases {
         validarConflictos(diaSemana, horaInicio, horaFin, docente, grupo, aula, null);
 
         FranjaHoraria franja = new FranjaHoraria(diaSemana, horaInicio, horaFin);
-        repo.agregar(new Clase(franja, periodo, asignatura, docente, grupo, aula));
+        Clase nueva = new Clase(franja, periodo, asignatura, docente, grupo, aula);
+        repo.agregar(nueva);
+
+        logger.audit(String.format(
+                "op=CREATE entity=CLASE id=%s-%s | asignatura=%s docente=%s grupo=%s aula=%s periodo=%s",
+                diaSemana, horaInicio, asignatura.getNombre(),
+                docente.getCodigo(), grupo.getNombre(),
+                aula.getNombre(), periodo.getNombre()));
     }
 
     public List<Clase> listarClases() {
@@ -47,13 +57,23 @@ public class GestionClases {
         validarCamposObligatorios(diaSemana, horaInicio, horaFin, asignatura, docente, grupo, aula, periodo);
         validarConflictos(diaSemana, horaInicio, horaFin, docente, grupo, aula, original);
 
+        String antes = original.toString();
         FranjaHoraria franja = new FranjaHoraria(diaSemana, horaInicio, horaFin);
         Clase actualizada = new Clase(franja, periodo, asignatura, docente, grupo, aula);
         repo.actualizar(original, actualizada);
+
+        logger.audit(String.format(
+                "op=UPDATE entity=CLASE id=%s-%s | before=%s after=%s",
+                diaSemana, horaInicio, antes, actualizada));
     }
 
     public void eliminarClase(Clase clase) {
+        if (clase == null) throw new IllegalArgumentException("La clase no puede ser nula");
+        String snapshot = clase.toString();
         repo.eliminar(clase);
+        logger.audit(String.format(
+                "op=DELETE entity=CLASE id=%s-%s | snapshot=%s",
+                clase.getDiaSemana(), clase.getHoraInicio(), snapshot));
     }
 
     // ============= Validaciones privadas =============

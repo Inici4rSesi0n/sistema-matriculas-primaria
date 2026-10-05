@@ -1,6 +1,7 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.*;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioMatriculas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.*;
 class GestionMatriculasTest {
 
     private RepositorioMatriculas repoMock;
+    private LoggerPort loggerMock;
     private GestionMatriculas casoUso;
     private Estudiante estudiante;
     private PeriodoAcademico periodo;
@@ -26,7 +28,8 @@ class GestionMatriculasTest {
     @BeforeEach
     void setUp() {
         repoMock = mock(RepositorioMatriculas.class);
-        casoUso = new GestionMatriculas(repoMock);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionMatriculas(repoMock, loggerMock);
         estudiante = new Estudiante("E001", "hash", "111", "Est", "Uno", 15);
         periodo = new PeriodoAcademico("2026-I", "2026-01-01", "2026-12-31", "Activo");
         grupo = new Grupo("1A", new Grado("1er Grado", "Primaria"));
@@ -99,9 +102,8 @@ class GestionMatriculasTest {
     @Test
     void actualizarEstado_debeModificarEstadoYPersistir() {
         Matricula matricula = new Matricula(estudiante, periodo, grupo, null, "2026-01-10", EstadoMatricula.ACTIVA);
-        EstadoMatricula nuevoEstado = EstadoMatricula.RETIRADA;
 
-        casoUso.actualizarEstado(matricula, nuevoEstado);
+        casoUso.actualizarEstado(matricula, EstadoMatricula.RETIRADA);
 
         assertEquals(EstadoMatricula.RETIRADA, matricula.getEstado());
         verify(repoMock).actualizar(matricula, matricula);

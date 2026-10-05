@@ -1,6 +1,7 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.*;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioClases;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.*;
 class GestionClasesTest {
 
     private RepositorioClases repoMock;
+    private LoggerPort loggerMock;
     private GestionClases casoUso;
 
     private Asignatura asignatura;
@@ -30,7 +32,8 @@ class GestionClasesTest {
     @BeforeEach
     void setUp() {
         repoMock = mock(RepositorioClases.class);
-        casoUso = new GestionClases(repoMock);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionClases(repoMock, loggerMock);
 
         asignatura = new Asignatura("Matemáticas");
         docente = new Docente("D001", "hash", "123", "Juan", "Perez", 30, "Mat", new ArrayList<>());
@@ -40,15 +43,11 @@ class GestionClasesTest {
         periodo = new PeriodoAcademico("2026-I", "2026-01-01", "2026-12-31", "Activo");
     }
 
-    // ============ Creación: flujo feliz ============
-
     @Test
     void crearClase_debeGuardarClaseCorrectamente() {
         casoUso.crearClase("Lunes", "08:00", "10:00", asignatura, docente, grupo, aula, periodo);
         verify(repoMock).agregar(any(Clase.class));
     }
-
-    // ============ Validaciones de campos obligatorios ============
 
     @Test
     void crearClase_debeLanzarExcepcionSiDiaVacio() {
@@ -98,8 +97,6 @@ class GestionClasesTest {
                 () -> casoUso.crearClase("Lunes", "08:00", "10:00", asignatura, docente, grupo, aula, null));
     }
 
-    // ============ B6: Validación de conflictos al crear ============
-
     @Test
     void crearClase_debeFallarSiDocenteTieneConflicto() {
         when(repoMock.existeConflictoDocente(eq("D001"), eq("Lunes"), eq("08:00"), eq("10:00"), isNull()))
@@ -135,11 +132,9 @@ class GestionClasesTest {
                 () -> casoUso.crearClase("Lunes", "08:00", "10:00", asignatura, docente, grupo, aula, periodo));
 
         assertTrue(ex.getMessage().contains("grupo"),
-                "El mensaje debe mencionar el grupo. Fue: " + ex.getMessage());
+                "El mensaje debe mencionar al grupo. Fue: " + ex.getMessage());
         verify(repoMock, never()).agregar(any());
     }
-
-    // ============ Consultas ============
 
     @Test
     void listarClases_debeRetornarListaCompleta() {
@@ -187,8 +182,6 @@ class GestionClasesTest {
         assertNull(resultado);
     }
 
-    // ============ B6: Actualización excluyendo la propia clase ============
-
     @Test
     void actualizarClase_debeActualizarCorrectamente() {
         FranjaHoraria franjaOriginal = new FranjaHoraria("Lunes", "08:00", "10:00");
@@ -206,7 +199,6 @@ class GestionClasesTest {
 
         casoUso.actualizarClase(original, "Martes", "09:00", "11:00", asignatura, docente, grupo, aula, periodo);
 
-        // Debe invocar los 3 métodos de validación pasando "original" como clase a excluir
         verify(repoMock).existeConflictoDocente(eq("D001"), eq("Martes"), eq("09:00"), eq("11:00"), eq(original));
         verify(repoMock).existeConflictoAula(eq("Aula 101"), eq("Martes"), eq("09:00"), eq("11:00"), eq(original));
         verify(repoMock).existeConflictoGrupo(eq("1A"), eq("1er Grado"), eq("Martes"), eq("09:00"), eq("11:00"), eq(original));
@@ -225,8 +217,6 @@ class GestionClasesTest {
 
         verify(repoMock, never()).actualizar(any(), any());
     }
-
-    // ============ Eliminación ============
 
     @Test
     void eliminarClase_debeEliminarCorrectamente() {
