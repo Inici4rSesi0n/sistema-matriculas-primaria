@@ -1,9 +1,9 @@
 package aplicacion.casosdeuso;
 
+import aplicacion.servicio.BuscadorUsuario;
 import dominio.modelo.Usuario;
 import dominio.puerto.externo.HashProvider;
 import dominio.puerto.externo.LoggerPort;
-import dominio.puerto.repositorio.*;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,32 +13,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class AutenticarUsuario {
 
-    private final RepositorioAdministradores repoAdmin;
-    private final RepositorioDirectores repoDir;
-    private final RepositorioDocentes repoDoc;
-    private final RepositorioEstudiantes repoEst;
-    private final RepositorioSecretarios repoSec;
-    private final RepositorioCoordinadores repoCoord;
-    private final RepositorioPadres repoPad;
+    private final BuscadorUsuario buscadorUsuario;
     private final HashProvider hashProvider;
     private final LoggerPort logger;
 
-    public AutenticarUsuario(RepositorioAdministradores repoAdmin,
-                             RepositorioDirectores repoDir,
-                             RepositorioDocentes repoDoc,
-                             RepositorioEstudiantes repoEst,
-                             RepositorioSecretarios repoSec,
-                             RepositorioCoordinadores repoCoord,
-                             RepositorioPadres repoPad,
+    public AutenticarUsuario(BuscadorUsuario buscadorUsuario,
                              HashProvider hashProvider,
                              LoggerPort logger) {
-        this.repoAdmin = repoAdmin;
-        this.repoDir = repoDir;
-        this.repoDoc = repoDoc;
-        this.repoEst = repoEst;
-        this.repoSec = repoSec;
-        this.repoCoord = repoCoord;
-        this.repoPad = repoPad;
+        this.buscadorUsuario = buscadorUsuario;
         this.hashProvider = hashProvider;
         this.logger = logger;
     }
@@ -53,15 +35,7 @@ public class AutenticarUsuario {
             throw new IllegalArgumentException("La contraseña no puede ser nula.");
         }
 
-        Usuario usuario = null;
-
-        usuario = repoAdmin.buscarPorCodigo(codigo).orElse(null);
-        if (usuario == null) usuario = repoDir.buscarPorCodigo(codigo).orElse(null);
-        if (usuario == null) usuario = repoDoc.buscarPorCodigo(codigo).orElse(null);
-        if (usuario == null) usuario = repoEst.buscarPorCodigo(codigo).orElse(null);
-        if (usuario == null) usuario = repoSec.buscarPorCodigo(codigo).orElse(null);
-        if (usuario == null) usuario = repoCoord.buscarPorCodigo(codigo).orElse(null);
-        if (usuario == null) usuario = repoPad.buscarPorCodigo(codigo).orElse(null);
+        Usuario usuario = buscadorUsuario.buscarPorCodigo(codigo);
 
         if (usuario != null && hashProvider.verificarHash(usuario.getHashContrasena(), contraseña)) {
             logger.info("Usuario {} autenticado exitosamente.", codigo);

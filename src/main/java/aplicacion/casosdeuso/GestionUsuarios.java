@@ -1,20 +1,17 @@
 package aplicacion.casosdeuso;
-
+import aplicacion.servicio.BuscadorUsuario;
 import dominio.modelo.*;
 import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.*;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  *
  * @author inici4rsesi0n
  */
 @Service
 public class GestionUsuarios {
-
     private final RepositorioAdministradores repoAdmin;
     private final RepositorioDirectores repoDir;
     private final RepositorioDocentes repoDoc;
@@ -23,11 +20,12 @@ public class GestionUsuarios {
     private final RepositorioCoordinadores repoCoord;
     private final RepositorioPadres repoPad;
     private final LoggerPort logger;
+    private final BuscadorUsuario buscadorUsuario;
 
     public GestionUsuarios(RepositorioAdministradores repoAdmin, RepositorioDirectores repoDir,
                            RepositorioDocentes repoDoc, RepositorioEstudiantes repoEst,
                            RepositorioSecretarios repoSec, RepositorioCoordinadores repoCoord,
-                           RepositorioPadres repoPad, LoggerPort logger) {
+                           RepositorioPadres repoPad, LoggerPort logger, BuscadorUsuario buscadorUsuario) {
         this.repoAdmin = repoAdmin;
         this.repoDir = repoDir;
         this.repoDoc = repoDoc;
@@ -36,6 +34,7 @@ public class GestionUsuarios {
         this.repoCoord = repoCoord;
         this.repoPad = repoPad;
         this.logger = logger;
+        this.buscadorUsuario = buscadorUsuario;
     }
 
     public List<Usuario> listarTodos() {
@@ -51,18 +50,9 @@ public class GestionUsuarios {
         logger.debug("Total de usuarios encontrados: {}", todos.size());
         return todos;
     }
-
-    public Usuario buscarPorCodigo(String codigo) {
-        Usuario u = repoAdmin.buscarPorCodigo(codigo).orElse(null);
-        if (u == null) u = repoDir.buscarPorCodigo(codigo).orElse(null);
-        if (u == null) u = repoDoc.buscarPorCodigo(codigo).orElse(null);
-        if (u == null) u = repoEst.buscarPorCodigo(codigo).orElse(null);
-        if (u == null) u = repoSec.buscarPorCodigo(codigo).orElse(null);
-        if (u == null) u = repoCoord.buscarPorCodigo(codigo).orElse(null);
-        if (u == null) u = repoPad.buscarPorCodigo(codigo).orElse(null);
-        return u;
+    public Usuario buscarPorCodigo(String codigo){
+        return buscadorUsuario.buscarPorCodigo(codigo);
     }
-
     public boolean existeDni(String dni, Usuario excluir) {
         return listarTodos().stream().anyMatch(u -> u.getDni().equalsIgnoreCase(dni) && !u.equals(excluir));
     }

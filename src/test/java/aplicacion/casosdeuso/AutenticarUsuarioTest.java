@@ -1,16 +1,15 @@
 package aplicacion.casosdeuso;
 
+import aplicacion.servicio.BuscadorUsuario;
 import dominio.modelo.Docente;
 import dominio.modelo.Secretario;
 import dominio.modelo.Usuario;
 import dominio.puerto.externo.HashProvider;
 import dominio.puerto.externo.LoggerPort;
-import dominio.puerto.repositorio.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -21,13 +20,7 @@ import static org.mockito.Mockito.*;
  */
 class AutenticarUsuarioTest {
 
-    private RepositorioAdministradores repoAdmin;
-    private RepositorioDirectores repoDir;
-    private RepositorioDocentes repoDoc;
-    private RepositorioEstudiantes repoEst;
-    private RepositorioSecretarios repoSec;
-    private RepositorioCoordinadores repoCoord;
-    private RepositorioPadres repoPad;
+    private BuscadorUsuario buscadorMock;
     private HashProvider hashProvider;
     private LoggerPort loggerPort;
 
@@ -35,92 +28,68 @@ class AutenticarUsuarioTest {
 
     @BeforeEach
     void setUp() {
-        repoAdmin = mock(RepositorioAdministradores.class);
-        repoDir = mock(RepositorioDirectores.class);
-        repoDoc = mock(RepositorioDocentes.class);
-        repoEst = mock(RepositorioEstudiantes.class);
-        repoSec = mock(RepositorioSecretarios.class);
-        repoCoord = mock(RepositorioCoordinadores.class);
-        repoPad = mock(RepositorioPadres.class);
+        buscadorMock = mock(BuscadorUsuario.class);
         hashProvider = mock(HashProvider.class);
         loggerPort = mock(LoggerPort.class);
 
-        autenticarUsuario = new AutenticarUsuario(repoAdmin, repoDir, repoDoc,
-                repoEst, repoSec, repoCoord, repoPad, hashProvider, loggerPort);
+        autenticarUsuario = new AutenticarUsuario(buscadorMock, hashProvider, loggerPort);
     }
 
     @Test
     void ejecutar_debeAutenticarDocenteCorrectamente() {
         String codigo = "D001";
-        char[] contraseña = "secreta".toCharArray();
+        char[] contrasena = "secreta".toCharArray();
         Docente docente = new Docente(codigo, "hash", "123", "Juan", "Perez", 30, "Mat", new ArrayList<>());
 
-        when(repoAdmin.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoDir.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoDoc.buscarPorCodigo(codigo)).thenReturn(Optional.of(docente));
-        when(hashProvider.verificarHash("hash", contraseña)).thenReturn(true);
+        when(buscadorMock.buscarPorCodigo(codigo)).thenReturn(docente);
+        when(hashProvider.verificarHash("hash", contrasena)).thenReturn(true);
 
-        Usuario resultado = autenticarUsuario.ejecutar(codigo, contraseña);
+        Usuario resultado = autenticarUsuario.ejecutar(codigo, contrasena);
 
         assertNotNull(resultado);
         assertEquals(docente, resultado);
-        verify(repoEst, never()).buscarPorCodigo(anyString());
     }
 
     @Test
     void ejecutar_debeFallarSiCodigoNoExiste() {
         String codigo = "XXX";
-        char[] contraseña = "secreta".toCharArray();
+        char[] contrasena = "secreta".toCharArray();
 
-        when(repoAdmin.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoDir.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoDoc.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoEst.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoSec.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoCoord.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoPad.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
+        when(buscadorMock.buscarPorCodigo(codigo)).thenReturn(null);
 
-        Usuario resultado = autenticarUsuario.ejecutar(codigo, contraseña);
+        Usuario resultado = autenticarUsuario.ejecutar(codigo, contrasena);
 
         assertNull(resultado);
         verify(hashProvider, never()).verificarHash(anyString(), any());
     }
 
     @Test
-    void ejecutar_debeFallarSiContraseñaIncorrecta() {
+    void ejecutar_debeFallarSiContrasenaIncorrecta() {
         String codigo = "D001";
-        char[] contraseña = "incorrecta".toCharArray();
+        char[] contrasena = "incorrecta".toCharArray();
         Docente docente = new Docente(codigo, "hash", "123", "Ana", "Lopez", 28, "Ing", new ArrayList<>());
 
-        when(repoAdmin.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoDir.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoDoc.buscarPorCodigo(codigo)).thenReturn(Optional.of(docente));
-        when(hashProvider.verificarHash("hash", contraseña)).thenReturn(false);
+        when(buscadorMock.buscarPorCodigo(codigo)).thenReturn(docente);
+        when(hashProvider.verificarHash("hash", contrasena)).thenReturn(false);
 
-        Usuario resultado = autenticarUsuario.ejecutar(codigo, contraseña);
+        Usuario resultado = autenticarUsuario.ejecutar(codigo, contrasena);
 
         assertNull(resultado);
     }
 
     @Test
-    void ejecutar_debeBuscarEnTodosLosRepositoriosHastaEncontrar() {
+    void ejecutar_debeAutenticarSecretarioCorrectamente() {
         String codigo = "S001";
-        char[] contraseña = "pass".toCharArray();
-        Secretario secretario = mock(Secretario.class);
-        when(secretario.getHashContrasena()).thenReturn("hashS");
+        char[] contrasena = "pass".toCharArray();
+        Secretario secretario = new Secretario(codigo, "hashS", "111", "Sec", "Uno", 35);
 
-        when(repoAdmin.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoDir.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoDoc.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoEst.buscarPorCodigo(codigo)).thenReturn(Optional.empty());
-        when(repoSec.buscarPorCodigo(codigo)).thenReturn(Optional.of(secretario));
-        when(hashProvider.verificarHash("hashS", contraseña)).thenReturn(true);
+        when(buscadorMock.buscarPorCodigo(codigo)).thenReturn(secretario);
+        when(hashProvider.verificarHash("hashS", contrasena)).thenReturn(true);
 
-        Usuario resultado = autenticarUsuario.ejecutar(codigo, contraseña);
+        Usuario resultado = autenticarUsuario.ejecutar(codigo, contrasena);
 
         assertNotNull(resultado);
-        verify(repoCoord, never()).buscarPorCodigo(codigo);
-        verify(repoPad, never()).buscarPorCodigo(codigo);
+        assertEquals(secretario, resultado);
     }
 
     @Test
@@ -130,7 +99,7 @@ class AutenticarUsuarioTest {
     }
 
     @Test
-    void ejecutar_debeLanzarExcepcionSiContraseñaNula() {
+    void ejecutar_debeLanzarExcepcionSiContrasenaNula() {
         assertThrows(IllegalArgumentException.class,
                 () -> autenticarUsuario.ejecutar("D001", null));
     }

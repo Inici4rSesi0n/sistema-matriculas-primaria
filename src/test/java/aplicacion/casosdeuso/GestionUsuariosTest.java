@@ -1,19 +1,25 @@
 package aplicacion.casosdeuso;
+
+import aplicacion.servicio.BuscadorUsuario;
 import dominio.modelo.*;
 import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
 /**
  *
  * @author inici4rsesi0n
  */
 class GestionUsuariosTest {
+
     private RepositorioAdministradores repoAdmin;
     private RepositorioDirectores repoDir;
     private RepositorioDocentes repoDoc;
@@ -22,7 +28,9 @@ class GestionUsuariosTest {
     private RepositorioCoordinadores repoCoord;
     private RepositorioPadres repoPad;
     private LoggerPort loggerPort;
+    private BuscadorUsuario buscadorUsuario;
     private GestionUsuarios casoUso;
+
     @BeforeEach
     void setUp() {
         repoAdmin = mock(RepositorioAdministradores.class);
@@ -34,7 +42,11 @@ class GestionUsuariosTest {
         repoPad = mock(RepositorioPadres.class);
         loggerPort = mock(LoggerPort.class);
 
-        casoUso = new GestionUsuarios(repoAdmin, repoDir, repoDoc, repoEst, repoSec, repoCoord, repoPad, loggerPort);
+        // Buscador real usando los repos mockeados (mantiene compatibilidad con tests existentes)
+        buscadorUsuario = new BuscadorUsuario(repoAdmin, repoDir, repoDoc, repoEst, repoSec, repoCoord, repoPad);
+
+        casoUso = new GestionUsuarios(repoAdmin, repoDir, repoDoc, repoEst, repoSec, repoCoord, repoPad,
+                loggerPort, buscadorUsuario);
     }
 
     @Test
@@ -59,7 +71,8 @@ class GestionUsuariosTest {
 
     @Test
     void agregarUsuario_codigoDuplicado_debeLanzarExcepcion() {
-        when(repoAdmin.buscarPorCodigo("A001")).thenReturn(Optional.of(new Administrador("A001", "hash", "111", "Admin", "Uno", 30)));
+        when(repoAdmin.buscarPorCodigo("A001"))
+                .thenReturn(Optional.of(new Administrador("A001", "hash", "111", "Admin", "Uno", 30)));
 
         assertThrows(IllegalArgumentException.class,
                 () -> casoUso.agregarUsuario("A001", "hash", "222", "Otro", "Dos", 35, Usuario.Rol.ADMINISTRADOR, null));
@@ -112,6 +125,20 @@ class GestionUsuariosTest {
         verify(repoDoc).eliminar(docente);
     }
 
+    @Test
+    void actualizarUsuario_noDebePerderAsignaturasDeDocente() {
+        Docente docente = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
+        Asignatura mat = new Asignatura("Matemáticas");
+        Asignatura fis = new Asignatura("Física");
+        docente.agregarAsignatura(mat);
+        docente.agregarAsignatura(fis);
+        docente.setNombre("Juan Carlos");
+        casoUso.actualizarUsuario(docente);
+        assertEquals(2, docente.getAsignaturas().size(), "Editar el nombre no debe afectar las asignaturas");
+        assertTrue(docente.getAsignaturas().contains(mat));
+        assertTrue(docente.getAsignaturas().contains(fis));
+    }
+
     private void mockListarTodosVacios() {
         when(repoAdmin.listarTodos()).thenReturn(List.of());
         when(repoDir.listarTodos()).thenReturn(List.of());
@@ -130,18 +157,5 @@ class GestionUsuariosTest {
         when(repoSec.listarTodos()).thenReturn(List.of());
         when(repoCoord.listarTodos()).thenReturn(List.of());
         when(repoPad.listarTodos()).thenReturn(List.of());
-    }
-    @Test
-    void actualizarUsuario_noDebePerderAsignaturasDeDocente(){
-        Docente docente = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new ArrayList<>());
-        Asignatura mat = new Asignatura("Matemáticas");
-        Asignatura fis = new Asignatura("Física");
-        docente.agregarAsignatura(mat);
-        docente.agregarAsignatura(fis);
-        docente.setNombre("Juan Carlos");
-        casoUso.actualizarUsuario(docente);
-        assertEquals(2, docente.getAsignaturas().size(),"Editar el nombre no debe afectar las asignaturas");
-        assertTrue(docente.getAsignaturas().contains(mat));
-        assertTrue(docente.getAsignaturas().contains(fis));
     }
 }
