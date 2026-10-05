@@ -1,6 +1,7 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.Director;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioDirectores;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,88 +19,73 @@ import static org.mockito.Mockito.*;
 class GestionDirectoresTest {
 
     private RepositorioDirectores repoMock;
+    private LoggerPort loggerMock;
     private GestionDirectores casoUso;
 
     @BeforeEach
     void setUp() {
         repoMock = mock(RepositorioDirectores.class);
-        casoUso = new GestionDirectores(repoMock);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionDirectores(repoMock, loggerMock);
     }
 
     @Test
-    void agregar_debeGuardarDirectorCuandoNoExiste() {
-        Director director = new Director("D001", "hash", "111", "Dir", "Uno", 40);
-        when(repoMock.buscarPorCodigo("D001")).thenReturn(Optional.empty());
+    void agregar_debeLanzarExcepcionSiNulo() {
+        assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(null));
+        verify(repoMock, never()).agregar(any());
+    }
 
+    @Test
+    void agregar_debeGuardarCuandoNoExiste() {
+        Director director = new Director("DIR001", "hash", "111", "Dir", "Uno", 40);
+        when(repoMock.buscarPorCodigo("DIR001")).thenReturn(Optional.empty());
         casoUso.agregar(director);
-
         verify(repoMock).agregar(director);
     }
 
     @Test
     void agregar_debeLanzarExcepcionSiCodigoDuplicado() {
-        Director existente = new Director("D001", "hash", "111", "Dir", "Uno", 40);
-        Director nuevo = new Director("D001", "hash2", "222", "Dir", "Dos", 45);
-        when(repoMock.buscarPorCodigo("D001")).thenReturn(Optional.of(existente));
-
+        Director existente = new Director("DIR001", "hash", "111", "Dir", "Uno", 40);
+        Director nuevo = new Director("DIR001", "hash2", "222", "Otro", "Dos", 45);
+        when(repoMock.buscarPorCodigo("DIR001")).thenReturn(Optional.of(existente));
         assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(nuevo));
         verify(repoMock, never()).agregar(any());
     }
 
     @Test
-    void agregar_debeLanzarExcepcionSiDirectorNulo() {
-        assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(null));
-    }
-
-    @Test
-    void buscarPorCodigo_debeRetornarDirectorSiExiste() {
-        Director esperado = new Director("D001", "hash", "111", "Dir", "Uno", 40);
-        when(repoMock.buscarPorCodigo("D001")).thenReturn(Optional.of(esperado));
-
-        Director resultado = casoUso.buscarPorCodigo("D001");
-
-        assertEquals(esperado, resultado);
+    void buscarPorCodigo_debeRetornarSiExiste() {
+        Director esperado = new Director("DIR001", "hash", "111", "Dir", "Uno", 40);
+        when(repoMock.buscarPorCodigo("DIR001")).thenReturn(Optional.of(esperado));
+        assertEquals(esperado, casoUso.buscarPorCodigo("DIR001"));
     }
 
     @Test
     void buscarPorCodigo_debeRetornarNullSiNoExiste() {
-        when(repoMock.buscarPorCodigo("D999")).thenReturn(Optional.empty());
-
-        Director resultado = casoUso.buscarPorCodigo("D999");
-
-        assertNull(resultado);
+        when(repoMock.buscarPorCodigo("X")).thenReturn(Optional.empty());
+        assertNull(casoUso.buscarPorCodigo("X"));
     }
 
     @Test
     void listarTodos_debeRetornarListaCompleta() {
         List<Director> lista = List.of(
-                new Director("D001", "hash1", "111", "Dir1", "Uno", 40),
-                new Director("D002", "hash2", "222", "Dir2", "Dos", 45)
-        );
+                new Director("DIR001", "hash", "111", "A", "Uno", 40),
+                new Director("DIR002", "hash", "222", "B", "Dos", 45));
         when(repoMock.listarTodos()).thenReturn(lista);
-
-        List<Director> resultado = casoUso.listarTodos();
-
-        assertEquals(2, resultado.size());
-        verify(repoMock).listarTodos();
+        assertEquals(2, casoUso.listarTodos().size());
     }
 
     @Test
-    void actualizar_debeActualizarDirector() {
-        Director original = new Director("D001", "hash", "111", "Dir", "Uno", 40);
-        Director actualizado = new Director("D001", "hashNuevo", "999", "DirMod", "UnoMod", 50);
-
+    void actualizar_debePersistirCambios() {
+        Director original = new Director("DIR001", "hash", "111", "Dir", "Uno", 40);
+        Director actualizado = new Director("DIR001", "hash", "111", "Dir", "Uno Editado", 41);
         casoUso.actualizar(original, actualizado);
-
         verify(repoMock).actualizar(original, actualizado);
     }
 
     @Test
-    void eliminar_debeEliminarDirector() {
-        Director aEliminar = new Director("D001", "hash", "111", "Dir", "Uno", 40);
-
+    void eliminar_debeEliminarCorrectamente() {
+        Director aEliminar = new Director("DIR001", "hash", "111", "Dir", "Uno", 40);
         casoUso.eliminar(aEliminar);
-
         verify(repoMock).eliminar(aEliminar);
     }
 }

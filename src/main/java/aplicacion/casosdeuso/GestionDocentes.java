@@ -3,6 +3,7 @@ package aplicacion.casosdeuso;
 import dominio.modelo.Asignatura;
 import dominio.modelo.Docente;
 import dominio.modelo.Grupo;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioDocentes;
 import dominio.puerto.repositorio.RepositorioGrupos;
 import org.springframework.stereotype.Service;
@@ -18,35 +19,67 @@ public class GestionDocentes {
 
     private final RepositorioDocentes repo;
     private final RepositorioGrupos repoGrupos;
+    private final LoggerPort logger;
 
-    public GestionDocentes(RepositorioDocentes repo, RepositorioGrupos repoGrupos) {
+    public GestionDocentes(RepositorioDocentes repo, RepositorioGrupos repoGrupos, LoggerPort logger) {
         this.repo = repo;
         this.repoGrupos = repoGrupos;
+        this.logger = logger;
     }
 
     public void agregar(Docente docente) {
         if (docente == null) throw new IllegalArgumentException("El docente no puede ser nulo");
-        if (repo.buscarPorCodigo(docente.getCodigo()).isPresent()) throw new IllegalArgumentException("Ya existe un docente con ese código");
-        if (repo.buscarPorDni(docente.getDni()).isPresent()) throw new IllegalArgumentException("Ya existe un docente con ese DNI");
+        if (repo.buscarPorCodigo(docente.getCodigo()).isPresent())
+            throw new IllegalArgumentException("Ya existe un docente con ese código");
+        if (repo.buscarPorDni(docente.getDni()).isPresent())
+            throw new IllegalArgumentException("Ya existe un docente con ese DNI");
         repo.agregar(docente);
+        logger.audit(String.format(
+                "op=CREATE entity=DOCENTE id=%s | nombre=%s %s dni=%s",
+                docente.getCodigo(), docente.getNombre(),
+                docente.getApellido(), docente.getDni()));
     }
 
     public Docente buscarPorCodigo(String codigo) { return repo.buscarPorCodigo(codigo).orElse(null); }
     public Docente buscarPorDni(String dni) { return repo.buscarPorDni(dni).orElse(null); }
     public List<Docente> listarTodos() { return repo.listarTodos(); }
-    public void actualizar(Docente original, Docente actualizado) { repo.actualizar(original, actualizado); }
-    public void eliminar(Docente docente) { repo.eliminar(docente); }
+
+    public void actualizar(Docente original, Docente actualizado) {
+        if (original == null || actualizado == null) {
+            throw new IllegalArgumentException("Los docentes no pueden ser nulos");
+        }
+        String antes = original.toString();
+        repo.actualizar(original, actualizado);
+        logger.audit(String.format(
+                "op=UPDATE entity=DOCENTE id=%s | before=%s after=%s",
+                original.getCodigo(), antes, actualizado));
+    }
+
+    public void eliminar(Docente docente) {
+        if (docente == null) throw new IllegalArgumentException("El docente no puede ser nulo");
+        String snapshot = docente.toString();
+        repo.eliminar(docente);
+        logger.audit(String.format(
+                "op=DELETE entity=DOCENTE id=%s | snapshot=%s",
+                docente.getCodigo(), snapshot));
+    }
 
     public void agregarAsignatura(Docente docente, Asignatura asignatura) {
         if (asignatura == null) throw new IllegalArgumentException("La asignatura no puede ser nula");
         docente.agregarAsignatura(asignatura);
         repo.actualizar(docente, docente);
+        logger.audit(String.format(
+                "op=LINK entity=DOCENTE id=%s -> ASIGNATURA id=%s",
+                docente.getCodigo(), asignatura.getNombre()));
     }
 
     public void removerAsignatura(Docente docente, Asignatura asignatura) {
         if (asignatura == null) throw new IllegalArgumentException("La asignatura no puede ser nula");
         docente.removerAsignatura(asignatura);
         repo.actualizar(docente, docente);
+        logger.audit(String.format(
+                "op=UNLINK entity=DOCENTE id=%s -> ASIGNATURA id=%s",
+                docente.getCodigo(), asignatura.getNombre()));
     }
 
     /**
@@ -64,5 +97,12 @@ public class GestionDocentes {
         }
         repoGrupos.actualizar(grupo, grupo);
         repo.actualizar(docente, docente);
+
+        String detalleAnterior = (tutorAnterior != null && !tutorAnterior.equals(docente))
+                ? String.format(" previous=%s", tutorAnterior.getCodigo())
+                : "";
+        logger.audit(String.format(
+                "op=LINK entity=DOCENTE id=%s -> GRUPO id=%s | role=TUTOR%s",
+                docente.getCodigo(), grupo.getNombre(), detalleAnterior));
     }
 }

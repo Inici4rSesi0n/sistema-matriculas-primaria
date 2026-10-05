@@ -4,6 +4,7 @@ import dominio.modelo.Asignatura;
 import dominio.modelo.Docente;
 import dominio.modelo.Grado;
 import dominio.modelo.Grupo;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioDocentes;
 import dominio.puerto.repositorio.RepositorioGrupos;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,13 +25,15 @@ class GestionDocentesTest {
 
     private RepositorioDocentes repoDocentes;
     private RepositorioGrupos repoGrupos;
+    private LoggerPort loggerMock;
     private GestionDocentes casoUso;
 
     @BeforeEach
     void setUp() {
         repoDocentes = mock(RepositorioDocentes.class);
         repoGrupos = mock(RepositorioGrupos.class);
-        casoUso = new GestionDocentes(repoDocentes, repoGrupos);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionDocentes(repoDocentes, repoGrupos, loggerMock);
     }
 
     @Test

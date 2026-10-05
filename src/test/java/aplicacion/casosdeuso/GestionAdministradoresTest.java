@@ -1,6 +1,7 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.Administrador;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioAdministradores;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,16 +19,24 @@ import static org.mockito.Mockito.*;
 class GestionAdministradoresTest {
 
     private RepositorioAdministradores repoMock;
+    private LoggerPort loggerMock;
     private GestionAdministradores casoUso;
 
     @BeforeEach
     void setUp() {
         repoMock = mock(RepositorioAdministradores.class);
-        casoUso = new GestionAdministradores(repoMock);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionAdministradores(repoMock, loggerMock);
     }
 
     @Test
-    void agregar_debeGuardarAdministradorCuandoNoExiste() {
+    void agregar_debeLanzarExcepcionSiNulo() {
+        assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(null));
+        verify(repoMock, never()).agregar(any());
+    }
+
+    @Test
+    void agregar_debeGuardarCuandoNoExiste() {
         Administrador admin = new Administrador("A001", "hash", "111", "Admin", "Uno", 30);
         when(repoMock.buscarPorCodigo("A001")).thenReturn(Optional.empty());
 
@@ -39,7 +48,7 @@ class GestionAdministradoresTest {
     @Test
     void agregar_debeLanzarExcepcionSiCodigoDuplicado() {
         Administrador existente = new Administrador("A001", "hash", "111", "Admin", "Uno", 30);
-        Administrador nuevo = new Administrador("A001", "hash2", "222", "Admin", "Dos", 35);
+        Administrador nuevo = new Administrador("A001", "hash2", "222", "Otro", "Dos", 35);
         when(repoMock.buscarPorCodigo("A001")).thenReturn(Optional.of(existente));
 
         assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(nuevo));
@@ -47,47 +56,31 @@ class GestionAdministradoresTest {
     }
 
     @Test
-    void agregar_debeLanzarExcepcionSiAdministradorNulo() {
-        assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(null));
-    }
-
-    @Test
-    void buscarPorCodigo_debeRetornarAdministradorSiExiste() {
+    void buscarPorCodigo_debeRetornarSiExiste() {
         Administrador esperado = new Administrador("A001", "hash", "111", "Admin", "Uno", 30);
         when(repoMock.buscarPorCodigo("A001")).thenReturn(Optional.of(esperado));
-
-        Administrador resultado = casoUso.buscarPorCodigo("A001");
-
-        assertEquals(esperado, resultado);
+        assertEquals(esperado, casoUso.buscarPorCodigo("A001"));
     }
 
     @Test
     void buscarPorCodigo_debeRetornarNullSiNoExiste() {
-        when(repoMock.buscarPorCodigo("B999")).thenReturn(Optional.empty());
-
-        Administrador resultado = casoUso.buscarPorCodigo("B999");
-
-        assertNull(resultado);
+        when(repoMock.buscarPorCodigo("X")).thenReturn(Optional.empty());
+        assertNull(casoUso.buscarPorCodigo("X"));
     }
 
     @Test
     void listarTodos_debeRetornarListaCompleta() {
         List<Administrador> lista = List.of(
-                new Administrador("A001", "hash1", "111", "Admin1", "Uno", 30),
-                new Administrador("A002", "hash2", "222", "Admin2", "Dos", 35)
-        );
+                new Administrador("A001", "hash", "111", "A", "Uno", 30),
+                new Administrador("A002", "hash", "222", "B", "Dos", 40));
         when(repoMock.listarTodos()).thenReturn(lista);
-
-        List<Administrador> resultado = casoUso.listarTodos();
-
-        assertEquals(2, resultado.size());
-        verify(repoMock).listarTodos();
+        assertEquals(2, casoUso.listarTodos().size());
     }
 
     @Test
-    void actualizar_debeActualizarAdministrador() {
-        Administrador original = new Administrador("A001", "hash", "111", "Admin", "Uno", 30);
-        Administrador actualizado = new Administrador("A001", "hashNuevo", "999", "AdminMod", "UnoMod", 40);
+    void actualizar_debePersistirCambios() {
+        Administrador original = new Administrador("A001", "hash", "111", "A", "Uno", 30);
+        Administrador actualizado = new Administrador("A001", "hash", "111", "A", "Uno Editado", 31);
 
         casoUso.actualizar(original, actualizado);
 
@@ -95,11 +88,9 @@ class GestionAdministradoresTest {
     }
 
     @Test
-    void eliminar_debeEliminarAdministrador() {
-        Administrador aEliminar = new Administrador("A001", "hash", "111", "Admin", "Uno", 30);
-
+    void eliminar_debeEliminarCorrectamente() {
+        Administrador aEliminar = new Administrador("A001", "hash", "111", "A", "Uno", 30);
         casoUso.eliminar(aEliminar);
-
         verify(repoMock).eliminar(aEliminar);
     }
 }

@@ -1,6 +1,7 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.Secretario;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioSecretarios;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,88 +19,73 @@ import static org.mockito.Mockito.*;
 class GestionSecretariosTest {
 
     private RepositorioSecretarios repoMock;
+    private LoggerPort loggerMock;
     private GestionSecretarios casoUso;
 
     @BeforeEach
     void setUp() {
         repoMock = mock(RepositorioSecretarios.class);
-        casoUso = new GestionSecretarios(repoMock);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionSecretarios(repoMock, loggerMock);
     }
 
     @Test
-    void agregar_debeGuardarSecretarioCuandoNoExiste() {
-        Secretario secretario = new Secretario("S001", "hash", "111", "Sec", "Uno", 30);
-        when(repoMock.buscarPorCodigo("S001")).thenReturn(Optional.empty());
+    void agregar_debeLanzarExcepcionSiNulo() {
+        assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(null));
+        verify(repoMock, never()).agregar(any());
+    }
 
+    @Test
+    void agregar_debeGuardarCuandoNoExiste() {
+        Secretario secretario = new Secretario("SEC001", "hash", "111", "Sec", "Uno", 30);
+        when(repoMock.buscarPorCodigo("SEC001")).thenReturn(Optional.empty());
         casoUso.agregar(secretario);
-
         verify(repoMock).agregar(secretario);
     }
 
     @Test
     void agregar_debeLanzarExcepcionSiCodigoDuplicado() {
-        Secretario existente = new Secretario("S001", "hash", "111", "Sec", "Uno", 30);
-        Secretario nuevo = new Secretario("S001", "hash2", "222", "Sec", "Dos", 35);
-        when(repoMock.buscarPorCodigo("S001")).thenReturn(Optional.of(existente));
-
+        Secretario existente = new Secretario("SEC001", "hash", "111", "Sec", "Uno", 30);
+        Secretario nuevo = new Secretario("SEC001", "hash2", "222", "Otro", "Dos", 35);
+        when(repoMock.buscarPorCodigo("SEC001")).thenReturn(Optional.of(existente));
         assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(nuevo));
         verify(repoMock, never()).agregar(any());
     }
 
     @Test
-    void agregar_debeLanzarExcepcionSiSecretarioNulo() {
-        assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(null));
-    }
-
-    @Test
-    void buscarPorCodigo_debeRetornarSecretarioSiExiste() {
-        Secretario esperado = new Secretario("S001", "hash", "111", "Sec", "Uno", 30);
-        when(repoMock.buscarPorCodigo("S001")).thenReturn(Optional.of(esperado));
-
-        Secretario resultado = casoUso.buscarPorCodigo("S001");
-
-        assertEquals(esperado, resultado);
+    void buscarPorCodigo_debeRetornarSiExiste() {
+        Secretario esperado = new Secretario("SEC001", "hash", "111", "Sec", "Uno", 30);
+        when(repoMock.buscarPorCodigo("SEC001")).thenReturn(Optional.of(esperado));
+        assertEquals(esperado, casoUso.buscarPorCodigo("SEC001"));
     }
 
     @Test
     void buscarPorCodigo_debeRetornarNullSiNoExiste() {
-        when(repoMock.buscarPorCodigo("S999")).thenReturn(Optional.empty());
-
-        Secretario resultado = casoUso.buscarPorCodigo("S999");
-
-        assertNull(resultado);
+        when(repoMock.buscarPorCodigo("X")).thenReturn(Optional.empty());
+        assertNull(casoUso.buscarPorCodigo("X"));
     }
 
     @Test
     void listarTodos_debeRetornarListaCompleta() {
         List<Secretario> lista = List.of(
-                new Secretario("S001", "hash1", "111", "Sec1", "Uno", 30),
-                new Secretario("S002", "hash2", "222", "Sec2", "Dos", 35)
-        );
+                new Secretario("SEC001", "hash", "111", "A", "Uno", 30),
+                new Secretario("SEC002", "hash", "222", "B", "Dos", 35));
         when(repoMock.listarTodos()).thenReturn(lista);
-
-        List<Secretario> resultado = casoUso.listarTodos();
-
-        assertEquals(2, resultado.size());
-        verify(repoMock).listarTodos();
+        assertEquals(2, casoUso.listarTodos().size());
     }
 
     @Test
-    void actualizar_debeActualizarSecretario() {
-        Secretario original = new Secretario("S001", "hash", "111", "Sec", "Uno", 30);
-        Secretario actualizado = new Secretario("S001", "hashNuevo", "999", "SecMod", "UnoMod", 40);
-
+    void actualizar_debePersistirCambios() {
+        Secretario original = new Secretario("SEC001", "hash", "111", "Sec", "Uno", 30);
+        Secretario actualizado = new Secretario("SEC001", "hash", "111", "Sec", "Uno Editado", 31);
         casoUso.actualizar(original, actualizado);
-
         verify(repoMock).actualizar(original, actualizado);
     }
 
     @Test
-    void eliminar_debeEliminarSecretario() {
-        Secretario aEliminar = new Secretario("S001", "hash", "111", "Sec", "Uno", 30);
-
+    void eliminar_debeEliminarCorrectamente() {
+        Secretario aEliminar = new Secretario("SEC001", "hash", "111", "Sec", "Uno", 30);
         casoUso.eliminar(aEliminar);
-
         verify(repoMock).eliminar(aEliminar);
     }
 }

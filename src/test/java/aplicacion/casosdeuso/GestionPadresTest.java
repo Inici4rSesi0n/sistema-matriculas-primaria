@@ -2,6 +2,7 @@ package aplicacion.casosdeuso;
 
 import dominio.modelo.Estudiante;
 import dominio.modelo.Padre;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioPadres;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,12 +21,14 @@ import static org.mockito.Mockito.*;
 class GestionPadresTest {
 
     private RepositorioPadres repoMock;
+    private LoggerPort loggerMock;
     private GestionPadres casoUso;
 
     @BeforeEach
     void setUp() {
         repoMock = mock(RepositorioPadres.class);
-        casoUso = new GestionPadres(repoMock);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionPadres(repoMock, loggerMock);
     }
 
     @Test

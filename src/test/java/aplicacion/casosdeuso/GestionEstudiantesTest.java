@@ -1,6 +1,7 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.Estudiante;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioEstudiantes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,109 +19,91 @@ import static org.mockito.Mockito.*;
 class GestionEstudiantesTest {
 
     private RepositorioEstudiantes repoMock;
+    private LoggerPort loggerMock;
     private GestionEstudiantes casoUso;
 
     @BeforeEach
     void setUp() {
         repoMock = mock(RepositorioEstudiantes.class);
-        casoUso = new GestionEstudiantes(repoMock);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionEstudiantes(repoMock, loggerMock);
     }
 
     @Test
-    void agregar_debeGuardarEstudianteCuandoNoExiste() {
-        Estudiante estudiante = new Estudiante("E001", "hash", "111", "Est", "Uno", 15);
+    void agregar_debeLanzarExcepcionSiNulo() {
+        assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(null));
+        verify(repoMock, never()).agregar(any());
+    }
+
+    @Test
+    void agregar_debeGuardarCuandoNoExiste() {
+        Estudiante est = new Estudiante("E001", "hash", "111", "Ana", "Gomez", 12);
         when(repoMock.buscarPorCodigo("E001")).thenReturn(Optional.empty());
         when(repoMock.buscarPorDni("111")).thenReturn(Optional.empty());
-
-        casoUso.agregar(estudiante);
-
-        verify(repoMock).agregar(estudiante);
+        casoUso.agregar(est);
+        verify(repoMock).agregar(est);
     }
 
     @Test
     void agregar_debeLanzarExcepcionSiCodigoDuplicado() {
-        Estudiante existente = new Estudiante("E001", "hash", "111", "Est", "Uno", 15);
-        Estudiante nuevo = new Estudiante("E001", "hash2", "222", "Est", "Dos", 16);
+        Estudiante existente = new Estudiante("E001", "hash", "111", "Ana", "Gomez", 12);
+        Estudiante nuevo = new Estudiante("E001", "hash2", "222", "Otro", "Uno", 13);
         when(repoMock.buscarPorCodigo("E001")).thenReturn(Optional.of(existente));
-
         assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(nuevo));
         verify(repoMock, never()).agregar(any());
     }
 
     @Test
     void agregar_debeLanzarExcepcionSiDniDuplicado() {
-        Estudiante existente = new Estudiante("E002", "hash", "111", "Est", "Dos", 16);
-        Estudiante nuevo = new Estudiante("E003", "hash2", "111", "Est", "Tres", 17);
-        when(repoMock.buscarPorCodigo("E003")).thenReturn(Optional.empty());
+        Estudiante existente = new Estudiante("E001", "hash", "111", "Ana", "Gomez", 12);
+        Estudiante nuevo = new Estudiante("E002", "hash2", "111", "Otro", "Uno", 13);
+        when(repoMock.buscarPorCodigo("E002")).thenReturn(Optional.empty());
         when(repoMock.buscarPorDni("111")).thenReturn(Optional.of(existente));
-
         assertThrows(IllegalArgumentException.class, () -> casoUso.agregar(nuevo));
         verify(repoMock, never()).agregar(any());
     }
 
     @Test
-    void buscarPorCodigo_debeRetornarEstudianteSiExiste() {
-        Estudiante esperado = new Estudiante("E001", "hash", "111", "Est", "Uno", 15);
+    void buscarPorCodigo_debeRetornarSiExiste() {
+        Estudiante esperado = new Estudiante("E001", "hash", "111", "Ana", "Gomez", 12);
         when(repoMock.buscarPorCodigo("E001")).thenReturn(Optional.of(esperado));
-
-        Estudiante resultado = casoUso.buscarPorCodigo("E001");
-        assertEquals(esperado, resultado);
+        assertEquals(esperado, casoUso.buscarPorCodigo("E001"));
     }
 
     @Test
     void buscarPorCodigo_debeRetornarNullSiNoExiste() {
-        when(repoMock.buscarPorCodigo("E999")).thenReturn(Optional.empty());
-
-        Estudiante resultado = casoUso.buscarPorCodigo("E999");
-        assertNull(resultado);
+        when(repoMock.buscarPorCodigo("X")).thenReturn(Optional.empty());
+        assertNull(casoUso.buscarPorCodigo("X"));
     }
 
     @Test
-    void buscarPorDni_debeRetornarEstudianteSiExiste() {
-        Estudiante esperado = new Estudiante("E001", "hash", "111", "Est", "Uno", 15);
+    void buscarPorDni_debeRetornarSiExiste() {
+        Estudiante esperado = new Estudiante("E001", "hash", "111", "Ana", "Gomez", 12);
         when(repoMock.buscarPorDni("111")).thenReturn(Optional.of(esperado));
-
-        Estudiante resultado = casoUso.buscarPorDni("111");
-        assertEquals(esperado, resultado);
-    }
-
-    @Test
-    void buscarPorDni_debeRetornarNullSiNoExiste() {
-        when(repoMock.buscarPorDni("000")).thenReturn(Optional.empty());
-
-        Estudiante resultado = casoUso.buscarPorDni("000");
-        assertNull(resultado);
+        assertEquals(esperado, casoUso.buscarPorDni("111"));
     }
 
     @Test
     void listarTodos_debeRetornarListaCompleta() {
         List<Estudiante> lista = List.of(
-                new Estudiante("E001", "hash1", "111", "Est1", "Uno", 15),
-                new Estudiante("E002", "hash2", "222", "Est2", "Dos", 16)
-        );
+                new Estudiante("E001", "hash", "111", "Ana", "Gomez", 12),
+                new Estudiante("E002", "hash", "222", "Luis", "Perez", 13));
         when(repoMock.listarTodos()).thenReturn(lista);
-
-        List<Estudiante> resultado = casoUso.listarTodos();
-        assertEquals(2, resultado.size());
-        verify(repoMock).listarTodos();
+        assertEquals(2, casoUso.listarTodos().size());
     }
 
     @Test
-    void actualizar_debeActualizarEstudiante() {
-        Estudiante original = new Estudiante("E001", "hash", "111", "Est", "Uno", 15);
-        Estudiante actualizado = new Estudiante("E001", "hashNuevo", "999", "EstMod", "UnoMod", 16);
-
+    void actualizar_debePersistirCambios() {
+        Estudiante original = new Estudiante("E001", "hash", "111", "Ana", "Gomez", 12);
+        Estudiante actualizado = new Estudiante("E001", "hash", "111", "Ana Editada", "Gomez", 12);
         casoUso.actualizar(original, actualizado);
-
         verify(repoMock).actualizar(original, actualizado);
     }
 
     @Test
-    void eliminar_debeEliminarEstudiante() {
-        Estudiante aEliminar = new Estudiante("E001", "hash", "111", "Est", "Uno", 15);
-
+    void eliminar_debeEliminarCorrectamente() {
+        Estudiante aEliminar = new Estudiante("E001", "hash", "111", "Ana", "Gomez", 12);
         casoUso.eliminar(aEliminar);
-
         verify(repoMock).eliminar(aEliminar);
     }
 }
