@@ -21,41 +21,7 @@
          styleClass="seccion-tabpane">
     <tabs>
         <Tab fx:id="tabAsignaturas" text="Asignaturas" closable="false">
-            <BorderPane>
-                <top>
-                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
-                        <Button fx:id="btnNuevaAsignatura"
-                                text="+ Nueva Asignatura"
-                                styleClass="boton-primario"
-                                onAction="#handleNuevaAsignatura" />
-                    </HBox>
-                </top>
-                <center>
-                    <TableView fx:id="tablaAsignaturas" styleClass="seccion-tabla">
-                        <columns>
-                            <TableColumn fx:id="colNumAsignatura" text="N°" prefWidth="50.0" styleClass="col-center" />
-                            <TableColumn fx:id="colNombreAsignatura" text="Nombre" prefWidth="300.0" />
-                            <TableColumn fx:id="colAccionesAsignatura" text="Acciones" prefWidth="160.0" styleClass="col-center" />
-                        </columns>
-                    </TableView>
-                </center>
-                <right>
-                    <VBox fx:id="panelFormularioAsignatura" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
-                        <padding>
-                            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
-                        </padding>
-                        <Label styleClass="formulario-title" text="Asignatura" />
-                        <Separator styleClass="formulario-separator" />
-                        <Label text="Nombre:" styleClass="formulario-label" />
-                        <TextField fx:id="txtNombreAsignatura" promptText="Nombre de la asignatura" styleClass="formulario-input" />
-                        <Region VBox.vgrow="ALWAYS" />
-                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
-                            <Button fx:id="btnCancelarAsignatura" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarAsignatura" />
-                            <Button fx:id="btnGuardarAsignatura" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarAsignatura" />
-                        </HBox>
-                    </VBox>
-                </right>
-            </BorderPane>
+            <fx:include source="tab_asignaturas.fxml" />
         </Tab>
 
         <Tab fx:id="tabPeriodos" text="Periodos" closable="false">
