@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class FxDashboardController implements Initializable {
+public class DashboardController implements Initializable {
 
     private final GestionPermisos gestionPermisos;
     private final GestionEstudiantes gestionEstudiantes;
@@ -54,7 +54,7 @@ public class FxDashboardController implements Initializable {
     private final Map<String, Pane> vistasCargadas = new HashMap<>();
     private final Map<String, String> rutasVistas = new HashMap<>();
 
-    public FxDashboardController(GestionPermisos gestionPermisos,
+    public DashboardController(GestionPermisos gestionPermisos,
                                  GestionEstudiantes gestionEstudiantes,
                                  GestionDocentes gestionDocentes,
                                  GestionGrupos gestionGrupos,

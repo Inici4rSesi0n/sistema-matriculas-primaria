@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class FxMainController implements Initializable {
+public class MainController implements Initializable {
 
     private final GestionPermisos gestionPermisos;
     private final SpringFxmlLoader fxmlLoader;
@@ -54,7 +54,7 @@ public class FxMainController implements Initializable {
     private Timeline timelineConectado;
     private final Map<String, String> rutasVistas = new ConcurrentHashMap<>();
 
-    public FxMainController(GestionPermisos gestionPermisos, SpringFxmlLoader fxmlLoader) {
+    public MainController(GestionPermisos gestionPermisos, SpringFxmlLoader fxmlLoader) {
         this.gestionPermisos = gestionPermisos;
         this.fxmlLoader = fxmlLoader;
     }
@@ -111,7 +111,7 @@ public class FxMainController implements Initializable {
         try {
             FXMLLoader loader = fxmlLoader.crearLoader(ruta);
             Parent root = loader.load();
-            FxLoginController controller = loader.getController();
+            LoginController controller = loader.getController();
 
             Stage loginStage = new Stage(StageStyle.DECORATED);
             loginStage.setTitle("Inicio de Sesión - WiredAcademy");
@@ -176,7 +176,7 @@ public class FxMainController implements Initializable {
 
             if ("dashboard".equals(vistaKey)) {
                 nuevaVentana.setTitle("WiredAcademy · Ecosistema Educativo Digital");
-                FxDashboardController dashboardController = (FxDashboardController) controller;
+                DashboardController dashboardController = (DashboardController) controller;
                 dashboardController.setUsuario(usuario);
 
                 nuevaVentana.setOnCloseRequest(event -> Platform.exit());

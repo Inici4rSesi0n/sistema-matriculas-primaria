@@ -11,7 +11,7 @@
 <BorderPane fx:id="mainRoot" 
             xmlns="http://javafx.com/javafx/23.0.1" 
             xmlns:fx="http://javafx.com/fxml/1" 
-            fx:controller="presentacion.controlador.FxMainController"
+            fx:controller="presentacion.controlador.MainController"
             maxWidth="1.0E8" maxHeight="1.0E8">
    <stylesheets>
       <URL value="@/css/main.css" />

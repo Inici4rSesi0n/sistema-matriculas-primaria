@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class visor_HorarioController implements Initializable {
+public class VisorHorarioController implements Initializable {
 
     private final GestionGrupos gestionGrupos;
     private final GestionPeriodos gestionPeriodos;
@@ -58,7 +58,7 @@ public class visor_HorarioController implements Initializable {
 
     private ObservableList<Evento> listaHorario;
 
-    public visor_HorarioController(GestionGrupos gestionGrupos,
+    public VisorHorarioController(GestionGrupos gestionGrupos,
                                    GestionPeriodos gestionPeriodos,
                                    GestionHorario gestionHorario) {
         this.gestionGrupos = gestionGrupos;

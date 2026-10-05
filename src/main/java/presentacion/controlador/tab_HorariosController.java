@@ -280,7 +280,7 @@ public class tab_HorariosController implements Initializable {
     @FXML
     private void handleVerHorario() {
         try {
-            FXMLLoader loader = fxmlLoader.crearLoader("/fxml/visor_Horario.fxml");
+            FXMLLoader loader = fxmlLoader.crearLoader("/fxml/visor_horario.fxml");
             Parent root = loader.load();
 
             Stage stage = new Stage();

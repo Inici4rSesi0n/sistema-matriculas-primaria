@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class FxLoginController implements Initializable {
+public class LoginController implements Initializable {
 
     private final AutenticarUsuario autenticarUsuario;
 
@@ -45,7 +45,7 @@ public class FxLoginController implements Initializable {
     private Usuario usuarioAutenticado;
     private boolean regresando = false;
 
-    public FxLoginController(AutenticarUsuario autenticarUsuario) {
+    public LoginController(AutenticarUsuario autenticarUsuario) {
         this.autenticarUsuario = autenticarUsuario;
     }
 
