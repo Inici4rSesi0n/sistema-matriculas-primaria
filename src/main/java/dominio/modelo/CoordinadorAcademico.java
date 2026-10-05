@@ -54,9 +54,12 @@ public class CoordinadorAcademico extends Usuario {
     public String getNombreCompleto() {
         return getNombre() + " " + getApellido();
     }
-
     @Override
     public String toString() {
-        return "CoordinadorAcademico [" + super.toString() + ", gradosSupervisados=" + gradosSupervisados.size() + "]";
+        String nombresGrados = gradosSupervisados.stream()
+                .map(Grado::getNombre)
+                .collect(java.util.stream.Collectors.joining(", "));
+        return "CoordinadorAcademico [" + super.toString()
+                + ", gradosSupervisados=[" + nombresGrados + "]]";
     }
 }

@@ -79,9 +79,14 @@ public class Matricula implements Serializable {
     }
     @Override
     public String toString() {
-        return "Matricula [estudiante=" + (estudiante != null ? estudiante.getCodigo() : "N/A") +
-               ", periodo=" + (periodo != null ? periodo.getNombre() : "N/A") +
-               ", grupo=" + (grupo != null ? grupo.getNombre() : "N/A") +
-               ", estado=" + estado + "]";
+        String nombresAsignaturas = asignaturas.stream()
+                .map(Asignatura::getNombre)
+                .collect(java.util.stream.Collectors.joining(", "));
+        return "Matricula [estudiante=" + (estudiante != null ? estudiante.getCodigo() : "N/A")
+                + ", periodo=" + (periodo != null ? periodo.getNombre() : "N/A")
+                + ", grupo=" + (grupo != null ? grupo.getNombre() : "N/A")
+                + ", asignaturas=[" + nombresAsignaturas + "]"
+                + ", fecha=" + fecha
+                + ", estado=" + estado + "]";
     }
 }

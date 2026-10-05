@@ -64,9 +64,12 @@ public class Docente extends Usuario {
     }
     @Override
     public String toString() {
+        String nombresAsignaturas = asignaturas.stream()
+            .map(Asignatura::getNombre)
+            .collect(java.util.stream.Collectors.joining(", "));
         return super.toString() +
                ", Especialidad=" + especialidad +
                ", Tutoría=" + (tutoria != null ? tutoria.getNombre() : "Sin tutoría") +
-               ", Asignaturas=" + asignaturas.size();
+               ", Asignaturas=" + nombresAsignaturas + "]";
     }
 }

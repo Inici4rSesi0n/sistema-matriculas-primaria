@@ -69,7 +69,10 @@ public class Grupo implements Serializable {
     }
     @Override
     public String toString() {
-        return "Grupo [nombre=" + nombre + ", grado=" + (grado != null ? grado.getNombre() : "Sin grado") +
-               ", estudiantes=" + estudiantes.size() + "]";
+        String tutorCodigo = (tutor != null) ? tutor.getCodigo() : "Sin tutor";
+        return "Grupo [nombre=" + nombre
+                + ", grado=" + (grado != null ? grado.getNombre() : "Sin grado")
+                + ", tutor=" + tutorCodigo
+                + ", estudiantes=" + estudiantes.size() + "]";
     }
 }
