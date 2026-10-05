@@ -10,7 +10,6 @@ import aplicacion.casosdeuso.GestionGrados;
 import aplicacion.casosdeuso.GestionGrupos;
 import aplicacion.casosdeuso.GestionPeriodos;
 import aplicacion.casosdeuso.GestionRecreos;
-import aplicacion.casosdeuso.GestionTurnos;
 import dominio.modelo.Asignatura;
 import dominio.modelo.Aula;
 import dominio.modelo.FranjaHoraria;
@@ -19,7 +18,6 @@ import dominio.modelo.Grupo;
 import dominio.modelo.ModalidadAula;
 import dominio.modelo.PeriodoAcademico;
 import dominio.modelo.Recreo;
-import dominio.modelo.Turno;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
@@ -49,7 +47,7 @@ import javafx.util.StringConverter;
 @Scope("prototype")
 public class tab_CatalogosController implements Initializable {
     @FXML private TabPane tabPaneCatalogos;
-    @FXML private Tab tabAsignaturas, tabPeriodos, tabAulas, tabGrupos, tabRecreos, tabGrados, tabTurnos;
+    @FXML private Tab tabAsignaturas, tabPeriodos, tabAulas, tabGrupos, tabRecreos, tabGrados;
     @FXML private TableView<Asignatura> tablaAsignaturas;
     @FXML private TableColumn<Asignatura, Integer> colNumAsignatura;
     @FXML private TableColumn<Asignatura, String> colNombreAsignatura;
@@ -100,13 +98,6 @@ public class tab_CatalogosController implements Initializable {
     @FXML private VBox panelFormularioGrado;
     @FXML private TextField txtNombreGrado, txtNivelGrado;
     @FXML private Button btnNuevoGrado, btnGuardarGrado, btnCancelarGrado;
-    @FXML private TableView<Turno> tablaTurnos;
-    @FXML private TableColumn<Turno, Integer> colNumTurno;
-    @FXML private TableColumn<Turno, String> colNombreTurno;
-    @FXML private TableColumn<Turno, Void> colAccionesTurno;
-    @FXML private VBox panelFormularioTurno;
-    @FXML private TextField txtNombreTurno;
-    @FXML private Button btnNuevoTurno, btnGuardarTurno, btnCancelarTurno;
 
     private ObservableList<Asignatura> listaAsignaturas;
     private ObservableList<PeriodoAcademico> listaPeriodos;
@@ -114,7 +105,6 @@ public class tab_CatalogosController implements Initializable {
     private ObservableList<Grupo> listaGrupos;
     private ObservableList<Recreo> listaRecreos;
     private ObservableList<Grado> listaGrados;
-    private ObservableList<Turno> listaTurnos;
     private ObservableList<PeriodoAcademico> periodosRecreoTemporal;
 
     private Asignatura asignaturaEditando;
@@ -123,28 +113,24 @@ public class tab_CatalogosController implements Initializable {
     private Grupo grupoEditando;
     private Recreo recreoEditando;
     private Grado gradoEditando;
-    private Turno turnoEditando;
     private final GestionAsignaturas gestionAsignaturas;
     private final GestionPeriodos gestionPeriodos;
     private final GestionAulas gestionAulas;
     private final GestionGrupos gestionGrupos;
     private final GestionRecreos gestionRecreos;
     private final GestionGrados gestionGrados;
-    private final GestionTurnos gestionTurnos;
     public tab_CatalogosController(GestionAsignaturas gestionAsignaturas,
                                    GestionPeriodos gestionPeriodos,
                                    GestionAulas gestionAulas,
                                    GestionGrupos gestionGrupos,
                                    GestionRecreos gestionRecreos,
-                                   GestionGrados gestionGrados,
-                                   GestionTurnos gestionTurnos) {
+                                   GestionGrados gestionGrados) {
         this.gestionAsignaturas = gestionAsignaturas;
         this.gestionPeriodos = gestionPeriodos;
         this.gestionAulas = gestionAulas;
         this.gestionGrupos = gestionGrupos;
         this.gestionRecreos = gestionRecreos;
         this.gestionGrados = gestionGrados;
-        this.gestionTurnos = gestionTurnos;
     }
 
     @Override
@@ -158,7 +144,6 @@ public class tab_CatalogosController implements Initializable {
         SistemaEventBus.suscribir(TipoEvento.GRUPOS, this::cargarGrupos);
         SistemaEventBus.suscribir(TipoEvento.RECREOS, this::cargarRecreos);
         SistemaEventBus.suscribir(TipoEvento.GRADOS, this::cargarGrados);
-        SistemaEventBus.suscribir(TipoEvento.TURNOS, this::cargarTurnos);
         periodosRecreoTemporal = FXCollections.observableArrayList();
         listViewPeriodosRecreo.setItems(periodosRecreoTemporal);
         configurarCellFactoryPeriodosRecreo();
@@ -195,7 +180,6 @@ public class tab_CatalogosController implements Initializable {
         configurarTablaGrupos();
         configurarTablaRecreos();
         configurarTablaGrados();
-        configurarTablaTurnos();
     }
 
     private void configurarTablaAsignaturas() {
@@ -277,17 +261,7 @@ public class tab_CatalogosController implements Initializable {
         colNivelGrado.setCellValueFactory(new PropertyValueFactory<>("nivel"));
         configurarAcciones(colAccionesGrado, "grado");
     }
-
-    private void configurarTablaTurnos() {
-        colNumTurno.setCellFactory(col -> new TableCell<>() {
-            @Override protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty ? null : String.valueOf(getIndex() + 1));
-            }
-        });
-        colNombreTurno.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        configurarAcciones(colAccionesTurno, "turno");
-    }
+ 
 
     private <T> void configurarAcciones(TableColumn<T, Void> columna, String tipo) {
         columna.setCellFactory(param -> new TableCell<>() {
@@ -365,14 +339,7 @@ public class tab_CatalogosController implements Initializable {
                 txtNivelGrado.setText(g.getNivel());
                 panelFormularioGrado.setVisible(true);
                 panelFormularioGrado.setManaged(true);
-            }
-            case "turno" -> {
-                Turno t = (Turno) obj;
-                turnoEditando = t;
-                txtNombreTurno.setText(t.getNombre());
-                panelFormularioTurno.setVisible(true);
-                panelFormularioTurno.setManaged(true);
-            }
+            } 
         }
     }
 
@@ -386,7 +353,6 @@ public class tab_CatalogosController implements Initializable {
                 case "grupo"      -> { gestionGrupos.eliminarGrupo((Grupo) obj); SistemaEventBus.notificar(TipoEvento.GRUPOS); }
                 case "recreo"     -> { gestionRecreos.eliminarRecreo((Recreo) obj); SistemaEventBus.notificar(TipoEvento.RECREOS); }
                 case "grado"      -> { gestionGrados.eliminarGrado((Grado) obj); SistemaEventBus.notificar(TipoEvento.GRADOS); }
-                case "turno"      -> { gestionTurnos.eliminarTurno((Turno) obj); SistemaEventBus.notificar(TipoEvento.TURNOS); }
             }
             cargarDatos();
         } catch (IllegalArgumentException e) {
@@ -419,7 +385,6 @@ public class tab_CatalogosController implements Initializable {
         cargarGrupos();
         cargarRecreos();
         cargarGrados();
-        cargarTurnos();
     }
 
     private void cargarAsignaturas() {
@@ -451,12 +416,7 @@ public class tab_CatalogosController implements Initializable {
         listaGrados = FXCollections.observableArrayList(gestionGrados.listarTodos());
         tablaGrados.setItems(listaGrados);
         tablaGrados.refresh();
-    }
-    private void cargarTurnos() {
-        listaTurnos = FXCollections.observableArrayList(gestionTurnos.listarTodos());
-        tablaTurnos.setItems(listaTurnos);
-        tablaTurnos.refresh();
-    }
+    } 
 
     @FXML private void handleNuevaAsignatura() { asignaturaEditando = null; txtNombreAsignatura.clear(); panelFormularioAsignatura.setVisible(true); panelFormularioAsignatura.setManaged(true); }
     @FXML private void handleGuardarAsignatura() {
@@ -583,20 +543,6 @@ public class tab_CatalogosController implements Initializable {
         } catch (IllegalArgumentException e) { Dialogos.info(e.getMessage()); }
     }
     @FXML private void handleCancelarGrado() { panelFormularioGrado.setVisible(false); panelFormularioGrado.setManaged(false); }
-
-    @FXML private void handleNuevoTurno() { turnoEditando = null; txtNombreTurno.clear(); panelFormularioTurno.setVisible(true); panelFormularioTurno.setManaged(true); }
-    @FXML private void handleGuardarTurno() {
-        String nombre = txtNombreTurno.getText().trim();
-        if (nombre.isBlank()) { Dialogos.info("El nombre no puede estar vacío."); return; }
-        try {
-            if (turnoEditando == null) gestionTurnos.crearTurno(nombre);
-            else gestionTurnos.actualizarTurno(turnoEditando, nombre);
-            SistemaEventBus.notificar(TipoEvento.TURNOS);
-            panelFormularioTurno.setVisible(false);
-            panelFormularioTurno.setManaged(false);
-        } catch (IllegalArgumentException e) { Dialogos.info(e.getMessage()); }
-    }
-    @FXML private void handleCancelarTurno() { panelFormularioTurno.setVisible(false); panelFormularioTurno.setManaged(false); }
 
     private String formatearGrado(Grado g) {
         if (g == null) return "";

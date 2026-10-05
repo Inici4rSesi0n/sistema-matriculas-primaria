@@ -292,41 +292,7 @@
         </Tab>
 
         <Tab fx:id="tabTurnos" text="Turnos" closable="false">
-            <BorderPane>
-                <top>
-                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
-                        <Button fx:id="btnNuevoTurno"
-                                text="+ Nuevo Turno"
-                                styleClass="boton-primario"
-                                onAction="#handleNuevoTurno" />
-                    </HBox>
-                </top>
-                <center>
-                    <TableView fx:id="tablaTurnos" styleClass="seccion-tabla">
-                        <columns>
-                            <TableColumn fx:id="colNumTurno" text="N°" prefWidth="50.0" styleClass="col-center" />
-                            <TableColumn fx:id="colNombreTurno" text="Nombre" prefWidth="300.0" />
-                            <TableColumn fx:id="colAccionesTurno" text="Acciones" prefWidth="160.0" styleClass="col-center" />
-                        </columns>
-                    </TableView>
-                </center>
-                <right>
-                    <VBox fx:id="panelFormularioTurno" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
-                        <padding>
-                            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
-                        </padding>
-                        <Label styleClass="formulario-title" text="Turno" />
-                        <Separator styleClass="formulario-separator" />
-                        <Label text="Nombre:" styleClass="formulario-label" />
-                        <TextField fx:id="txtNombreTurno" promptText="Nombre del turno" styleClass="formulario-input" />
-                        <Region VBox.vgrow="ALWAYS" />
-                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
-                            <Button fx:id="btnCancelarTurno" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarTurno" />
-                            <Button fx:id="btnGuardarTurno" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarTurno" />
-                        </HBox>
-                    </VBox>
-                </right>
-            </BorderPane>
+            <fx:include source="tab_turnos.fxml" />
         </Tab>
     </tabs>
 </TabPane>
