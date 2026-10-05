@@ -54,8 +54,8 @@ public class s_GestionUsuariosController implements Initializable {
         configurarColumnaAcciones();
         configurarComboRoles();
         SistemaEventBus.suscribir(TipoEvento.USUARIOS, this::cargarUsuarios);
+        cargarUsuarios(); 
     }
-
     private void configurarTabla() {
         colCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));

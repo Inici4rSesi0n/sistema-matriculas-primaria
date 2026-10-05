@@ -1,16 +1,20 @@
 package aplicacion.casosdeuso;
+
 import dominio.modelo.*;
 import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.*;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  *
  * @author inici4rsesi0n
  */
 @Service
 public class GestionUsuarios {
+
     private final RepositorioAdministradores repoAdmin;
     private final RepositorioDirectores repoDir;
     private final RepositorioDocentes repoDoc;
@@ -19,6 +23,7 @@ public class GestionUsuarios {
     private final RepositorioCoordinadores repoCoord;
     private final RepositorioPadres repoPad;
     private final LoggerPort logger;
+
     public GestionUsuarios(RepositorioAdministradores repoAdmin, RepositorioDirectores repoDir,
                            RepositorioDocentes repoDoc, RepositorioEstudiantes repoEst,
                            RepositorioSecretarios repoSec, RepositorioCoordinadores repoCoord,
@@ -77,12 +82,16 @@ public class GestionUsuarios {
             case ESTUDIANTE -> repoEst.agregar(new Estudiante(codigo, hash, dni, nombre, apellido, edad));
             case PADRE -> repoPad.agregar(new Padre(codigo, hash, dni, nombre, apellido, edad, new ArrayList<>()));
         }
-        logger.info("Usuario {} con rol {} creado exitosamente.", codigo, rol);
+        logger.audit(String.format(
+                "op=CREATE entity=%s id=%s | nombre=%s %s dni=%s",
+                rol, codigo, nombre, apellido, dni));
     }
 
     public void actualizarUsuario(Usuario usuario) {
         if (usuario == null) throw new IllegalArgumentException("El usuario no puede ser nulo");
+
         String antes = usuario.toString();
+
         switch (usuario.getRol()) {
             case ADMINISTRADOR -> repoAdmin.actualizar((Administrador) usuario, (Administrador) usuario);
             case DIRECTOR -> repoDir.actualizar((Director) usuario, (Director) usuario);
@@ -92,11 +101,17 @@ public class GestionUsuarios {
             case COORDINADOR -> repoCoord.actualizar((CoordinadorAcademico) usuario, (CoordinadorAcademico) usuario);
             case PADRE -> repoPad.actualizar((Padre) usuario, (Padre) usuario);
         }
-        logger.info("[AUDIT] Usuario {} actualizado. Antes: {} | Después: {}", 
-                usuario.getCodigo(), antes, usuario);
+
+        logger.audit(String.format(
+                "op=UPDATE entity=%s id=%s | before=%s after=%s",
+                usuario.getRol(), usuario.getCodigo(), antes, usuario));
     }
 
     public void eliminarUsuario(Usuario usuario) {
+        if (usuario == null) throw new IllegalArgumentException("El usuario no puede ser nulo");
+
+        String snapshot = usuario.toString();
+
         switch (usuario.getRol()) {
             case ADMINISTRADOR -> repoAdmin.eliminar((Administrador) usuario);
             case DIRECTOR -> repoDir.eliminar((Director) usuario);
@@ -106,7 +121,10 @@ public class GestionUsuarios {
             case COORDINADOR -> repoCoord.eliminar((CoordinadorAcademico) usuario);
             case PADRE -> repoPad.eliminar((Padre) usuario);
         }
-        logger.warn("Usuario {} ({}) eliminado del sistema.", usuario.getCodigo(), usuario.getRol());
+
+        logger.audit(String.format(
+                "op=DELETE entity=%s id=%s | snapshot=%s",
+                usuario.getRol(), usuario.getCodigo(), snapshot));
     }
 
     private void validarUnicidad(String codigo, String dni, Usuario excluir) {

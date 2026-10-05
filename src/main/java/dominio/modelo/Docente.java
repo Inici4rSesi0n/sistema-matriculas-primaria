@@ -70,6 +70,6 @@ public class Docente extends Usuario {
         return super.toString() +
                ", Especialidad=" + especialidad +
                ", Tutoría=" + (tutoria != null ? tutoria.getNombre() : "Sin tutoría") +
-               ", Asignaturas=" + nombresAsignaturas + "]";
+               ", Asignaturas=[" + nombresAsignaturas + "]";
     }
 }
