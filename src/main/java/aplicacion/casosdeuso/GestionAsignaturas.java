@@ -1,18 +1,27 @@
 package aplicacion.casosdeuso;
+
 import dominio.modelo.Asignatura;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioAsignaturas;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
+
 /**
  *
  * @author inici4rsesi0n
  */
 @Service
 public class GestionAsignaturas {
+
     private final RepositorioAsignaturas repo;
-    public GestionAsignaturas(RepositorioAsignaturas repo) {
+    private final LoggerPort logger;
+
+    public GestionAsignaturas(RepositorioAsignaturas repo, LoggerPort logger) {
         this.repo = repo;
+        this.logger = logger;
     }
+
     public void crearAsignatura(String nombre) {
         if (nombre == null || nombre.isBlank()) {
             throw new IllegalArgumentException("El nombre de la asignatura no puede estar vacío.");
@@ -21,21 +30,35 @@ public class GestionAsignaturas {
             throw new IllegalArgumentException("Ya existe una asignatura con ese nombre.");
         }
         repo.agregar(new Asignatura(nombre));
+        logger.audit(String.format(
+                "op=CREATE entity=ASIGNATURA id=%s", nombre));
     }
+
     public List<Asignatura> listarTodos() {
         return repo.listarTodos();
     }
+
     public Asignatura buscarAsignatura(String nombre) {
         return repo.buscarPorNombre(nombre).orElse(null);
     }
+
     public void actualizarAsignatura(Asignatura original, String nuevoNombre) {
         if (nuevoNombre == null || nuevoNombre.isBlank()) {
             throw new IllegalArgumentException("El nuevo nombre no puede estar vacío.");
         }
+        String antes = original.getNombre();
         original.setNombre(nuevoNombre);
         repo.actualizar(original, original);
+        logger.audit(String.format(
+                "op=UPDATE entity=ASIGNATURA id=%s | before=%s after=%s",
+                original.getNombre(), antes, nuevoNombre));
     }
+
     public void eliminarAsignatura(Asignatura asignatura) {
+        if (asignatura == null) throw new IllegalArgumentException("La asignatura no puede ser nula");
+        String nombre = asignatura.getNombre();
         repo.eliminar(asignatura);
+        logger.audit(String.format(
+                "op=DELETE entity=ASIGNATURA id=%s", nombre));
     }
 }

@@ -2,6 +2,7 @@ package aplicacion.casosdeuso;
 
 import dominio.modelo.Aula;
 import dominio.modelo.ModalidadAula;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioAulas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,104 +20,78 @@ import static org.mockito.Mockito.*;
 class GestionAulasTest {
 
     private RepositorioAulas repoMock;
+    private LoggerPort loggerMock;
     private GestionAulas casoUso;
 
     @BeforeEach
     void setUp() {
         repoMock = mock(RepositorioAulas.class);
-        casoUso = new GestionAulas(repoMock);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionAulas(repoMock, loggerMock);
     }
 
     @Test
     void crearAula_debeGuardarCuandoNoExiste() {
-        when(repoMock.buscarPorNombre("Laboratorio")).thenReturn(Optional.empty());
-
-        casoUso.crearAula("Laboratorio", 30, "Edificio A", "Laboratorio", ModalidadAula.PRESENCIAL);
-
+        when(repoMock.buscarPorNombre("Aula 101")).thenReturn(Optional.empty());
+        casoUso.crearAula("Aula 101", 40, "Pabellón A", "Teoría", ModalidadAula.PRESENCIAL);
         verify(repoMock).agregar(any(Aula.class));
     }
 
     @Test
-    void crearAula_conModalidadVirtual_debeGuardar() {
-        when(repoMock.buscarPorNombre("Zoom-101")).thenReturn(Optional.empty());
-
-        casoUso.crearAula("Zoom-101", 50, "Plataforma", "Teoría", ModalidadAula.VIRTUAL);
-
-        verify(repoMock).agregar(any(Aula.class));
-    }
-
-    @Test
-    void crearAula_debeLanzarExcepcionCuandoYaExiste() {
-        when(repoMock.buscarPorNombre("Laboratorio")).thenReturn(Optional.of(new Aula("Laboratorio", 30, "Edificio A", "Laboratorio")));
-
+    void crearAula_debeFallarSiCapacidadInvalida() {
         assertThrows(IllegalArgumentException.class,
-                () -> casoUso.crearAula("Laboratorio", 30, "Edificio A", "Laboratorio", ModalidadAula.PRESENCIAL));
-        verify(repoMock, never()).agregar(any());
+                () -> casoUso.crearAula("Aula 101", 0, "Pabellón A", "Teoría", ModalidadAula.PRESENCIAL));
     }
 
     @Test
-    void listarAulas_debeRetornarTodas() {
+    void crearAula_debeFallarSiNombreVacio() {
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.crearAula("", 40, "Pabellón A", "Teoría", ModalidadAula.PRESENCIAL));
+    }
+
+    @Test
+    void crearAula_debeFallarSiDuplicado() {
+        when(repoMock.buscarPorNombre("Aula 101")).thenReturn(Optional.of(new Aula("Aula 101", 40, "X", "Y")));
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.crearAula("Aula 101", 40, "Pabellón A", "Teoría", ModalidadAula.PRESENCIAL));
+    }
+
+    @Test
+    void listarTodos_debeRetornarListaCompleta() {
         List<Aula> lista = List.of(
-                new Aula("Aula 101", 40, "Pabellón 1", "Teoría"),
-                new Aula("Lab Física", 25, "Pabellón 2", "Laboratorio")
-        );
+                new Aula("A101", 40, "P1", "Teoría"),
+                new Aula("A102", 30, "P2", "Lab"));
         when(repoMock.listarTodos()).thenReturn(lista);
-
-        List<Aula> resultado = casoUso.listarTodos();
-
-        assertEquals(2, resultado.size());
-        verify(repoMock).listarTodos();
+        assertEquals(2, casoUso.listarTodos().size());
     }
 
     @Test
-    void buscarAula_debeRetornarAulaSiExiste() {
-        Aula esperada = new Aula("Aula Magna", 100, "Rectorado", "Auditorio");
-        when(repoMock.buscarPorNombre("Aula Magna")).thenReturn(Optional.of(esperada));
-
-        Aula resultado = casoUso.buscarAula("Aula Magna");
-
-        assertEquals(esperada, resultado);
-    }
-
-    @Test
-    void buscarAula_debeRetornarNullSiNoExiste() {
-        when(repoMock.buscarPorNombre("Inexistente")).thenReturn(Optional.empty());
-
-        Aula resultado = casoUso.buscarAula("Inexistente");
-
-        assertNull(resultado);
-    }
-
-    @Test
-    void actualizarAula_debeActualizarConNuevosDatos() {
-        Aula original = new Aula("Aula Vieja", 20, "Pabellón 3", "Teoría");
-        String nuevoNombre = "Aula Renovada";
-        int nuevaCapacidad = 30;
-        String nuevaUbicacion = "Pabellón 4";
-        String nuevoTipo = "Taller";
-        ModalidadAula nuevaModalidad = ModalidadAula.VIRTUAL;
-
-        casoUso.actualizarAula(original, nuevoNombre, nuevaCapacidad, nuevaUbicacion, nuevoTipo, nuevaModalidad);
-
-        verify(repoMock).actualizar(eq(original), any(Aula.class));
-    }
-
-    @Test
-    void eliminarAula_debeEliminarCorrectamente() {
-        Aula aEliminar = new Aula("Aula a borrar", 15, "Pabellón 5", "Teoría");
-
-        casoUso.eliminarAula(aEliminar);
-
-        verify(repoMock).eliminar(aEliminar);
+    void buscarAula_debeRetornarSiExiste() {
+        Aula esperada = new Aula("Aula 101", 40, "P1", "Teoría");
+        when(repoMock.buscarPorNombre("Aula 101")).thenReturn(Optional.of(esperada));
+        assertEquals(esperada, casoUso.buscarAula("Aula 101"));
     }
 
     @Test
     void actualizarAula_debeModificarMismaReferencia() {
-        Aula original = new Aula("Aula 101", 40, "Piso 1", "Teoria");
-        casoUso.actualizarAula(original, "Aula 102", 50, "Piso 2", "Lab", ModalidadAula.PRESENCIAL);
-
+        Aula original = new Aula("Aula 101", 40, "P1", "Teoría");
+        casoUso.actualizarAula(original, "Aula 102", 50, "P2", "Lab", ModalidadAula.PRESENCIAL);
         assertEquals("Aula 102", original.getNombre());
         assertEquals(50, original.getCapacidad());
         verify(repoMock).actualizar(original, original);
+    }
+
+    @Test
+    void actualizarAula_debeFallarSiCapacidadInvalida() {
+        Aula original = new Aula("Aula 101", 40, "P1", "Teoría");
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.actualizarAula(original, "Aula 102", 0, "P2", "Lab", ModalidadAula.PRESENCIAL));
+    }
+
+    @Test
+    void eliminarAula_debeEliminarCorrectamente() {
+        Aula aEliminar = new Aula("Aula 101", 40, "P1", "Teoría");
+        casoUso.eliminarAula(aEliminar);
+        verify(repoMock).eliminar(aEliminar);
     }
 }

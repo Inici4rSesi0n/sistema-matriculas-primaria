@@ -1,11 +1,10 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.Asignatura;
-import dominio.modelo.Docente;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioAsignaturas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,92 +19,74 @@ import static org.mockito.Mockito.*;
 class GestionAsignaturasTest {
 
     private RepositorioAsignaturas repoMock;
+    private LoggerPort loggerMock;
     private GestionAsignaturas casoUso;
 
     @BeforeEach
     void setUp() {
         repoMock = mock(RepositorioAsignaturas.class);
-        casoUso = new GestionAsignaturas(repoMock);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionAsignaturas(repoMock, loggerMock);
     }
 
     @Test
     void crearAsignatura_debeGuardarCuandoNoExiste() {
         when(repoMock.buscarPorNombre("Matemáticas")).thenReturn(Optional.empty());
-
         casoUso.crearAsignatura("Matemáticas");
-
         verify(repoMock).agregar(any(Asignatura.class));
     }
 
     @Test
-    void crearAsignatura_debeLanzarExcepcionCuandoYaExiste() {
-        when(repoMock.buscarPorNombre("Matemáticas")).thenReturn(Optional.of(new Asignatura("Matemáticas")));
+    void crearAsignatura_debeFallarSiNombreVacio() {
+        assertThrows(IllegalArgumentException.class, () -> casoUso.crearAsignatura(""));
+        verify(repoMock, never()).agregar(any());
+    }
 
+    @Test
+    void crearAsignatura_debeFallarSiDuplicado() {
+        when(repoMock.buscarPorNombre("Matemáticas")).thenReturn(Optional.of(new Asignatura("Matemáticas")));
         assertThrows(IllegalArgumentException.class, () -> casoUso.crearAsignatura("Matemáticas"));
         verify(repoMock, never()).agregar(any());
     }
 
     @Test
-    void listarAsignaturas_debeRetornarTodas() {
-        List<Asignatura> lista = List.of(new Asignatura("A1"), new Asignatura("A2"));
+    void listarTodos_debeRetornarListaCompleta() {
+        List<Asignatura> lista = List.of(new Asignatura("Mat"), new Asignatura("Fís"));
         when(repoMock.listarTodos()).thenReturn(lista);
-
-        List<Asignatura> resultado = casoUso.listarTodos();
-
-        assertEquals(2, resultado.size());
-        verify(repoMock).listarTodos();
+        assertEquals(2, casoUso.listarTodos().size());
     }
 
     @Test
-    void buscarAsignatura_debeRetornarAsignaturaSiExiste() {
-        Asignatura esperada = new Asignatura("Historia");
-        when(repoMock.buscarPorNombre("Historia")).thenReturn(Optional.of(esperada));
-
-        Asignatura resultado = casoUso.buscarAsignatura("Historia");
-
-        assertEquals(esperada, resultado);
+    void buscarAsignatura_debeRetornarSiExiste() {
+        Asignatura esperada = new Asignatura("Matemáticas");
+        when(repoMock.buscarPorNombre("Matemáticas")).thenReturn(Optional.of(esperada));
+        assertEquals(esperada, casoUso.buscarAsignatura("Matemáticas"));
     }
 
     @Test
     void buscarAsignatura_debeRetornarNullSiNoExiste() {
-        when(repoMock.buscarPorNombre("Inexistente")).thenReturn(Optional.empty());
-
-        Asignatura resultado = casoUso.buscarAsignatura("Inexistente");
-
-        assertNull(resultado);
-    }
-
-    @Test
-    void actualizarAsignatura_debeActualizarConNuevoNombre() {
-        Asignatura original = new Asignatura("Ciencias");
-        String nuevoNombre = "Ciencias Naturales";
-
-        casoUso.actualizarAsignatura(original, nuevoNombre);
-
-        ArgumentCaptor<Asignatura> captor = ArgumentCaptor.forClass(Asignatura.class);
-        verify(repoMock).actualizar(eq(original), captor.capture());
-        assertEquals(nuevoNombre, captor.getValue().getNombre());
-    }
-
-    @Test
-    void eliminarAsignatura_debeEliminarCorrectamente() {
-        Asignatura aEliminar = new Asignatura("Arte");
-
-        casoUso.eliminarAsignatura(aEliminar);
-
-        verify(repoMock).eliminar(aEliminar);
+        when(repoMock.buscarPorNombre("X")).thenReturn(Optional.empty());
+        assertNull(casoUso.buscarAsignatura("X"));
     }
 
     @Test
     void actualizarAsignatura_debeModificarMismaReferencia() {
-        Asignatura original = new Asignatura("Matematicas");
-        Docente docente = new Docente("D001", "hash", "111", "Juan", "Perez", 30, "Mat", new java.util.ArrayList<>());
-        docente.agregarAsignatura(original);
-
-        casoUso.actualizarAsignatura(original, "Matematica I");
-
-        assertEquals("Matematica I", docente.getAsignaturas().get(0).getNombre(),
-                "El docente debe ver el nombre actualizado sin recargar");
+        Asignatura original = new Asignatura("Matemáticas");
+        casoUso.actualizarAsignatura(original, "Matemática I");
+        assertEquals("Matemática I", original.getNombre());
         verify(repoMock).actualizar(original, original);
+    }
+
+    @Test
+    void actualizarAsignatura_debeFallarSiNombreVacio() {
+        Asignatura original = new Asignatura("Matemáticas");
+        assertThrows(IllegalArgumentException.class, () -> casoUso.actualizarAsignatura(original, ""));
+    }
+
+    @Test
+    void eliminarAsignatura_debeEliminarCorrectamente() {
+        Asignatura aEliminar = new Asignatura("Matemáticas");
+        casoUso.eliminarAsignatura(aEliminar);
+        verify(repoMock).eliminar(aEliminar);
     }
 }

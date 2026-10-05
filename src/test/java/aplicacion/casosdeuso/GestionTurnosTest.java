@@ -1,6 +1,7 @@
 package aplicacion.casosdeuso;
 
 import dominio.modelo.Turno;
+import dominio.puerto.externo.LoggerPort;
 import dominio.puerto.repositorio.RepositorioTurnos;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,27 +19,26 @@ import static org.mockito.Mockito.*;
 class GestionTurnosTest {
 
     private RepositorioTurnos repoMock;
+    private LoggerPort loggerMock;
     private GestionTurnos casoUso;
 
     @BeforeEach
     void setUp() {
         repoMock = mock(RepositorioTurnos.class);
-        casoUso = new GestionTurnos(repoMock);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionTurnos(repoMock, loggerMock);
     }
 
     @Test
     void crearTurno_debeGuardarCuandoNoExiste() {
         when(repoMock.buscarPorNombre("Mañana")).thenReturn(Optional.empty());
-
         casoUso.crearTurno("Mañana");
-
         verify(repoMock).agregar(any(Turno.class));
     }
 
     @Test
     void crearTurno_debeLanzarExcepcionCuandoYaExiste() {
         when(repoMock.buscarPorNombre("Mañana")).thenReturn(Optional.of(new Turno("Mañana")));
-
         assertThrows(IllegalArgumentException.class, () -> casoUso.crearTurno("Mañana"));
         verify(repoMock, never()).agregar(any());
     }
@@ -47,10 +47,7 @@ class GestionTurnosTest {
     void listarTodos_debeRetornarListaCompleta() {
         List<Turno> lista = List.of(new Turno("Mañana"), new Turno("Tarde"));
         when(repoMock.listarTodos()).thenReturn(lista);
-
-        List<Turno> resultado = casoUso.listarTodos();
-
-        assertEquals(2, resultado.size());
+        assertEquals(2, casoUso.listarTodos().size());
         verify(repoMock).listarTodos();
     }
 
@@ -58,37 +55,26 @@ class GestionTurnosTest {
     void buscarPorNombre_debeRetornarTurnoSiExiste() {
         Turno esperado = new Turno("Noche");
         when(repoMock.buscarPorNombre("Noche")).thenReturn(Optional.of(esperado));
-
-        Turno resultado = casoUso.buscarPorNombre("Noche");
-
-        assertEquals(esperado, resultado);
+        assertEquals(esperado, casoUso.buscarPorNombre("Noche"));
     }
 
     @Test
     void buscarPorNombre_debeRetornarNullSiNoExiste() {
         when(repoMock.buscarPorNombre("Inexistente")).thenReturn(Optional.empty());
-
-        Turno resultado = casoUso.buscarPorNombre("Inexistente");
-
-        assertNull(resultado);
+        assertNull(casoUso.buscarPorNombre("Inexistente"));
     }
 
     @Test
     void actualizarTurno_debeActualizarConNuevoNombre() {
         Turno original = new Turno("Mañana");
-        String nuevoNombre = "Matutino";
-
-        casoUso.actualizarTurno(original, nuevoNombre);
-
+        casoUso.actualizarTurno(original, "Matutino");
         verify(repoMock).actualizar(eq(original), any(Turno.class));
     }
 
     @Test
     void eliminarTurno_debeEliminarCorrectamente() {
         Turno aEliminar = new Turno("Tarde");
-
         casoUso.eliminarTurno(aEliminar);
-
         verify(repoMock).eliminar(aEliminar);
     }
 
@@ -96,7 +82,6 @@ class GestionTurnosTest {
     void actualizarTurno_debeModificarMismaReferencia() {
         Turno original = new Turno("Manana");
         casoUso.actualizarTurno(original, "Tarde");
-
         assertEquals("Tarde", original.getNombre());
         verify(repoMock).actualizar(original, original);
     }
