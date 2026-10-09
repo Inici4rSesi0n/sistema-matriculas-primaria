@@ -1,0 +1,64 @@
+17:26:41.817 [JavaFX-Launcher] INFO  o.s.boot.SpringApplication - Started application in 5.078 seconds (process running for 7.043)
+17:26:41.824 [JavaFX-Launcher] DEBUG o.s.b.a.ApplicationAvailabilityBean - Application availability state LivenessState changed to CORRECT
+17:26:41.832 [JavaFX-Launcher] DEBUG o.s.b.a.ApplicationAvailabilityBean - Application availability state ReadinessState changed to ACCEPTING_TRAFFIC
+17:26:41.889 [JavaFX Application Thread] INFO  WiredAcademy - Sistema ya inicializado. Se encontraron 1 administradores.
+17:26:41.899 [JavaFX Application Thread] INFO  WiredAcademy - Catálogos verificados/inicializados.
+17:26:41.979 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'mainController' via constructor to bean named 'gestionPermisos'
+17:26:41.979 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'mainController' via constructor to bean named 'springFxmlLoader'
+17:26:54.794 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'loginController' via constructor to bean named 'autenticarUsuario'
+17:26:55.201 [JavaFX Application Thread] WARN  javafx.css - Error loading image: data:image/svg+xml;utf8,<svg width="40..."0.15"/></svg>
+17:27:03.464 [JavaFX Application Thread] INFO  WiredAcademy - Usuario ADMIN001 autenticado exitosamente.
+17:27:03.481 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'dashboardController' via constructor to bean named 'gestionPermisos'
+17:27:03.481 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'dashboardController' via constructor to bean named 'gestionEstudiantes'
+17:27:03.481 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'dashboardController' via constructor to bean named 'gestionDocentes'
+17:27:03.481 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'dashboardController' via constructor to bean named 'gestionGrupos'
+17:27:03.481 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'dashboardController' via constructor to bean named 'gestionAsignaturas'
+17:27:03.481 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'dashboardController' via constructor to bean named 'springFxmlLoader'
+17:27:06.956 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'seccionGestionUsuariosController' via constructor to bean named 'gestionUsuarios'
+17:27:06.956 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'seccionGestionUsuariosController' via constructor to bean named 'BCryptHashProvider'
+17:27:07.083 [JavaFX Application Thread] DEBUG WiredAcademy - Listando todos los usuarios del sistema.
+17:27:07.084 [JavaFX Application Thread] DEBUG WiredAcademy - Total de usuarios encontrados: 5
+17:27:09.372 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'seccionMatriculaController' via constructor to bean named 'gestionMatriculas'
+17:27:09.373 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'seccionMatriculaController' via constructor to bean named 'gestionEstudiantes'
+17:27:09.373 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'seccionMatriculaController' via constructor to bean named 'gestionPeriodos'
+17:27:09.373 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'seccionMatriculaController' via constructor to bean named 'gestionGrupos'
+17:27:11.585 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tab_CatalogosController' via constructor to bean named 'gestionPeriodos'
+17:27:11.585 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tab_CatalogosController' via constructor to bean named 'gestionGrupos'
+17:27:11.585 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tab_CatalogosController' via constructor to bean named 'gestionRecreos'
+17:27:11.586 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tab_CatalogosController' via constructor to bean named 'gestionGrados'
+17:27:11.638 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabAsignaturasController' via constructor to bean named 'gestionAsignaturas'
+17:27:11.690 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabAulasController' via constructor to bean named 'gestionAulas'
+17:27:11.765 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabGradosController' via constructor to bean named 'gestionGrados'
+17:27:11.792 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabTurnosController' via constructor to bean named 'gestionTurnos'
+17:27:11.826 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabAsignacionesController' via constructor to bean named 'gestionDocentes'
+17:27:11.827 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabAsignacionesController' via constructor to bean named 'gestionAsignaturas'
+17:27:11.827 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabAsignacionesController' via constructor to bean named 'gestionGrupos'
+17:27:11.828 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabAsignacionesController' via constructor to bean named 'gestionUsuarios'
+17:27:11.828 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabAsignacionesController' via constructor to bean named 'gestionGrados'
+17:27:11.889 [JavaFX Application Thread] DEBUG WiredAcademy - Listando todos los usuarios del sistema.
+17:27:11.890 [JavaFX Application Thread] DEBUG WiredAcademy - Total de usuarios encontrados: 5
+17:27:11.896 [JavaFX Application Thread] DEBUG WiredAcademy - Listando todos los usuarios del sistema.
+17:27:11.897 [JavaFX Application Thread] DEBUG WiredAcademy - Total de usuarios encontrados: 5
+17:27:11.912 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabHorariosController' via constructor to bean named 'gestionClases'
+17:27:11.912 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabHorariosController' via constructor to bean named 'gestionAsignaturas'
+17:27:11.912 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabHorariosController' via constructor to bean named 'gestionDocentes'
+17:27:11.913 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabHorariosController' via constructor to bean named 'gestionGrupos'
+17:27:11.913 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabHorariosController' via constructor to bean named 'gestionAulas'
+17:27:11.914 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabHorariosController' via constructor to bean named 'gestionPeriodos'
+17:27:11.914 [JavaFX Application Thread] DEBUG o.s.b.f.s.DefaultListableBeanFactory - Autowiring by type from bean name 'tabHorariosController' via constructor to bean named 'springFxmlLoader'
+17:28:23.741 [JavaFX Application Thread] INFO  WiredAcademy.AUDIT - op=CREATE entity=AULA id=Aula 201 | capacidad=35 modalidad=PRESENCIAL
+17:28:56.760 [JavaFX Application Thread] INFO  WiredAcademy.AUDIT - op=UPDATE entity=AULA id=Aula 201 | before=Aula [nombre=Aula 201, capacidad=35, tipo=Teórica, modalidad=PRESENCIAL] after=Aula [nombre=Aula 201, capacidad=35, tipo=Teórica, modalidad=VIRTUAL]
+17:29:02.173 [JavaFX Application Thread] INFO  WiredAcademy.AUDIT - op=UPDATE entity=AULA id=Aula 201 | before=Aula [nombre=Aula 201, capacidad=35, tipo=Teórica, modalidad=VIRTUAL] after=Aula [nombre=Aula 201, capacidad=35, tipo=Teórica, modalidad=PRESENCIAL]
+17:29:04.655 [JavaFX Application Thread] DEBUG o.s.c.a.AnnotationConfigApplicationContext - Closing org.springframework.context.annotation.AnnotationConfigApplicationContext@279e4551, started on Mon Oct 05 17:26:38 PET 2026
+17:29:04.671 [JavaFX Application Thread] DEBUG o.s.c.s.DefaultLifecycleProcessor - Stopping beans in phase 2147483647
+17:29:04.672 [JavaFX Application Thread] DEBUG o.s.c.s.DefaultLifecycleProcessor - Stopping beans in phase -2147483647
+17:29:04.676 [JavaFX Application Thread] DEBUG o.s.c.s.DefaultLifecycleProcessor - Bean 'springBootLoggingLifecycle' completed its stop procedure
+17:29:04.677 [JavaFX Application Thread] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  02:44 min
+[INFO] Finished at: 2026-10-05T17:29:04-05:00
+[INFO] ------------------------------------------------------------------------
+inici4rsesi0n@mint-xfce:~/ProyectoJava$ 
+
