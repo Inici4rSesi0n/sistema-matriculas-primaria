@@ -14,7 +14,6 @@ import dominio.modelo.Grupo;
 import dominio.modelo.PeriodoAcademico;
 import dominio.modelo.Recreo;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,7 +21,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -43,15 +41,6 @@ import javafx.util.StringConverter;
 public class tab_CatalogosController implements Initializable {
     @FXML private TabPane tabPaneCatalogos;
     @FXML private Tab tabAsignaturas, tabPeriodos, tabAulas, tabGrupos, tabRecreos, tabGrados;
-    @FXML private TableView<PeriodoAcademico> tablaPeriodos;
-    @FXML private TableColumn<PeriodoAcademico, Integer> colNumPeriodo;
-    @FXML private TableColumn<PeriodoAcademico, String> colNombrePeriodo, colFechaInicio, colFechaFin, colEstadoPeriodo;
-    @FXML private TableColumn<PeriodoAcademico, Void> colAccionesPeriodo;
-    @FXML private VBox panelFormularioPeriodo;
-    @FXML private TextField txtNombrePeriodo;
-    @FXML private DatePicker dateFechaInicio, dateFechaFin;
-    @FXML private ComboBox<String> cmbEstadoPeriodo;
-    @FXML private Button btnNuevoPeriodo, btnGuardarPeriodo, btnCancelarPeriodo;
     @FXML private VBox panelFormularioAula;
     @FXML private TextField txtNombreAula, txtCapacidadAula, txtUbicacionAula, txtTipoAula;
     @FXML private Button btnNuevaAula, btnGuardarAula, btnCancelarAula;
@@ -72,13 +61,9 @@ public class tab_CatalogosController implements Initializable {
     @FXML private ListView<PeriodoAcademico> listViewPeriodosRecreo;
     @FXML private TextField txtInicioRecreo, txtFinRecreo, txtDescripcionRecreo;
     @FXML private Button btnNuevoRecreo, btnGuardarRecreo, btnCancelarRecreo;
-
-    private ObservableList<PeriodoAcademico> listaPeriodos;
     private ObservableList<Grupo> listaGrupos;
     private ObservableList<Recreo> listaRecreos;
     private ObservableList<PeriodoAcademico> periodosRecreoTemporal;
-
-    private PeriodoAcademico periodoEditando;
     private Grupo grupoEditando;
     private Recreo recreoEditando;
     private final GestionPeriodos gestionPeriodos;
@@ -100,7 +85,7 @@ public class tab_CatalogosController implements Initializable {
         configurarCombos();
         configurarTablas();
         cargarDatos();
-        SistemaEventBus.suscribir(TipoEvento.PERIODOS, this::cargarPeriodos);
+        SistemaEventBus.suscribir(TipoEvento.PERIODOS, this::recargarComboPeriodosRecreo);
         SistemaEventBus.suscribir(TipoEvento.GRUPOS, this::cargarGrupos);
         SistemaEventBus.suscribir(TipoEvento.RECREOS, this::cargarRecreos);
         SistemaEventBus.suscribir(TipoEvento.GRADOS, this::recargarComboGrados);
@@ -110,9 +95,6 @@ public class tab_CatalogosController implements Initializable {
     }
 
     private void configurarCombos() {
-        cmbEstadoPeriodo.getItems().addAll("Activo", "Inactivo", "Culminado", "Prorrogado");
-        cmbEstadoPeriodo.getSelectionModel().selectFirst();
-
         cmbDiaRecreo.getItems().addAll("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo");
         cmbDiaRecreo.getSelectionModel().selectFirst();
 
@@ -121,23 +103,8 @@ public class tab_CatalogosController implements Initializable {
     }
 
     private void configurarTablas() {
-        configurarTablaPeriodos();
         configurarTablaGrupos();
         configurarTablaRecreos();
-    }
-
-    private void configurarTablaPeriodos() {
-        colNumPeriodo.setCellFactory(col -> new TableCell<>() {
-            @Override protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty ? null : String.valueOf(getIndex() + 1));
-            }
-        });
-        colNombrePeriodo.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        colFechaInicio.setCellValueFactory(new PropertyValueFactory<>("fechaInicio"));
-        colFechaFin.setCellValueFactory(new PropertyValueFactory<>("fechaFin"));
-        colEstadoPeriodo.setCellValueFactory(new PropertyValueFactory<>("estado"));
-        configurarAcciones(colAccionesPeriodo, "periodo");
     }
 
     private void configurarTablaGrupos() {
@@ -188,16 +155,6 @@ public class tab_CatalogosController implements Initializable {
 
     private void cargarEnFormulario(Object obj, String tipo) {
         switch (tipo) {
-            case "periodo" -> {
-                PeriodoAcademico p = (PeriodoAcademico) obj;
-                periodoEditando = p;
-                txtNombrePeriodo.setText(p.getNombre());
-                dateFechaInicio.setValue(LocalDate.parse(p.getFechaInicio()));
-                dateFechaFin.setValue(LocalDate.parse(p.getFechaFin()));
-                cmbEstadoPeriodo.setValue(p.getEstado());
-                panelFormularioPeriodo.setVisible(true);
-                panelFormularioPeriodo.setManaged(true);
-            }
             case "grupo" -> {
                 Grupo g = (Grupo) obj;
                 grupoEditando = g;
@@ -255,16 +212,10 @@ public class tab_CatalogosController implements Initializable {
     }
 
     private void cargarDatos() {
-        cargarPeriodos();
         cargarGrupos();
         cargarRecreos();
     }
 
-    private void cargarPeriodos() {
-        listaPeriodos = FXCollections.observableArrayList(gestionPeriodos.listarTodos());
-        tablaPeriodos.setItems(listaPeriodos);
-        tablaPeriodos.refresh();
-    }
     private void cargarGrupos() {
         listaGrupos = FXCollections.observableArrayList(gestionGrupos.listarTodos());
         tablaGrupos.setItems(listaGrupos);
@@ -275,22 +226,6 @@ public class tab_CatalogosController implements Initializable {
         tablaRecreos.setItems(listaRecreos);
         tablaRecreos.refresh();
     }
-
-    @FXML private void handleNuevoPeriodo() { periodoEditando = null; txtNombrePeriodo.clear(); dateFechaInicio.setValue(null); dateFechaFin.setValue(null); cmbEstadoPeriodo.getSelectionModel().selectFirst(); panelFormularioPeriodo.setVisible(true); panelFormularioPeriodo.setManaged(true); }
-    @FXML private void handleGuardarPeriodo() {
-        String nombre = txtNombrePeriodo.getText().trim();
-        LocalDate inicio = dateFechaInicio.getValue(), fin = dateFechaFin.getValue();
-        String estado = cmbEstadoPeriodo.getValue();
-        if (nombre.isBlank() || inicio == null || fin == null || estado == null) { Dialogos.info("Todos los campos son obligatorios."); return; }
-        try {
-            if (periodoEditando == null) gestionPeriodos.crearPeriodo(nombre, inicio.toString(), fin.toString(), estado);
-            else gestionPeriodos.actualizarPeriodo(periodoEditando, nombre, inicio.toString(), fin.toString(), estado);
-            SistemaEventBus.notificar(TipoEvento.PERIODOS);
-            panelFormularioPeriodo.setVisible(false);
-            panelFormularioPeriodo.setManaged(false);
-        } catch (IllegalArgumentException e) { Dialogos.info(e.getMessage()); }
-    }
-    @FXML private void handleCancelarPeriodo() { panelFormularioPeriodo.setVisible(false); panelFormularioPeriodo.setManaged(false); }
 
     @FXML private void handleNuevoGrupo() { grupoEditando = null; recargarComboGrados(); txtNombreGrupo.clear(); panelFormularioGrupo.setVisible(true); panelFormularioGrupo.setManaged(true); }
     @FXML private void handleGuardarGrupo() {

@@ -25,50 +25,7 @@
         </Tab>
 
         <Tab fx:id="tabPeriodos" text="Periodos" closable="false">
-            <BorderPane>
-                <top>
-                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
-                        <Button fx:id="btnNuevoPeriodo"
-                                text="+ Nuevo Periodo"
-                                styleClass="boton-primario"
-                                onAction="#handleNuevoPeriodo" />
-                    </HBox>
-                </top>
-                <center>
-                    <TableView fx:id="tablaPeriodos" styleClass="seccion-tabla">
-                        <columns>
-                            <TableColumn fx:id="colNumPeriodo" text="N°" prefWidth="50.0" styleClass="col-center" />
-                            <TableColumn fx:id="colNombrePeriodo" text="Nombre" prefWidth="150.0" />
-                            <TableColumn fx:id="colFechaInicio" text="Fecha Inicio" prefWidth="120.0" styleClass="col-center" />
-                            <TableColumn fx:id="colFechaFin" text="Fecha Fin" prefWidth="120.0" styleClass="col-center" />
-                            <TableColumn fx:id="colEstadoPeriodo" text="Estado" prefWidth="100.0" styleClass="col-center" />
-                            <TableColumn fx:id="colAccionesPeriodo" text="Acciones" prefWidth="160.0" styleClass="col-center" />
-                        </columns>
-                    </TableView>
-                </center>
-                <right>
-                    <VBox fx:id="panelFormularioPeriodo" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
-                        <padding>
-                            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
-                        </padding>
-                        <Label styleClass="formulario-title" text="Periodo" />
-                        <Separator styleClass="formulario-separator" />
-                        <Label text="Nombre:" styleClass="formulario-label" />
-                        <TextField fx:id="txtNombrePeriodo" promptText="Nombre del periodo" styleClass="formulario-input" />
-                        <Label text="Fecha Inicio:" styleClass="formulario-label" />
-                        <DatePicker fx:id="dateFechaInicio" promptText="YYYY-MM-DD" styleClass="formulario-input" />
-                        <Label text="Fecha Fin:" styleClass="formulario-label" />
-                        <DatePicker fx:id="dateFechaFin" promptText="YYYY-MM-DD" styleClass="formulario-input" />
-                        <Label text="Estado:" styleClass="formulario-label" />
-                        <ComboBox fx:id="cmbEstadoPeriodo" promptText="Seleccione un estado" styleClass="formulario-input" />
-                        <Region VBox.vgrow="ALWAYS" />
-                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
-                            <Button fx:id="btnCancelarPeriodo" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarPeriodo" />
-                            <Button fx:id="btnGuardarPeriodo" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarPeriodo" />
-                        </HBox>
-                    </VBox>
-                </right>
-            </BorderPane>
+            <fx:include source="tab_periodos.fxml" />
         </Tab>
 
         <Tab fx:id="tabAulas" text="Aulas" closable="false">
