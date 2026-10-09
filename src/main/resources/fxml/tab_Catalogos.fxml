@@ -37,57 +37,7 @@
         </Tab>
 
         <Tab fx:id="tabRecreos" text="Recreos" closable="false">
-            <BorderPane>
-                <top>
-                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
-                        <Button fx:id="btnNuevoRecreo"
-                                text="+ Nuevo Recreo"
-                                styleClass="boton-primario"
-                                onAction="#handleNuevoRecreo" />
-                    </HBox>
-                </top>
-                <center>
-                    <TableView fx:id="tablaRecreos" styleClass="seccion-tabla">
-                        <columns>
-                            <TableColumn fx:id="colNumRecreo" text="N°" prefWidth="50.0" styleClass="col-center" />
-                            <TableColumn fx:id="colDiaRecreo" text="Día" prefWidth="100.0" styleClass="col-center" />
-                            <TableColumn fx:id="colInicioRecreo" text="Hora Inicio" prefWidth="100.0" styleClass="col-center" />
-                            <TableColumn fx:id="colFinRecreo" text="Hora Fin" prefWidth="100.0" styleClass="col-center" />
-                            <TableColumn fx:id="colDescripcionRecreo" text="Descripción" prefWidth="200.0" />
-                            <TableColumn fx:id="colAccionesRecreo" text="Acciones" prefWidth="160.0" styleClass="col-center" />
-                        </columns>
-                    </TableView>
-                </center>
-                <right>
-                    <VBox fx:id="panelFormularioRecreo" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
-                        <padding>
-                            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
-                        </padding>
-                        <Label styleClass="formulario-title" text="Recreo" />
-                        <Separator styleClass="formulario-separator" />
-                        <Label text="Día:" styleClass="formulario-label" />
-                        <ComboBox fx:id="cmbDiaRecreo" promptText="Seleccione un día" styleClass="formulario-input" />
-                        <Label text="Periodo:" styleClass="formulario-label" />
-                        <HBox spacing="10.0" alignment="CENTER_LEFT">
-                            <ComboBox fx:id="cmbPeriodoRecreo" promptText="Seleccione un periodo" styleClass="formulario-input" HBox.hgrow="ALWAYS" />
-                            <Button text="+ Añadir" styleClass="boton-secundario" onAction="#handleAgregarPeriodoRecreo" />
-                        </HBox>
-                        <Label text="Periodos asociados:" styleClass="formulario-label" />
-                        <ListView fx:id="listViewPeriodosRecreo" prefHeight="110.0" minHeight="80.0" maxHeight="150.0" styleClass="formulario-input" VBox.vgrow="SOMETIMES" />
-                        <Label text="Hora Inicio:" styleClass="formulario-label" />
-                        <TextField fx:id="txtInicioRecreo" promptText="HH:mm" styleClass="formulario-input" />
-                        <Label text="Hora Fin:" styleClass="formulario-label" />
-                        <TextField fx:id="txtFinRecreo" promptText="HH:mm" styleClass="formulario-input" />
-                        <Label text="Descripción:" styleClass="formulario-label" />
-                        <TextField fx:id="txtDescripcionRecreo" promptText="Recreo" styleClass="formulario-input" />
-                        <Region VBox.vgrow="ALWAYS" />
-                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
-                            <Button fx:id="btnCancelarRecreo" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarRecreo" />
-                            <Button fx:id="btnGuardarRecreo" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarRecreo" />
-                        </HBox>
-                    </VBox>
-                </right>
-            </BorderPane>
+            <fx:include source="tab_recreos.fxml" />
         </Tab>
 
         <Tab fx:id="tabGrados" text="Grados" closable="false">
