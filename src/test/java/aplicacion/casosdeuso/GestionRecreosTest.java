@@ -1,5 +1,4 @@
 package aplicacion.casosdeuso;
-
 import dominio.modelo.FranjaHoraria;
 import dominio.modelo.PeriodoAcademico;
 import dominio.modelo.Recreo;
@@ -116,5 +115,55 @@ class GestionRecreosTest {
         Recreo aEliminar = new Recreo(franja, "Recreo", List.of(periodoA));
         casoUso.eliminarRecreo(aEliminar);
         verify(repoMock).eliminar(aEliminar);
+    }
+    @Test
+    void crearRecreo_debeFallarSiFranjaDescripcionYPeriodoSolapan() {
+        Recreo existente = new Recreo(franja, "Recreo", List.of(periodoA));
+        when(repoMock.listarTodos()).thenReturn(List.of(existente));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.crearRecreo(franja, "Recreo", List.of(periodoA)));
+        verify(repoMock, never()).agregar(any());
+    }
+
+    @Test
+    void crearRecreo_debeFallarSiComparteAlMenosUnPeriodoDeVarios() {
+        Recreo existente = new Recreo(franja, "Recreo", List.of(periodoA, periodoB));
+        when(repoMock.listarTodos()).thenReturn(List.of(existente));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.crearRecreo(franja, "Recreo", List.of(periodoA)));
+        verify(repoMock, never()).agregar(any());
+    }
+
+    @Test
+    void crearRecreo_debePermitirSiNoHayOverlapDePeriodos() {
+        Recreo existente = new Recreo(franja, "Recreo", List.of(periodoA));
+        when(repoMock.listarTodos()).thenReturn(List.of(existente));
+
+        casoUso.crearRecreo(franja, "Recreo", List.of(periodoB));
+
+        verify(repoMock).agregar(any(Recreo.class));
+    }
+
+    @Test
+    void actualizarRecreo_debeFallarSiSolapaConOtro() {
+        Recreo original = new Recreo(franja, "Recreo", List.of(periodoA));
+        Recreo otro = new Recreo(franja, "Recreo", List.of(periodoB));
+        when(repoMock.listarTodos()).thenReturn(List.of(original, otro));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.actualizarRecreo(original, franja, "Recreo", List.of(periodoB)));
+        verify(repoMock, never()).actualizar(any(), any());
+    }
+
+    @Test
+    void actualizarRecreo_debePermitirSiElUnicoOverlapEsElOriginal() {
+        Recreo original = new Recreo(franja, "Recreo", List.of(periodoA, periodoB));
+        when(repoMock.listarTodos()).thenReturn(List.of(original));
+
+        casoUso.actualizarRecreo(original, franja, "Recreo", List.of(periodoA));
+
+        verify(repoMock).actualizar(original, original);
     }
 }
