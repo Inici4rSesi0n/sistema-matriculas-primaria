@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("prototype")
-public class tab_CatalogosController implements Initializable {
+public class TabCatalogosController implements Initializable {
     @FXML private TabPane tabPaneCatalogos;
     @FXML private Tab tabAsignaturas, tabPeriodos, tabAulas, tabGrupos, tabRecreos, tabGrados, tabTurnos;
     @Override

@@ -22,7 +22,7 @@
     
     <center>
         <StackPane fx:id="contenedorCategorias">
-            <fx:include fx:id="tabPaneCatalogos" source="tab_Catalogos.fxml" />
+            <fx:include fx:id="tabPaneCatalogos" source="tab_catalogos.fxml" />
             <fx:include fx:id="tabPaneAsignaciones" source="tab_asignaciones.fxml" />
             <fx:include fx:id="tabPaneHorarios" source="tab_horarios.fxml" />
         </StackPane>

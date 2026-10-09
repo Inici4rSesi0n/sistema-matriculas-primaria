@@ -18,7 +18,7 @@ public class SeccionGestionAcademicaController implements Initializable {
     @FXML private ComboBox<String> cmbCategoria;
     @FXML private StackPane contenedorCategorias;
 
-    @FXML private tab_CatalogosController tabPaneCatalogosController;
+    @FXML private TabCatalogosController tabPaneCatalogosController;
     @FXML private TabAsignacionesController tabPaneAsignacionesController;
     @FXML private TabHorariosController tabPaneHorariosController;
 
