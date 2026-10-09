@@ -33,44 +33,7 @@
         </Tab>
 
         <Tab fx:id="tabGrupos" text="Grupos" closable="false">
-            <BorderPane>
-                <top>
-                    <HBox styleClass="seccion-toolbar" alignment="CENTER_LEFT">
-                        <Button fx:id="btnNuevoGrupo"
-                                text="+ Nuevo Grupo"
-                                styleClass="boton-primario"
-                                onAction="#handleNuevoGrupo" />
-                    </HBox>
-                </top>
-                <center>
-                    <TableView fx:id="tablaGrupos" styleClass="seccion-tabla">
-                        <columns>
-                            <TableColumn fx:id="colNumGrupo" text="N°" prefWidth="50.0" styleClass="col-center" />
-                            <TableColumn fx:id="colNombreGrupo" text="Nombre" prefWidth="200.0" />
-                            <TableColumn fx:id="colGradoGrupo" text="Grado" prefWidth="150.0" />
-                            <TableColumn fx:id="colAccionesGrupo" text="Acciones" prefWidth="160.0" styleClass="col-center" />
-                        </columns>
-                    </TableView>
-                </center>
-                <right>
-                    <VBox fx:id="panelFormularioGrupo" styleClass="formulario-panel" visible="false" managed="false" spacing="15.0" prefWidth="420.0">
-                        <padding>
-                            <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
-                        </padding>
-                        <Label styleClass="formulario-title" text="Grupo" />
-                        <Separator styleClass="formulario-separator" />
-                        <Label text="Nombre:" styleClass="formulario-label" />
-                        <TextField fx:id="txtNombreGrupo" promptText="Nombre del grupo" styleClass="formulario-input" />
-                        <Label text="Grado:" styleClass="formulario-label" />
-                        <ComboBox fx:id="cmbGradoGrupo" promptText="Seleccione un grado" styleClass="formulario-input" />
-                        <Region VBox.vgrow="ALWAYS" />
-                        <HBox alignment="CENTER_RIGHT" spacing="15.0">
-                            <Button fx:id="btnCancelarGrupo" text="Cancelar" styleClass="boton-secundario" onAction="#handleCancelarGrupo" />
-                            <Button fx:id="btnGuardarGrupo" text="Guardar" styleClass="boton-primario" onAction="#handleGuardarGrupo" />
-                        </HBox>
-                    </VBox>
-                </right>
-            </BorderPane>
+            <fx:include source="tab_grupos.fxml" />
         </Tab>
 
         <Tab fx:id="tabRecreos" text="Recreos" closable="false">
