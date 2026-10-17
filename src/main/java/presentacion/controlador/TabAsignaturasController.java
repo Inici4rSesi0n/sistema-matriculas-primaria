@@ -1,6 +1,6 @@
 package presentacion.controlador;
 
-import aplicacion.casosdeuso.GestionAsignaturas;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionAsignaturas;
 import dominio.modelo.Asignatura;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;

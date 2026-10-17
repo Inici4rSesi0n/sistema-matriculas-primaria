@@ -1,6 +1,6 @@
 package presentacion.controlador;
 
-import aplicacion.casosdeuso.GestionPeriodos;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionPeriodos;
 import dominio.modelo.PeriodoAcademico;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;

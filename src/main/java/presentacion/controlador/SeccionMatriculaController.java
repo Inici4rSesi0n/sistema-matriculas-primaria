@@ -1,8 +1,8 @@
 package presentacion.controlador;
-import aplicacion.casosdeuso.GestionEstudiantes;
-import aplicacion.casosdeuso.GestionGrupos;
-import aplicacion.casosdeuso.GestionMatriculas;
-import aplicacion.casosdeuso.GestionPeriodos;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.usuarios.GestionEstudiantes;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrupos;
+import aplicacion.casosdeuso.portaldeingreso.gestiondetramites.GestionMatriculas;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionPeriodos;
 import dominio.modelo.EstadoMatricula;
 import dominio.modelo.Estudiante;
 import dominio.modelo.Grupo;

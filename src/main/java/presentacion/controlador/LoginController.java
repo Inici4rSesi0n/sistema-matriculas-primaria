@@ -1,6 +1,6 @@
 package presentacion.controlador;
 
-import aplicacion.casosdeuso.AutenticarUsuario;
+import aplicacion.casosdeuso.portaldeingreso.sistema.AutenticarUsuario;
 import dominio.modelo.Usuario;
 import infraestructura.seguridad.UtilLimpieza;
 import presentacion.dialogos.Dialogos;

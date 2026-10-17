@@ -1,6 +1,6 @@
 package presentacion.controlador;
 
-import aplicacion.casosdeuso.GestionPermisos;
+import aplicacion.casosdeuso.portaldeingreso.sistema.GestionPermisos;
 import dominio.modelo.Usuario;
 import infraestructura.configuracion.SpringFxmlLoader;
 import presentacion.animaciones.AnimacionesMain;

@@ -1,8 +1,8 @@
 package presentacion.controlador;
 
-import aplicacion.casosdeuso.GestionGrupos;
-import aplicacion.casosdeuso.GestionHorario;
-import aplicacion.casosdeuso.GestionPeriodos;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrupos;
+import aplicacion.casosdeuso.portaldeingreso.miareapersonal.GestionHorario;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionPeriodos;
 import dominio.modelo.Clase;
 import dominio.modelo.Evento;
 import dominio.modelo.Grupo;

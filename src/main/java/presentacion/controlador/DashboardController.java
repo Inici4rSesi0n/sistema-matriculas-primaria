@@ -1,10 +1,10 @@
 package presentacion.controlador;
-import aplicacion.casosdeuso.GestionAsignaturas;
-import aplicacion.casosdeuso.GestionDocentes;
-import aplicacion.casosdeuso.GestionEstudiantes;
-import aplicacion.casosdeuso.GestionGrupos;
-import aplicacion.casosdeuso.GestionPermisos;
-import aplicacion.casosdeuso.GestionPermisos.SeccionMenu;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionAsignaturas;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.usuarios.GestionDocentes;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.usuarios.GestionEstudiantes;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrupos;
+import aplicacion.casosdeuso.portaldeingreso.sistema.GestionPermisos;
+import aplicacion.casosdeuso.portaldeingreso.sistema.GestionPermisos.SeccionMenu;
 import dominio.modelo.Usuario;
 import infraestructura.configuracion.SpringFxmlLoader;
 import presentacion.dialogos.Dialogos;

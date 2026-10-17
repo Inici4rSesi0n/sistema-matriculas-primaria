@@ -1,0 +1,97 @@
+package aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico;
+
+import dominio.modelo.Aula;
+import dominio.modelo.ModalidadAula;
+import dominio.puerto.externo.LoggerPort;
+import dominio.puerto.repositorio.RepositorioAulas;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+/**
+ *
+ * @author inici4rsesi0n
+ */
+class GestionAulasTest {
+
+    private RepositorioAulas repoMock;
+    private LoggerPort loggerMock;
+    private GestionAulas casoUso;
+
+    @BeforeEach
+    void setUp() {
+        repoMock = mock(RepositorioAulas.class);
+        loggerMock = mock(LoggerPort.class);
+        casoUso = new GestionAulas(repoMock, loggerMock);
+    }
+
+    @Test
+    void crearAula_debeGuardarCuandoNoExiste() {
+        when(repoMock.buscarPorNombre("Aula 101")).thenReturn(Optional.empty());
+        casoUso.crearAula("Aula 101", 40, "Pabellón A", "Teoría", ModalidadAula.PRESENCIAL);
+        verify(repoMock).agregar(any(Aula.class));
+    }
+
+    @Test
+    void crearAula_debeFallarSiCapacidadInvalida() {
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.crearAula("Aula 101", 0, "Pabellón A", "Teoría", ModalidadAula.PRESENCIAL));
+    }
+
+    @Test
+    void crearAula_debeFallarSiNombreVacio() {
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.crearAula("", 40, "Pabellón A", "Teoría", ModalidadAula.PRESENCIAL));
+    }
+
+    @Test
+    void crearAula_debeFallarSiDuplicado() {
+        when(repoMock.buscarPorNombre("Aula 101")).thenReturn(Optional.of(new Aula("Aula 101", 40, "X", "Y")));
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.crearAula("Aula 101", 40, "Pabellón A", "Teoría", ModalidadAula.PRESENCIAL));
+    }
+
+    @Test
+    void listarTodos_debeRetornarListaCompleta() {
+        List<Aula> lista = List.of(
+                new Aula("A101", 40, "P1", "Teoría"),
+                new Aula("A102", 30, "P2", "Lab"));
+        when(repoMock.listarTodos()).thenReturn(lista);
+        assertEquals(2, casoUso.listarTodos().size());
+    }
+
+    @Test
+    void buscarAula_debeRetornarSiExiste() {
+        Aula esperada = new Aula("Aula 101", 40, "P1", "Teoría");
+        when(repoMock.buscarPorNombre("Aula 101")).thenReturn(Optional.of(esperada));
+        assertEquals(esperada, casoUso.buscarAula("Aula 101"));
+    }
+
+    @Test
+    void actualizarAula_debeModificarMismaReferencia() {
+        Aula original = new Aula("Aula 101", 40, "P1", "Teoría");
+        casoUso.actualizarAula(original, "Aula 102", 50, "P2", "Lab", ModalidadAula.PRESENCIAL);
+        assertEquals("Aula 102", original.getNombre());
+        assertEquals(50, original.getCapacidad());
+        verify(repoMock).actualizar(original, original);
+    }
+
+    @Test
+    void actualizarAula_debeFallarSiCapacidadInvalida() {
+        Aula original = new Aula("Aula 101", 40, "P1", "Teoría");
+        assertThrows(IllegalArgumentException.class,
+                () -> casoUso.actualizarAula(original, "Aula 102", 0, "P2", "Lab", ModalidadAula.PRESENCIAL));
+    }
+
+    @Test
+    void eliminarAula_debeEliminarCorrectamente() {
+        Aula aEliminar = new Aula("Aula 101", 40, "P1", "Teoría");
+        casoUso.eliminarAula(aEliminar);
+        verify(repoMock).eliminar(aEliminar);
+    }
+}

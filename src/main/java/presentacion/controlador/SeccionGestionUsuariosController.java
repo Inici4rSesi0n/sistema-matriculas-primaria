@@ -1,6 +1,6 @@
 package presentacion.controlador;
 
-import aplicacion.casosdeuso.GestionUsuarios;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.usuarios.GestionUsuarios;
 import aplicacion.dto.CrearUsuarioCommand;
 import dominio.modelo.Usuario;
 import dominio.puerto.externo.HashProvider;

@@ -1,11 +1,11 @@
 package presentacion.controlador;
 
-import aplicacion.casosdeuso.GestionAsignaturas;
-import aplicacion.casosdeuso.GestionAulas;
-import aplicacion.casosdeuso.GestionClases;
-import aplicacion.casosdeuso.GestionDocentes;
-import aplicacion.casosdeuso.GestionGrupos;
-import aplicacion.casosdeuso.GestionPeriodos;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionAsignaturas;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionAulas;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionClases;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.usuarios.GestionDocentes;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrupos;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionPeriodos;
 import dominio.modelo.Asignatura;
 import dominio.modelo.Aula;
 import dominio.modelo.Clase;

@@ -1,6 +1,6 @@
 package presentacion.controlador;
-import aplicacion.casosdeuso.GestionPeriodos;
-import aplicacion.casosdeuso.GestionRecreos;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionPeriodos;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionRecreos;
 import dominio.modelo.FranjaHoraria;
 import dominio.modelo.PeriodoAcademico;
 import dominio.modelo.Recreo;

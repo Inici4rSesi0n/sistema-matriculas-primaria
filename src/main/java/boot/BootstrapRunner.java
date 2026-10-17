@@ -1,6 +1,6 @@
 package boot;
 
-import aplicacion.casosdeuso.BootstrapUseCase;
+import aplicacion.casosdeuso.portaldeingreso.sistema.BootstrapUseCase;
 import infraestructura.configuracion.SpringFxmlLoader;
 import infraestructura.persistencia.ManejadorPersistencia;
 import infraestructura.persistencia.Recargable;

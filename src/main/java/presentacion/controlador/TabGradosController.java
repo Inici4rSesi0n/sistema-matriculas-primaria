@@ -1,6 +1,6 @@
 package presentacion.controlador;
 
-import aplicacion.casosdeuso.GestionGrados;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrados;
 import dominio.modelo.Grado;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;

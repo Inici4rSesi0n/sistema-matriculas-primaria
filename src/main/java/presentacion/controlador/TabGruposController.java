@@ -1,7 +1,7 @@
 package presentacion.controlador;
 
-import aplicacion.casosdeuso.GestionGrados;
-import aplicacion.casosdeuso.GestionGrupos;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrados;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrupos;
 import dominio.modelo.Grado;
 import dominio.modelo.Grupo;
 import presentacion.dialogos.Dialogos;

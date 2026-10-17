@@ -319,6 +319,57 @@ Este documento es **vivo**. Se actualiza cuando:
 - Se retira o añade una categoría de logger.
 - Se registra una decisión arquitectónica o deuda diferida.
 
+
+## 14. Criterio de Creación en Casos de Uso
+
+El sistema aplica **dos estilos** para la creación de entidades, según el contexto. **No es inconsistencia — es polimorfismo contextual.**
+
+### `agregar(Entidad)` — Para jerarquías de tipos
+
+**Cuándo usar:**
+- La entidad tiene jerarquía (`Usuario` → 7 subclases).
+- El controlador conoce el tipo concreto a instanciar.
+- El caso de uso solo persiste, sin lógica de construcción.
+
+**Aplicado en:**
+- `GestionAdministradores.agregar(Administrador)`
+- `GestionDirectores.agregar(Director)`
+- `GestionCoordinadores.agregar(CoordinadorAcademico)`
+- `GestionSecretarios.agregar(Secretario)`
+- `GestionDocentes.agregar(Docente)`
+- `GestionEstudiantes.agregar(Estudiante)`
+- `GestionPadres.agregar(Padre)`
+
+**Excepción:** `GestionUsuarios.agregarUsuario(CrearUsuarioCommand)` — usa el DTO para manejar los 7 roles con una firma unificada.
+
+### `crearX(parámetros)` — Para entidades uniformes
+
+**Cuándo usar:**
+- La entidad tiene un constructor uniforme (sin jerarquía).
+- El caso de uso aplica validaciones + construye la entidad.
+- El controlador no debe conocer detalles de construcción.
+
+**Aplicado en:**
+- `GestionAsignaturas.crearAsignatura(nombre)`
+- `GestionAulas.crearAula(nombre, capacidad, ...)`
+- `GestionGrados.crearGrado(nombre, nivel)`
+- `GestionGrupos.crearGrupo(nombre, grado)`
+- `GestionPeriodos.crearPeriodo(nombre, fechas, estado)`
+- `GestionTurnos.crearTurno(nombre)`
+- `GestionRecreos.crearRecreo(franja, desc, periodos)`
+- `GestionClases.crearClase(dia, horaInicio, ...)`
+
+### Regla de decisión
+
+| Pregunta | Si SÍ | Si NO |
+|---|---|---|
+| ¿La entidad tiene jerarquía de tipos? | `agregar(Entidad)` | `crearX(parámetros)` |
+| ¿El controlador conoce el tipo concreto? | `agregar(Entidad)` | `crearX(parámetros)` |
+| ¿Hay lógica de validación previa a construir? | `crearX(parámetros)` | `agregar(Entidad)` |
+
+**Nuevos casos de uso:** evaluar según la regla. **No forzar unificación** — cada estilo tiene su razón.
+
+---
 ---
 
 *WiredAcademy — Ecosistema Educativo Digital*

@@ -1,6 +1,6 @@
 package presentacion.controlador;
 
-import aplicacion.casosdeuso.GestionTurnos;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionTurnos;
 import dominio.modelo.Turno;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
