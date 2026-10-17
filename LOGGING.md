@@ -370,6 +370,5 @@ El sistema aplica **dos estilos** para la creación de entidades, según el cont
 **Nuevos casos de uso:** evaluar según la regla. **No forzar unificación** — cada estilo tiene su razón.
 
 ---
----
 
 *WiredAcademy — Ecosistema Educativo Digital*
