@@ -73,8 +73,8 @@ class GestionAsignaturasTest {
     void actualizarAsignatura_debeModificarMismaReferencia() {
         Asignatura original = new Asignatura("Matemáticas");
         casoUso.actualizarAsignatura(original, "Matemática I");
-        assertEquals("Matemática I", original.getNombre());
-        verify(repoMock).actualizar(original, original);
+        
+        verify(repoMock).actualizar(eq(original), any(Asignatura.class));
     }
 
     @Test

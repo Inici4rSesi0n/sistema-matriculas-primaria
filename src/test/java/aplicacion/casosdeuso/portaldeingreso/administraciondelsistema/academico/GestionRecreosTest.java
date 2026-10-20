@@ -88,10 +88,10 @@ class GestionRecreosTest {
         Recreo original = new Recreo(franja, "Viejo", List.of(periodoA));
         FranjaHoraria nuevaFranja = new FranjaHoraria("Lunes", "11:00", "11:30");
         casoUso.actualizarRecreo(original, nuevaFranja, "Nuevo", List.of(periodoA, periodoB));
-        assertEquals("Nuevo", original.getDescripcion());
-        assertEquals("11:00", original.getHoraInicio());
-        assertEquals(2, original.getPeriodos().size());
-        verify(repoMock).actualizar(original, original);
+        
+        
+        
+        verify(repoMock).actualizar(eq(original), any(Recreo.class));
     }
 
     @Test

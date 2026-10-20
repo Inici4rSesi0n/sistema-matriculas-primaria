@@ -9,6 +9,5 @@ public interface ProveedorDatosIniciales {
     String getApellido();
     String getDni();
     char[] getContrasena();
-    char[] getContrasenaMaestra();
     boolean isConfirmado();
 }

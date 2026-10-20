@@ -1,11 +1,10 @@
 package presentacion.controlador;
-
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrados;
 import dominio.modelo.Grado;
+import dominio.puerto.externo.LoggerPort;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -13,28 +12,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 /**
- * Controlador de la pestaña "Grados".
  *
  * @author inici4rsesi0n
  */
 @Component
 @Scope("prototype")
 public class TabGradosController implements Initializable {
-
     private final GestionGrados gestionGrados;
+    private final LoggerPort logger;
 
     @FXML private TableView<Grado> tablaGrados;
     @FXML private TableColumn<Grado, Integer> colNumGrado;
@@ -47,8 +39,9 @@ public class TabGradosController implements Initializable {
     private ObservableList<Grado> listaGrados;
     private Grado gradoEditando;
 
-    public TabGradosController(GestionGrados gestionGrados) {
+    public TabGradosController(GestionGrados gestionGrados, LoggerPort logger) {
         this.gestionGrados = gestionGrados;
+        this.logger = logger;
     }
 
     @Override
@@ -90,9 +83,14 @@ public class TabGradosController implements Initializable {
 
     private void cargarGrados() {
         Platform.runLater(() -> {
-            listaGrados = FXCollections.observableArrayList(gestionGrados.listarTodos());
-            tablaGrados.setItems(listaGrados);
-            tablaGrados.refresh();
+            try {
+                listaGrados = FXCollections.observableArrayList(gestionGrados.listarTodos());
+                tablaGrados.setItems(listaGrados);
+                tablaGrados.refresh();
+            } catch (Exception e) {
+                logger.error("Error al cargar grados: " + e.getMessage());
+                Dialogos.info("Error al cargar grados.");
+            }
         });
     }
 
@@ -109,27 +107,24 @@ public class TabGradosController implements Initializable {
         try {
             gestionGrados.eliminarGrado(g);
             SistemaEventBus.notificar(TipoEvento.GRADOS);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al eliminar grado: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
 
-    @FXML
-    private void handleNuevoGrado() {
+    @FXML private void handleNuevoGrado() {
         gradoEditando = null;
-        txtNombreGrado.clear();
-        txtNivelGrado.clear();
+        txtNombreGrado.clear(); txtNivelGrado.clear();
         panelFormularioGrado.setVisible(true);
         panelFormularioGrado.setManaged(true);
     }
 
-    @FXML
-    private void handleGuardarGrado() {
+    @FXML private void handleGuardarGrado() {
         String nombre = txtNombreGrado.getText().trim();
         String nivel = txtNivelGrado.getText().trim();
         if (nombre.isBlank() || nivel.isBlank()) {
-            Dialogos.info("El nombre y el nivel son obligatorios.");
-            return;
+            Dialogos.info("El nombre y el nivel son obligatorios."); return;
         }
         try {
             if (gradoEditando == null) gestionGrados.crearGrado(nombre, nivel);
@@ -137,13 +132,13 @@ public class TabGradosController implements Initializable {
             SistemaEventBus.notificar(TipoEvento.GRADOS);
             panelFormularioGrado.setVisible(false);
             panelFormularioGrado.setManaged(false);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al guardar grado: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
 
-    @FXML
-    private void handleCancelarGrado() {
+    @FXML private void handleCancelarGrado() {
         panelFormularioGrado.setVisible(false);
         panelFormularioGrado.setManaged(false);
     }

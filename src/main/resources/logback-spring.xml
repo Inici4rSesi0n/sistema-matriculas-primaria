@@ -1,137 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property name="PATRON_CONSOLE" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
-    <property name="PATRON_ARCHIVO" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
-    <property name="DIRECTORIO_LOGS" value="./logs"/>
+    <property name="PATRON_AUDIT"  value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{usuario:--}] %msg%n"/>
+    <property name="PATRON_ERROR"  value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n%ex"/>
+    <property name="PATRON_SQL"    value="%d{HH:mm:ss.SSS} [SQL] %msg%n"/>
+    <property name="PATRON_CONSOLE" value="%d{HH:mm:ss.SSS} [%X{usuario:--}] %-5level %logger{36} - %msg%n"/>
+    <property name="LOG_DIR"       value="${WIREDACADEMY_LOG_DIR:-./logs}"/>
 
-    <property name="ARCHIVO_LOG" value="${DIRECTORIO_LOGS}/wiredacademy.log"/>
-    <property name="ARCHIVO_ERROR" value="${DIRECTORIO_LOGS}/wiredacademy-error.log"/>
-    <property name="ARCHIVO_AUDIT" value="${DIRECTORIO_LOGS}/wiredacademy-audit.log"/>
-    <property name="ARCHIVO_EVENTBUS" value="${DIRECTORIO_LOGS}/wiredacademy-eventbus.log"/>
+    <!-- =========================================================
+         APPENDERS DE ARCHIVO (Siempre activos)
+         ========================================================= -->
+    <appender name="AUDIT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/wiredacademy-audit.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/wiredacademy-audit-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder><pattern>${PATRON_AUDIT}</pattern></encoder>
+    </appender>
 
-    <!-- ============================================================
-         DEV — todo a consola
-         ============================================================ -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/wiredacademy-error.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/wiredacademy-error-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder><pattern>${PATRON_ERROR}</pattern></encoder>
+    </appender>
+
+    <appender name="EVENTBUS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/wiredacademy-eventbus.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/wiredacademy-eventbus-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <encoder><pattern>${PATRON_ERROR}</pattern></encoder>
+    </appender>
+
+    <appender name="SQL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/wiredacademy-sql.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/wiredacademy-sql-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder><pattern>${PATRON_SQL}</pattern></encoder>
+    </appender>
+
+    <appender name="APP_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/wiredacademy-app.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/wiredacademy-app-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder><pattern>${PATRON_ERROR}</pattern></encoder>
+    </appender>
+
+    <!-- =========================================================
+         APPENDER DE CONSOLA
+         ========================================================= -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder><pattern>${PATRON_CONSOLE}</pattern></encoder>
+    </appender>
+
+    <!-- =========================================================
+         PERFIL DEV — Consola limpia + Archivos
+         ========================================================= -->
     <springProfile name="dev">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>${PATRON_CONSOLE}</pattern>
-                <charset>UTF-8</charset>
-            </encoder>
-        </appender>
+        <!-- Hibernate va SOLO al archivo SQL, no ensucia la consola -->
+        <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+            <appender-ref ref="SQL_FILE"/>
+        </logger>
+        <logger name="org.hibernate.orm.jdbc.bind" level="TRACE" additivity="false">
+            <appender-ref ref="SQL_FILE"/>
+        </logger>
+        <logger name="org.springframework" level="WARN"/>
 
-        <root level="DEBUG">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-
-        <logger name="WiredAcademy.AUDIT" level="INFO"/>
-        <logger name="WiredAcademy.EVENTBUS" level="DEBUG"/>
-        <logger name="WiredAcademy.UI" level="TRACE"/>
-    </springProfile>
-
-    <!-- ============================================================
-         PROD — archivos rotados por categoría
-         ============================================================ -->
-    <springProfile name="prod">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>${PATRON_CONSOLE}</pattern>
-                <charset>UTF-8</charset>
-            </encoder>
-        </appender>
-
-        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>${ARCHIVO_LOG}</file>
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>${DIRECTORIO_LOGS}/wiredacademy-%d{yyyy-MM-dd}.log</fileNamePattern>
-                <maxHistory>30</maxHistory>
-            </rollingPolicy>
-            <encoder>
-                <pattern>${PATRON_ARCHIVO}</pattern>
-                <charset>UTF-8</charset>
-            </encoder>
-        </appender>
-
-        <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>${ARCHIVO_ERROR}</file>
-            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-                <level>ERROR</level>
-            </filter>
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>${DIRECTORIO_LOGS}/wiredacademy-error-%d{yyyy-MM-dd}.log</fileNamePattern>
-                <maxHistory>30</maxHistory>
-            </rollingPolicy>
-            <encoder>
-                <pattern>${PATRON_ARCHIVO}</pattern>
-                <charset>UTF-8</charset>
-            </encoder>
-        </appender>
-
-        <appender name="FILE_AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>${ARCHIVO_AUDIT}</file>
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>${DIRECTORIO_LOGS}/wiredacademy-audit-%d{yyyy-MM-dd}.log</fileNamePattern>
-                <maxHistory>90</maxHistory>
-            </rollingPolicy>
-            <encoder>
-                <pattern>${PATRON_ARCHIVO}</pattern>
-                <charset>UTF-8</charset>
-            </encoder>
-        </appender>
-
-        <appender name="FILE_EVENTBUS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>${ARCHIVO_EVENTBUS}</file>
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>${DIRECTORIO_LOGS}/wiredacademy-eventbus-%d{yyyy-MM-dd}.log</fileNamePattern>
-                <maxHistory>15</maxHistory>
-            </rollingPolicy>
-            <encoder>
-                <pattern>${PATRON_ARCHIVO}</pattern>
-                <charset>UTF-8</charset>
-            </encoder>
-        </appender>
-
-        <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="FILE"/>
-            <appender-ref ref="FILE_ERROR"/>
-        </root>
-
-        <!-- AUDIT: archivo propio + raíz, retención 90 días -->
+        <!-- AUDIT: consola + archivo permanente -->
         <logger name="WiredAcademy.AUDIT" level="INFO" additivity="false">
-            <appender-ref ref="FILE_AUDIT"/>
-            <appender-ref ref="FILE"/>
             <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="AUDIT_FILE"/>
         </logger>
-
-        <!-- EVENTBUS: archivo propio + raíz, retención 15 días -->
-        <logger name="WiredAcademy.EVENTBUS" level="INFO" additivity="false">
-            <appender-ref ref="FILE_EVENTBUS"/>
-            <appender-ref ref="FILE"/>
-        </logger>
-
-        <!-- UI: deshabilitado en producción -->
-        <logger name="WiredAcademy.UI" level="OFF"/>
-    </springProfile>
-
-    <!-- ============================================================
-         PERFIL POR DEFECTO — solo consola
-         ============================================================ -->
-    <springProfile name="!dev &amp; !prod">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>${PATRON_CONSOLE}</pattern>
-                <charset>UTF-8</charset>
-            </encoder>
-        </appender>
 
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ERROR_FILE"/>
+            <appender-ref ref="APP_FILE"/>
         </root>
 
-        <logger name="WiredAcademy.AUDIT" level="INFO"/>
-        <logger name="WiredAcademy.EVENTBUS" level="INFO"/>
+        <logger name="WiredAcademy.EVENTBUS" level="DEBUG" additivity="false">
+            <appender-ref ref="EVENTBUS_FILE"/>
+        </logger>
+        <logger name="WiredAcademy.UI" level="TRACE" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="APP_FILE"/>
+        </logger>
+    </springProfile>
+
+    <!-- =========================================================
+         PERFIL PROD — Solo archivos (sin consola)
+         ========================================================= -->
+    <springProfile name="prod">
+        <logger name="org.hibernate" level="WARN"/>
+        <logger name="org.springframework" level="WARN"/>
+
+        <logger name="WiredAcademy.AUDIT" level="INFO" additivity="false">
+            <appender-ref ref="AUDIT_FILE"/>
+        </logger>
+        <logger name="WiredAcademy.EVENTBUS" level="INFO" additivity="false">
+            <appender-ref ref="EVENTBUS_FILE"/>
+        </logger>
+        <logger name="WiredAcademy.UI" level="OFF"/>
+
+        <root level="INFO">
+            <appender-ref ref="ERROR_FILE"/>
+            <appender-ref ref="APP_FILE"/>
+        </root>
     </springProfile>
 
 </configuration>

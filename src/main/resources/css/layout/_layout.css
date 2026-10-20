@@ -1,0 +1,246 @@
+/* 1. Fondo Global */
+.app-background {
+    -fx-background-color: radial-gradient(center 80% 20%, radius 50%, rgba(0, 210, 255, 0.08), transparent), 
+                          radial-gradient(center 20% 80%, radius 50%, rgba(139, 92, 246, 0.08), transparent),
+                          linear-gradient(to bottom right, #07050C, #0F172A);
+}
+
+/* 2. La Caja del Main */
+.glass-card {
+    -fx-background-color: rgba(22, 26, 41, 0.7);
+    -fx-background-radius: 16px;
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-radius: 16px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 40, 0.2, 0, 15);
+}
+
+/* 3. El Centro del Dashboard */
+.center-dashboard {
+    -fx-background-color: transparent; 
+}
+
+/* 4. Header Superior */
+.header-dashboard {
+    -fx-background-color: rgba(15, 23, 42, 0.6);
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.05) transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 15px 25px;
+}
+
+/* 5. Sidebar */
+.sidebar {
+    -fx-background-color: linear-gradient(to bottom, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.8));
+    -fx-border-color: transparent rgba(255, 255, 255, 0.05) transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+    -fx-pref-width: 260px;
+}
+
+.sidebar-branding {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.05) transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 30px 20px 20px 20px;
+}
+
+/* 6. BOTONES DEL SIDEBAR (Full-Width + Efecto Fosforescente Cian) */
+.sidebar-btn {
+    /* Fondo por defecto: Cian muy sutil con degradado a transparente */
+    -fx-background-color: linear-gradient(to right, rgba(0, 210, 255, 0.08), transparent) !important;
+    -fx-border-color: transparent transparent transparent transparent;
+    -fx-border-width: 0 0 0 3px; /* Indicador izquierdo */
+    -fx-alignment: center-left;
+    -fx-padding: 12px 20px;
+    /* SIN bordes redondeados (estilo lista) */
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-cursor: hand;
+    -fx-max-width: Infinity;
+}
+
+/* HOVER: Cambio a Morado */
+.sidebar-btn:hover {
+    -fx-background-color: linear-gradient(to right, rgba(139, 92, 246, 0.15), transparent) !important;
+    -fx-border-color: transparent transparent transparent #8B5CF6;
+}
+
+/* Textos */
+.sidebar-label { 
+    -fx-font-size: 14px; 
+    -fx-text-fill: #E2E8F0 !important; 
+    -fx-font-weight: 500;
+}
+.sidebar-btn:hover .sidebar-label { 
+    -fx-text-fill: #FFFFFF !important; 
+}
+
+.sidebar-section-title { 
+    -fx-font-size: 10px; 
+    -fx-font-weight: bold; 
+    -fx-text-fill: #64748B; 
+    -fx-padding: 20px 0 10px 20px; 
+    -fx-letter-spacing: 1px; 
+}
+
+/* 7. Tarjetas KPI */
+.kpi-card {
+    -fx-background-color: rgba(22, 26, 41, 0.7);
+    -fx-background-radius: 16px;
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-radius: 16px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 20, 0.1, 0, 8);
+    -fx-padding: 25px;
+}
+.kpi-card:hover {
+    -fx-background-color: rgba(30, 36, 56, 0.8);
+    -fx-border-color: rgba(0, 210, 255, 0.3);
+    -fx-effect: dropshadow(gaussian, rgba(0, 210, 255, 0.15), 20, 0.1, 0, 8);
+}
+
+/* Iconos Grandes KPI */
+.svg-icon-cyan-large { -fx-fill: #00D2FF; -fx-scale-x: 1.5; -fx-scale-y: 1.5; }
+.svg-icon-purple-large { -fx-fill: #8B5CF6; -fx-scale-x: 1.5; -fx-scale-y: 1.5; }
+.svg-icon-white { -fx-fill: white; -fx-scale-x: 1.1; -fx-scale-y: 1.1; }
+.svg-icon-gradient { -fx-fill: linear-gradient(to bottom right, #00D2FF, #3B82F6); -fx-scale-x: 1.1; -fx-scale-y: 1.1; }
+
+/* Iconos del Sidebar (Por defecto Cian, Hover Morado) */
+.svg-icon-muted { 
+    -fx-fill: #00D2FF; /* Cian por defecto */
+    -fx-scale-x: 1.1; 
+    -fx-scale-y: 1.1; 
+    -fx-effect: dropshadow(gaussian, rgba(0, 210, 255, 0.4), 5, 0.1, 0, 0); /* Fosforescencia en el icono */
+}
+.sidebar-btn:hover .svg-icon-muted { 
+    -fx-fill: #A78BFA; /* Morado al pasar el mouse */
+    -fx-effect: dropshadow(gaussian, rgba(167, 139, 250, 0.6), 8, 0.1, 0, 0);
+}
+
+/* Iconos del Sidebar (Blancos por defecto, Cian al pasar el mouse) */
+.svg-icon-muted { 
+    -fx-fill: #FFFFFF; /* Blanco puro */
+    -fx-scale-x: 1.1; 
+    -fx-scale-y: 1.1; 
+}
+.sidebar-btn:hover .svg-icon-muted { 
+    -fx-fill: #00D2FF; /* Brillo Cian al pasar el mouse */
+    -fx-effect: dropshadow(gaussian, rgba(0, 210, 255, 0.6), 8, 0.1, 0, 0);
+}
+
+/* Iconos del Sidebar (Morados por defecto, Blancos al pasar el mouse) */
+.svg-icon-muted { 
+    -fx-fill: #A78BFA; /* Morado/Violeta claro */
+    -fx-scale-x: 1.1; 
+    -fx-scale-y: 1.1; 
+    -fx-effect: dropshadow(gaussian, rgba(167, 139, 250, 0.3), 5, 0.1, 0, 0); /* Brillo sutil */
+}
+
+/* Al pasar el mouse, el fondo se vuelve morado oscuro y el icono BLANCO */
+.sidebar-btn:hover .svg-icon-muted { 
+    -fx-fill: #FFFFFF; 
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 8, 0.1, 0, 0);
+}
+
+/* Ajuste al texto para que acompañe el cambio */
+.sidebar-label { 
+    -fx-text-fill: #CBD5E1 !important; 
+}
+.sidebar-btn:hover .sidebar-label { 
+    -fx-text-fill: #FFFFFF !important; 
+}
+
+/* Título de la sección CRUD con más presencia */
+.crud-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #F8FAFC;
+    -fx-effect: dropshadow(gaussian, rgba(0, 210, 255, 0.4), 15, 0.2, 0, 0); /* Brillo Cian */
+}
+
+/* Separador elegante con degradado (ADN) */
+.formulario-separator .line {
+    -fx-border-color: linear-gradient(to right, transparent, rgba(0, 210, 255, 0.4), transparent);
+    -fx-border-width: 1px 0 0 0;
+}
+
+/* ADN para los Diálogos (Alerts) */
+.dialog-pane {
+    -fx-background-color: #0F172A;
+    -fx-border-color: rgba(0, 210, 255, 0.3);
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+.dialog-pane .label {
+    -fx-text-fill: #F8FAFC;
+    -fx-font-size: 14px;
+}
+.dialog-pane .header-panel {
+    -fx-background-color: #07050C;
+}
+.dialog-pane .button-bar .button {
+    -fx-background-color: rgba(139, 92, 246, 0.2);
+    -fx-text-fill: #C4B5FD;
+    -fx-border-color: #8B5CF6;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
+}
+.dialog-pane .button-bar .button:hover {
+    -fx-background-color: rgba(139, 92, 246, 0.4);
+}
+
+/* Forzar el ADN en TODOS los diálogos (Alertas y Confirmaciones) */
+.dialog-pane {
+    -fx-background-color: #0F172A !important; /* Fondo oscuro profundo */
+    -fx-border-color: rgba(0, 210, 255, 0.4) !important; /* Borde Cian */
+    -fx-border-width: 1px !important;
+}
+.dialog-pane .header-panel {
+    -fx-background-color: #07050C !important; /* Cabecera más oscura */
+}
+.dialog-pane .label {
+    -fx-text-fill: #F8FAFC !important; /* Texto blanco */
+    -fx-font-size: 14px;
+}
+.dialog-pane .content.label {
+    -fx-padding: 15px;
+}
+.dialog-pane .button-bar .button {
+    -fx-background-color: #8B5CF6 !important; /* Botón Morado */
+    -fx-text-fill: white !important;
+    -fx-border-color: transparent !important;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+.dialog-pane .button-bar .button:hover {
+    -fx-background-color: #7C3AED !important;
+}
+/* Icono de información/alerta */
+.dialog-pane .graphic-container {
+    -fx-background-color: transparent;
+}
+
+.sub-sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+    -fx-padding: 12px 20px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-max-width: Infinity;
+}
+
+.sub-sidebar-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-text-fill: #F8FAFC;
+}
+
+.sub-sidebar-btn.active {
+    -fx-background-color: linear-gradient(to right, rgba(0, 210, 255, 0.15), transparent);
+    -fx-text-fill: #00D2FF;
+    -fx-border-color: transparent transparent transparent #00D2FF;
+    -fx-border-width: 0 0 0 4px;
+    -fx-border-radius: 8px 0 0 8px;
+}

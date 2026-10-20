@@ -1,11 +1,9 @@
 package aplicacion.casosdeuso.portaldeingreso.sistema;
-
 import aplicacion.servicio.BuscadorUsuario;
 import dominio.modelo.Usuario;
 import dominio.puerto.externo.HashProvider;
 import dominio.puerto.externo.LoggerPort;
 import org.springframework.stereotype.Service;
-
 /**
  *
  * @author inici4rsesi0n
@@ -38,10 +36,12 @@ public class AutenticarUsuario {
         Usuario usuario = buscadorUsuario.buscarPorCodigo(codigo);
 
         if (usuario != null && hashProvider.verificarHash(usuario.getHashContrasena(), contraseña)) {
-            logger.info("Usuario {} autenticado exitosamente.", codigo);
+            logger.setUsuario(usuario.getCodigo());
+            logger.audit("op=LOGIN entity=USER id=" + usuario.getCodigo() + " | role=" + usuario.getRol());
             return usuario;
         }
 
+        logger.setUsuario(null); 
         if (usuario != null) {
             logger.warn("Contraseña incorrecta para usuario: {}", codigo);
         } else {

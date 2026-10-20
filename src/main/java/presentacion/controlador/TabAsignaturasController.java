@@ -1,11 +1,10 @@
 package presentacion.controlador;
-
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionAsignaturas;
 import dominio.modelo.Asignatura;
+import dominio.puerto.externo.LoggerPort;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -13,18 +12,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 /**
  *
  * @author inici4rsesi0n
@@ -32,8 +25,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public class TabAsignaturasController implements Initializable {
-
     private final GestionAsignaturas gestionAsignaturas;
+    private final LoggerPort logger;
 
     @FXML private TableView<Asignatura> tablaAsignaturas;
     @FXML private TableColumn<Asignatura, Integer> colNumAsignatura;
@@ -46,8 +39,9 @@ public class TabAsignaturasController implements Initializable {
     private ObservableList<Asignatura> listaAsignaturas;
     private Asignatura asignaturaEditando;
 
-    public TabAsignaturasController(GestionAsignaturas gestionAsignaturas) {
+    public TabAsignaturasController(GestionAsignaturas gestionAsignaturas, LoggerPort logger) {
         this.gestionAsignaturas = gestionAsignaturas;
+        this.logger = logger;
     }
 
     @Override
@@ -88,9 +82,14 @@ public class TabAsignaturasController implements Initializable {
 
     private void cargarAsignaturas() {
         Platform.runLater(() -> {
-            listaAsignaturas = FXCollections.observableArrayList(gestionAsignaturas.listarTodos());
-            tablaAsignaturas.setItems(listaAsignaturas);
-            tablaAsignaturas.refresh();
+            try {
+                listaAsignaturas = FXCollections.observableArrayList(gestionAsignaturas.listarTodos());
+                tablaAsignaturas.setItems(listaAsignaturas);
+                tablaAsignaturas.refresh();
+            } catch (Exception e) {
+                logger.error("Error al cargar asignaturas: " + e.getMessage());
+                Dialogos.info("Error al cargar asignaturas.");
+            }
         });
     }
 
@@ -106,25 +105,23 @@ public class TabAsignaturasController implements Initializable {
         try {
             gestionAsignaturas.eliminarAsignatura(a);
             SistemaEventBus.notificar(TipoEvento.ASIGNATURAS);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al eliminar asignatura: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
 
-    @FXML
-    private void handleNuevaAsignatura() {
+    @FXML private void handleNuevaAsignatura() {
         asignaturaEditando = null;
         txtNombreAsignatura.clear();
         panelFormularioAsignatura.setVisible(true);
         panelFormularioAsignatura.setManaged(true);
     }
 
-    @FXML
-    private void handleGuardarAsignatura() {
+    @FXML private void handleGuardarAsignatura() {
         String nombre = txtNombreAsignatura.getText().trim();
         if (nombre.isBlank()) {
-            Dialogos.info("El nombre no puede estar vacío.");
-            return;
+            Dialogos.info("El nombre no puede estar vacío."); return;
         }
         try {
             if (asignaturaEditando == null) gestionAsignaturas.crearAsignatura(nombre);
@@ -132,13 +129,13 @@ public class TabAsignaturasController implements Initializable {
             SistemaEventBus.notificar(TipoEvento.ASIGNATURAS);
             panelFormularioAsignatura.setVisible(false);
             panelFormularioAsignatura.setManaged(false);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al guardar asignatura: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
 
-    @FXML
-    private void handleCancelarAsignatura() {
+    @FXML private void handleCancelarAsignatura() {
         panelFormularioAsignatura.setVisible(false);
         panelFormularioAsignatura.setManaged(false);
     }

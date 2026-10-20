@@ -1,0 +1,13 @@
+package infraestructura.persistencia.jpa;
+import infraestructura.persistencia.entidades.CoordinadorEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.Optional;
+/**
+ *
+ * @author inici4rsesi0n
+ */
+@Repository
+public interface CoordinadorJpaRepository extends JpaRepository<CoordinadorEntity, Long>{
+    Optional<CoordinadorEntity> findByCodigo(String codigo);
+}

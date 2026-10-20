@@ -1,27 +1,19 @@
 package presentacion.controlador;
-
 import aplicacion.casosdeuso.portaldeingreso.sistema.AutenticarUsuario;
 import dominio.modelo.Usuario;
 import infraestructura.seguridad.UtilLimpieza;
 import presentacion.dialogos.Dialogos;
 import presentacion.estadousuario.SesionUsuario;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 /**
  *
  * @author inici4rsesi0n
@@ -29,9 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public class LoginController implements Initializable {
-
     private final AutenticarUsuario autenticarUsuario;
-
     @FXML private TextField txtCodigo;
     @FXML private PasswordField txtPassword;
     @FXML private TextField txtPasswordRevealed;
@@ -54,14 +44,10 @@ public class LoginController implements Initializable {
         sincronizarPasswordFields();
         btnTogglePassword.setOnMouseClicked(this::togglePasswordVisibility);
         txtPasswordRevealed.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (txtPasswordRevealed.isVisible()) {
-                txtPassword.setText(newVal);
-            }
+            if (txtPasswordRevealed.isVisible()) txtPassword.setText(newVal);
         });
         txtPassword.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (!txtPasswordRevealed.isVisible()) {
-                txtPasswordRevealed.setText(newVal);
-            }
+            if (!txtPasswordRevealed.isVisible()) txtPasswordRevealed.setText(newVal);
         });
     }
 
@@ -74,27 +60,15 @@ public class LoginController implements Initializable {
         regresando = false;
     }
 
-    public void setModo(String modo) {
-        this.modo = modo;
-    }
-
-    public boolean isLoginExitoso() {
-        return usuarioAutenticado != null;
-    }
-
-    public Usuario getUsuarioAutenticado() {
-        return usuarioAutenticado;
-    }
-
-    public boolean isRegresando() {
-        return regresando;
-    }
+    public void setModo(String modo) { this.modo = modo; }
+    public boolean isLoginExitoso() { return usuarioAutenticado != null; }
+    public Usuario getUsuarioAutenticado() { return usuarioAutenticado; }
+    public boolean isRegresando() { return regresando; }
 
     @FXML
     private void handleLogin() {
         String codigo = txtCodigo.getText();
         char[] contraseña = obtenerContrasena();
-
         if (codigo == null || codigo.isBlank() || contraseña == null || contraseña.length == 0) {
             Dialogos.info("Debe ingresar un código y una contraseña.");
             return;
@@ -103,9 +77,7 @@ public class LoginController implements Initializable {
             Usuario usuario = autenticarUsuario.ejecutar(codigo, contraseña);
             if (usuario != null) {
                 this.usuarioAutenticado = usuario;
-                if (chkMantenerSesion.isSelected()) {
-                    SesionUsuario.iniciarSesion(usuario);
-                }
+                if (chkMantenerSesion.isSelected()) SesionUsuario.iniciarSesion(usuario);
                 Stage stage = (Stage) btnLogin.getScene().getWindow();
                 stage.close();
             } else {
@@ -119,7 +91,7 @@ public class LoginController implements Initializable {
     @FXML
     private void handleRegresar() {
         regresando = true;
-        Stage stage = (Stage) btnLogin.getScene().getWindow();
+        Stage stage = (Stage) btnRegresar.getScene().getWindow();
         stage.close();
     }
 
@@ -135,19 +107,31 @@ public class LoginController implements Initializable {
 
     private void togglePasswordVisibility(MouseEvent event) {
         boolean revelado = txtPasswordRevealed.isVisible();
+        
+        // Alternar visibilidad
         txtPasswordRevealed.setVisible(!revelado);
         txtPassword.setVisible(revelado);
+        
+        // Alternar ocupación de espacio (esto evita el salto visual)
+        txtPasswordRevealed.setManaged(!revelado);
+        txtPassword.setManaged(revelado);
 
         if (!revelado) {
             txtPasswordRevealed.setText(txtPassword.getText());
+            txtPasswordRevealed.requestFocus();
+            txtPasswordRevealed.positionCaret(txtPasswordRevealed.getText().length());
         } else {
             txtPassword.setText(txtPasswordRevealed.getText());
+            txtPassword.requestFocus();
+            txtPassword.positionCaret(txtPassword.getText().length());
         }
         btnTogglePassword.setText(revelado ? "👁" : "🙈");
     }
 
     private void sincronizarPasswordFields() {
         txtPasswordRevealed.setVisible(false);
+        txtPasswordRevealed.setManaged(false);
         txtPassword.setVisible(true);
+        txtPassword.setManaged(true);
     }
 }

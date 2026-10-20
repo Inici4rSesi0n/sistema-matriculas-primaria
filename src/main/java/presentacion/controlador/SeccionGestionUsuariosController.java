@@ -4,6 +4,7 @@ import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.usuarios.G
 import aplicacion.dto.CrearUsuarioCommand;
 import dominio.modelo.Usuario;
 import dominio.puerto.externo.HashProvider;
+import dominio.puerto.externo.LoggerPort;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
@@ -15,16 +16,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.util.StringConverter;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -36,42 +31,35 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public class SeccionGestionUsuariosController implements Initializable {
-
     private final GestionUsuarios gestionUsuarios;
     private final HashProvider hashProvider;
+    private final LoggerPort logger;
 
     @FXML private TableView<Usuario> tablaUsuarios;
-    @FXML private TableColumn<Usuario, String> colCodigo;
-    @FXML private TableColumn<Usuario, String> colNombre;
-    @FXML private TableColumn<Usuario, String> colApellido;
-    @FXML private TableColumn<Usuario, String> colDni;
-    @FXML private TableColumn<Usuario, String> colRol;
+    @FXML private TableColumn<Usuario, String> colCodigo, colNombre, colApellido, colDni, colRol;
     @FXML private TableColumn<Usuario, Void> colAcciones;
     @FXML private VBox panelFormulario;
-    @FXML private ComboBox<Usuario.Rol> cmbRol;
-    @FXML private TextField txtCodigo;
-    @FXML private TextField txtNombre;
-    @FXML private TextField txtApellido;
-    @FXML private TextField txtDni;
-    @FXML private TextField txtEdad;
-    @FXML private TextField txtContrasena;
-    @FXML private Button btnNuevoUsuario;
-    @FXML private Button btnGuardar;
-    @FXML private Button btnCancelar;
+    
+    // Cambiado a String para igualar a los otros ComboBox
+    @FXML private ComboBox<String> cmbRol;
+    
+    @FXML private TextField txtCodigo, txtNombre, txtApellido, txtDni, txtEdad, txtContrasena;
+    @FXML private Button btnNuevoUsuario, btnGuardar, btnCancelar;
 
     private ObservableList<Usuario> listaUsuarios;
     private Usuario usuarioEditando;
 
-    public SeccionGestionUsuariosController(GestionUsuarios gestionUsuarios, HashProvider hashProvider) {
+    public SeccionGestionUsuariosController(GestionUsuarios gestionUsuarios, HashProvider hashProvider, LoggerPort logger) {
         this.gestionUsuarios = gestionUsuarios;
         this.hashProvider = hashProvider;
+        this.logger = logger;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configurarTabla();
         configurarColumnaAcciones();
-        configurarComboRoles();
+        configurarComboRoles(); // Ahora usa Strings
         SistemaEventBus.suscribir(TipoEvento.USUARIOS, this::cargarUsuarios);
         cargarUsuarios();
     }
@@ -89,60 +77,41 @@ public class SeccionGestionUsuariosController implements Initializable {
             private final Button btnEditar = new Button("Editar");
             private final Button btnEliminar = new Button("Eliminar");
             private final HBox hbox = new HBox(10, btnEditar, btnEliminar);
-
             {
                 btnEditar.getStyleClass().add("boton-tabla-editar");
                 btnEliminar.getStyleClass().add("boton-tabla-eliminar");
-
-                btnEditar.setOnAction(event -> {
-                    Usuario usuario = getTableView().getItems().get(getIndex());
-                    cargarUsuarioEnFormulario(usuario);
-                });
-
-                btnEliminar.setOnAction(event -> {
-                    Usuario usuario = getTableView().getItems().get(getIndex());
-                    eliminarUsuario(usuario);
-                });
+                btnEditar.setOnAction(event -> cargarUsuarioEnFormulario(getTableView().getItems().get(getIndex())));
+                btnEliminar.setOnAction(event -> eliminarUsuario(getTableView().getItems().get(getIndex())));
             }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
+            @Override protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(hbox);
-                }
+                setGraphic(empty ? null : hbox);
             }
         });
     }
 
     private void configurarComboRoles() {
-        cmbRol.getItems().addAll(Usuario.Rol.values());
-        cmbRol.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(Usuario.Rol rol) {
-                return rol != null ? rol.name() : "";
-            }
-
-            @Override
-            public Usuario.Rol fromString(String string) {
-                return Usuario.Rol.valueOf(string);
-            }
-        });
-        cmbRol.getSelectionModel().selectFirst();
+        cmbRol.getItems().clear(); // Primera opción
+        for (Usuario.Rol rol : Usuario.Rol.values()) {
+            cmbRol.getItems().add(rol.name());
+        }
+        cmbRol.getSelectionModel().selectFirst(); // Seleccionamos el texto
     }
 
     private void cargarUsuarios() {
         Platform.runLater(() -> {
-            listaUsuarios = FXCollections.observableArrayList(gestionUsuarios.listarTodos());
-            tablaUsuarios.setItems(listaUsuarios);
-            tablaUsuarios.refresh();
+            try {
+                listaUsuarios = FXCollections.observableArrayList(gestionUsuarios.listarTodos());
+                tablaUsuarios.setItems(listaUsuarios);
+                tablaUsuarios.refresh();
+            } catch (Exception e) {
+                logger.error("Error al cargar usuarios: " + e.getMessage());
+                Dialogos.info("Error al cargar usuarios.");
+            }
         });
     }
 
-    @FXML
-    private void handleNuevoUsuario() {
+    @FXML private void handleNuevoUsuario() {
         usuarioEditando = null;
         limpiarFormulario();
         txtCodigo.setText(generarCodigoUnico());
@@ -151,16 +120,14 @@ public class SeccionGestionUsuariosController implements Initializable {
         panelFormulario.setVisible(true);
     }
 
-    @FXML
-    private void handleCancelar() {
+    @FXML private void handleCancelar() {
         limpiarFormulario();
         panelFormulario.setManaged(false);
         panelFormulario.setVisible(false);
     }
 
-    @FXML
-    private void handleGuardar() {
-        Usuario.Rol rol = cmbRol.getValue();
+    @FXML private void handleGuardar() {
+        String rolSeleccionado = cmbRol.getValue();
         String codigo = txtCodigo.getText().trim();
         String nombre = txtNombre.getText().trim();
         String apellido = txtApellido.getText().trim();
@@ -168,42 +135,33 @@ public class SeccionGestionUsuariosController implements Initializable {
         String edadTexto = txtEdad.getText().trim();
         String contrasenaTexto = txtContrasena.getText();
 
-        if (rol == null || codigo.isBlank() || nombre.isBlank()
-                || apellido.isBlank() || dni.isBlank() || edadTexto.isBlank()) {
-            Dialogos.info("Todos los campos obligatorios deben estar completos.");
-            return;
+        if (rolSeleccionado == null || rolSeleccionado.startsWith("Seleccione") || codigo.isBlank() || nombre.isBlank() || apellido.isBlank() || dni.isBlank() || edadTexto.isBlank()) {
+            Dialogos.info("Todos los campos obligatorios deben estar completos."); return;
         }
-
+        
         int edad;
-        try {
-            edad = Integer.parseInt(edadTexto);
-        } catch (NumberFormatException e) {
-            Dialogos.info("La edad debe ser un número válido.");
-            return;
-        }
+        try { edad = Integer.parseInt(edadTexto); }
+        catch (NumberFormatException e) { Dialogos.info("La edad debe ser un número válido."); return; }
 
         if (usuarioEditando == null && contrasenaTexto.isBlank()) {
-            Dialogos.info("Debe asignar una contraseña al nuevo usuario.");
-            return;
+            Dialogos.info("Debe asignar una contraseña al nuevo usuario."); return;
         }
 
         try {
+            Usuario.Rol rol = Usuario.Rol.valueOf(rolSeleccionado); // Parseamos de String a Enum
+            
             if (usuarioEditando == null) {
                 char[] contrasena = contrasenaTexto.toCharArray();
                 String hash = hashProvider.generarHash(contrasena);
-                CrearUsuarioCommand cmd = new CrearUsuarioCommand(
-                        codigo, hash, dni, nombre, apellido, edad, rol, null);
+                CrearUsuarioCommand cmd = new CrearUsuarioCommand(codigo, hash, dni, nombre, apellido, edad, rol, null);
                 gestionUsuarios.agregarUsuario(cmd);
             } else {
                 if (!codigo.equals(usuarioEditando.getCodigo())) {
-                    Dialogos.info("No se puede modificar el código de un usuario existente.");
-                    return;
+                    Dialogos.info("No se puede modificar el código de un usuario existente."); return;
                 }
                 if (!dni.equals(usuarioEditando.getDni()) && gestionUsuarios.existeDni(dni, usuarioEditando)) {
-                    Dialogos.info("Ya existe otro usuario con ese DNI.");
-                    return;
+                    Dialogos.info("Ya existe otro usuario con ese DNI."); return;
                 }
-
                 usuarioEditando.setNombre(nombre);
                 usuarioEditando.setApellido(apellido);
                 usuarioEditando.setDni(dni);
@@ -218,7 +176,8 @@ public class SeccionGestionUsuariosController implements Initializable {
             panelFormulario.setManaged(false);
             panelFormulario.setVisible(false);
             SistemaEventBus.notificar(TipoEvento.USUARIOS);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al guardar usuario: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
@@ -227,7 +186,7 @@ public class SeccionGestionUsuariosController implements Initializable {
         usuarioEditando = usuario;
         panelFormulario.setManaged(true);
         panelFormulario.setVisible(true);
-        cmbRol.setValue(usuario.getRol());
+        cmbRol.setValue(usuario.getRol().name()); // Setea el String del Enum
         txtCodigo.setText(usuario.getCodigo());
         txtCodigo.setEditable(false);
         txtNombre.setText(usuario.getNombre());
@@ -238,12 +197,12 @@ public class SeccionGestionUsuariosController implements Initializable {
     }
 
     private void eliminarUsuario(Usuario usuario) {
-        if (Dialogos.confirmar("Confirmar eliminación", "¿Está seguro de eliminar al usuario " +
-                usuario.getCodigo() + "?")) {
+        if (Dialogos.confirmar("Confirmar eliminación", "¿Está seguro de eliminar al usuario " + usuario.getCodigo() + "?")) {
             try {
                 gestionUsuarios.eliminarUsuario(usuario);
                 SistemaEventBus.notificar(TipoEvento.USUARIOS);
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
+                logger.error("Error al eliminar usuario: " + e.getMessage());
                 Dialogos.info(e.getMessage());
             }
         }
@@ -251,14 +210,9 @@ public class SeccionGestionUsuariosController implements Initializable {
 
     private void limpiarFormulario() {
         usuarioEditando = null;
-        cmbRol.getSelectionModel().selectFirst();
-        txtCodigo.clear();
-        txtCodigo.setEditable(true);
-        txtNombre.clear();
-        txtApellido.clear();
-        txtDni.clear();
-        txtEdad.clear();
-        txtContrasena.clear();
+        cmbRol.getSelectionModel().selectFirst(); // Vuelve al "Seleccione un rol"
+        txtCodigo.clear(); txtCodigo.setEditable(true);
+        txtNombre.clear(); txtApellido.clear(); txtDni.clear(); txtEdad.clear(); txtContrasena.clear();
     }
 
     private String generarCodigoUnico() {

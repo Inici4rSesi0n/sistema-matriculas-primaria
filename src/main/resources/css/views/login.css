@@ -1,0 +1,84 @@
+.login-left-panel {
+    -fx-background-color: white;
+}
+.login-right-panel {
+    -fx-background-color: linear-gradient(to bottom right, #438bc7, #2a5d8c);
+}
+.back-wrapper {
+    -fx-padding: 20px;
+}
+.btn-back-text {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+.back-arrow-icon, .back-label {
+    -fx-text-fill: #3b71b3;
+    -fx-font-size: 14px;
+}
+.login-titulo {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 32px;
+    -fx-text-fill: #334155;
+}
+.password-wrapper {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 5px;
+}
+.password-stack .text-field, .password-stack .password-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.eye-icon {
+    -fx-padding: 0 10px 0 0;
+    -fx-cursor: hand;
+}
+.link-olvidado {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+.login-checkbox {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748b;
+}
+/* Lado derecho */
+.logo-placeholder {
+    -fx-background-color: rgba(255,255,255,0.2);
+    -fx-background-radius: 50%;
+    -fx-min-width: 100px;
+    -fx-min-height: 100px;
+    -fx-max-width: 100px;
+    -fx-max-height: 100px;
+}
+.info-titulo {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 36px;
+    -fx-text-fill: white;
+}
+.info-subtitulo {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 16px;
+    -fx-text-fill: #cbd5e1;
+    -fx-font-style: italic;
+}
+.login-separator .line {
+    -fx-border-color: rgba(255,255,255,0.3);
+}
+.beta-tag {
+    -fx-background-color: rgba(255,255,255,0.1);
+    -fx-text-fill: white;
+    -fx-padding: 5px 15px;
+    -fx-background-radius: 20px;
+    -fx-font-size: 12px;
+}
+.lema-institucional {
+    -fx-font-family: "Georgia", serif;
+    -fx-font-size: 22px;
+    -fx-text-fill: white;
+    -fx-font-style: italic;
+    -fx-text-alignment: center;
+}
+.version-text {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 10px;
+}

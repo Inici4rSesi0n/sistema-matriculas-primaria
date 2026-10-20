@@ -1,12 +1,15 @@
 package presentacion.controlador;
+
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionPeriodos;
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionRecreos;
 import dominio.modelo.FranjaHoraria;
 import dominio.modelo.PeriodoAcademico;
 import dominio.modelo.Recreo;
+import dominio.puerto.externo.LoggerPort;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,21 +19,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 /**
  *
  * @author inici4rsesi0n
@@ -38,9 +36,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public class TabRecreosController implements Initializable {
-
     private final GestionRecreos gestionRecreos;
     private final GestionPeriodos gestionPeriodos;
+    private final LoggerPort logger;
 
     @FXML private TableView<Recreo> tablaRecreos;
     @FXML private TableColumn<Recreo, Integer> colNumRecreo;
@@ -56,9 +54,10 @@ public class TabRecreosController implements Initializable {
     private ObservableList<PeriodoAcademico> periodosRecreoTemporal;
     private Recreo recreoEditando;
 
-    public TabRecreosController(GestionRecreos gestionRecreos, GestionPeriodos gestionPeriodos) {
+    public TabRecreosController(GestionRecreos gestionRecreos, GestionPeriodos gestionPeriodos, LoggerPort logger) {
         this.gestionRecreos = gestionRecreos;
         this.gestionPeriodos = gestionPeriodos;
+        this.logger = logger;
     }
 
     @Override
@@ -68,7 +67,6 @@ public class TabRecreosController implements Initializable {
         configurarListaPeriodos();
         cargarRecreos();
         recargarComboPeriodosRecreo();
-
         SistemaEventBus.suscribir(TipoEvento.RECREOS, this::cargarRecreos);
         SistemaEventBus.suscribir(TipoEvento.PERIODOS, this::recargarComboPeriodosRecreo);
     }
@@ -88,8 +86,7 @@ public class TabRecreosController implements Initializable {
         colDiaRecreo.setCellValueFactory(new PropertyValueFactory<>("diaSemana"));
         colInicioRecreo.setCellValueFactory(new PropertyValueFactory<>("horaInicio"));
         colFinRecreo.setCellValueFactory(new PropertyValueFactory<>("horaFin"));
-        colDescripcionRecreo.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(
-                cell.getValue().getDescripcion()));
+        colDescripcionRecreo.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(cell.getValue().getDescripcion()));
         configurarAcciones();
     }
 
@@ -114,8 +111,12 @@ public class TabRecreosController implements Initializable {
     private void configurarListaPeriodos() {
         periodosRecreoTemporal = FXCollections.observableArrayList();
         listViewPeriodosRecreo.setItems(periodosRecreoTemporal);
-        listViewPeriodosRecreo.setPlaceholder(
-                new javafx.scene.control.Label("Sin periodos asociados — use '+ Añadir'"));
+        
+        // Placeholder bonito para cuando no hay periodos
+        Label placeholder = new Label("Sin periodos asociados. Use '+ Añadir'.");
+        placeholder.setStyle("-fx-text-fill: #64748B; -fx-font-style: italic; -fx-font-size: 12px;");
+        listViewPeriodosRecreo.setPlaceholder(placeholder);
+
         listViewPeriodosRecreo.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(PeriodoAcademico item, boolean empty) {
@@ -124,12 +125,12 @@ public class TabRecreosController implements Initializable {
                     setText(null);
                     setGraphic(null);
                 } else {
-                    javafx.scene.control.Label lbl = new javafx.scene.control.Label(item.getNombre());
-                    lbl.setStyle("-fx-font-size: 12px; -fx-text-fill: #333;");
+                    Label lbl = new Label(item.getNombre());
+                    lbl.setStyle("-fx-font-size: 13px; -fx-text-fill: #F8FAFC;");
 
                     Button btnQuitar = new Button("✕");
                     btnQuitar.getStyleClass().add("boton-tabla-eliminar");
-                    btnQuitar.setStyle("-fx-font-size: 10px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
+                    btnQuitar.setStyle("-fx-font-size: 10px; -fx-padding: 2px 8px; -fx-cursor: hand;");
                     btnQuitar.setOnAction(e -> periodosRecreoTemporal.remove(item));
 
                     HBox hbox = new HBox(10);
@@ -143,7 +144,7 @@ public class TabRecreosController implements Initializable {
                     hbox.prefWidthProperty().bind(listViewPeriodosRecreo.widthProperty().subtract(35));
 
                     setGraphic(hbox);
-                    setStyle("-fx-padding: 4 8 4 8;");
+                    setStyle("-fx-padding: 4px 8px;");
                 }
             }
         });
@@ -151,7 +152,6 @@ public class TabRecreosController implements Initializable {
 
     private void recargarComboPeriodosRecreo() {
         cmbPeriodoRecreo.getItems().clear();
-        cmbPeriodoRecreo.getItems().add("Seleccione un periodo");
         for (PeriodoAcademico p : gestionPeriodos.listarTodos()) {
             cmbPeriodoRecreo.getItems().add(p.getNombre());
         }
@@ -160,9 +160,14 @@ public class TabRecreosController implements Initializable {
 
     private void cargarRecreos() {
         Platform.runLater(() -> {
-            listaRecreos = FXCollections.observableArrayList(gestionRecreos.listarTodos());
-            tablaRecreos.setItems(listaRecreos);
-            tablaRecreos.refresh();
+            try {
+                listaRecreos = FXCollections.observableArrayList(gestionRecreos.listarTodos());
+                tablaRecreos.setItems(listaRecreos);
+                tablaRecreos.refresh();
+            } catch (Exception e) {
+                logger.error("Error al cargar recreos: " + e.getMessage());
+                Dialogos.info("Error al cargar recreos.");
+            }
         });
     }
 
@@ -183,13 +188,13 @@ public class TabRecreosController implements Initializable {
         try {
             gestionRecreos.eliminarRecreo(r);
             SistemaEventBus.notificar(TipoEvento.RECREOS);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al eliminar recreo: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
 
-    @FXML
-    private void handleNuevoRecreo() {
+    @FXML private void handleNuevoRecreo() {
         recreoEditando = null;
         periodosRecreoTemporal.clear();
         recargarComboPeriodosRecreo();
@@ -201,24 +206,20 @@ public class TabRecreosController implements Initializable {
         panelFormularioRecreo.setManaged(true);
     }
 
-    @FXML
-    private void handleGuardarRecreo() {
+    @FXML private void handleGuardarRecreo() {
         String dia = cmbDiaRecreo.getValue();
         String inicio = txtInicioRecreo.getText().trim();
         String fin = txtFinRecreo.getText().trim();
         String desc = txtDescripcionRecreo.getText().trim();
 
         if (dia == null || inicio.isBlank() || fin.isBlank()) {
-            Dialogos.info("Todos los campos son obligatorios.");
-            return;
+            Dialogos.info("Todos los campos son obligatorios."); return;
         }
         if (periodosRecreoTemporal.isEmpty()) {
-            Dialogos.info("Debe asociar al menos un periodo al recreo.");
-            return;
+            Dialogos.info("Debe asociar al menos un periodo al recreo."); return;
         }
         if (!inicio.matches("([01]\\d|2[0-3]):[0-5]\\d") || !fin.matches("([01]\\d|2[0-3]):[0-5]\\d")) {
-            Dialogos.info("Formato de hora inválido. Use HH:mm (ej. 08:00, 14:30).");
-            return;
+            Dialogos.info("Formato de hora inválido. Use HH:mm (ej. 08:00, 14:30)."); return;
         }
         FranjaHoraria franja = new FranjaHoraria(dia, inicio, fin);
         List<PeriodoAcademico> periodos = new ArrayList<>(periodosRecreoTemporal);
@@ -231,19 +232,18 @@ public class TabRecreosController implements Initializable {
             SistemaEventBus.notificar(TipoEvento.RECREOS);
             panelFormularioRecreo.setVisible(false);
             panelFormularioRecreo.setManaged(false);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al guardar recreo: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
 
-    @FXML
-    private void handleCancelarRecreo() {
+    @FXML private void handleCancelarRecreo() {
         panelFormularioRecreo.setVisible(false);
         panelFormularioRecreo.setManaged(false);
     }
 
-    @FXML
-    private void handleAgregarPeriodoRecreo() {
+    @FXML private void handleAgregarPeriodoRecreo() {
         String nombrePeriodo = cmbPeriodoRecreo.getValue();
         if (nombrePeriodo == null || nombrePeriodo.startsWith("Seleccione")) return;
 

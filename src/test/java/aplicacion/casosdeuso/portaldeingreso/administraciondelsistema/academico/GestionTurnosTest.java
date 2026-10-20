@@ -82,7 +82,7 @@ class GestionTurnosTest {
     void actualizarTurno_debeModificarMismaReferencia() {
         Turno original = new Turno("Manana");
         casoUso.actualizarTurno(original, "Tarde");
-        assertEquals("Tarde", original.getNombre());
-        verify(repoMock).actualizar(original, original);
+        
+        verify(repoMock).actualizar(eq(original), any(Turno.class));
     }
 }

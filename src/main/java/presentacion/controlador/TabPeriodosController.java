@@ -1,11 +1,10 @@
 package presentacion.controlador;
-
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionPeriodos;
 import dominio.modelo.PeriodoAcademico;
+import dominio.puerto.externo.LoggerPort;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
-
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
@@ -14,30 +13,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 /**
- * Controlador de la pestaña "Periodos".
  *
  * @author inici4rsesi0n
  */
 @Component
 @Scope("prototype")
 public class TabPeriodosController implements Initializable {
-
     private final GestionPeriodos gestionPeriodos;
+    private final LoggerPort logger;
 
     @FXML private TableView<PeriodoAcademico> tablaPeriodos;
     @FXML private TableColumn<PeriodoAcademico, Integer> colNumPeriodo;
@@ -52,8 +42,9 @@ public class TabPeriodosController implements Initializable {
     private ObservableList<PeriodoAcademico> listaPeriodos;
     private PeriodoAcademico periodoEditando;
 
-    public TabPeriodosController(GestionPeriodos gestionPeriodos) {
+    public TabPeriodosController(GestionPeriodos gestionPeriodos, LoggerPort logger) {
         this.gestionPeriodos = gestionPeriodos;
+        this.logger = logger;
     }
 
     @Override
@@ -103,9 +94,14 @@ public class TabPeriodosController implements Initializable {
 
     private void cargarPeriodos() {
         Platform.runLater(() -> {
-            listaPeriodos = FXCollections.observableArrayList(gestionPeriodos.listarTodos());
-            tablaPeriodos.setItems(listaPeriodos);
-            tablaPeriodos.refresh();
+            try {
+                listaPeriodos = FXCollections.observableArrayList(gestionPeriodos.listarTodos());
+                tablaPeriodos.setItems(listaPeriodos);
+                tablaPeriodos.refresh();
+            } catch (Exception e) {
+                logger.error("Error al cargar periodos: " + e.getMessage());
+                Dialogos.info("Error al cargar periodos.");
+            }
         });
     }
 
@@ -124,31 +120,28 @@ public class TabPeriodosController implements Initializable {
         try {
             gestionPeriodos.eliminarPeriodo(p);
             SistemaEventBus.notificar(TipoEvento.PERIODOS);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al eliminar periodo: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
 
-    @FXML
-    private void handleNuevoPeriodo() {
+    @FXML private void handleNuevoPeriodo() {
         periodoEditando = null;
         txtNombrePeriodo.clear();
-        dateFechaInicio.setValue(null);
-        dateFechaFin.setValue(null);
+        dateFechaInicio.setValue(null); dateFechaFin.setValue(null);
         cmbEstadoPeriodo.getSelectionModel().selectFirst();
         panelFormularioPeriodo.setVisible(true);
         panelFormularioPeriodo.setManaged(true);
     }
 
-    @FXML
-    private void handleGuardarPeriodo() {
+    @FXML private void handleGuardarPeriodo() {
         String nombre = txtNombrePeriodo.getText().trim();
         LocalDate inicio = dateFechaInicio.getValue();
         LocalDate fin = dateFechaFin.getValue();
         String estado = cmbEstadoPeriodo.getValue();
         if (nombre.isBlank() || inicio == null || fin == null || estado == null) {
-            Dialogos.info("Todos los campos son obligatorios.");
-            return;
+            Dialogos.info("Todos los campos son obligatorios."); return;
         }
         try {
             if (periodoEditando == null) gestionPeriodos.crearPeriodo(nombre, inicio.toString(), fin.toString(), estado);
@@ -156,13 +149,13 @@ public class TabPeriodosController implements Initializable {
             SistemaEventBus.notificar(TipoEvento.PERIODOS);
             panelFormularioPeriodo.setVisible(false);
             panelFormularioPeriodo.setManaged(false);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al guardar periodo: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
 
-    @FXML
-    private void handleCancelarPeriodo() {
+    @FXML private void handleCancelarPeriodo() {
         panelFormularioPeriodo.setVisible(false);
         panelFormularioPeriodo.setManaged(false);
     }

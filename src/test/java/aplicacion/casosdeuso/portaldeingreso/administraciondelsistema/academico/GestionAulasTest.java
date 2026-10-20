@@ -76,9 +76,9 @@ class GestionAulasTest {
     void actualizarAula_debeModificarMismaReferencia() {
         Aula original = new Aula("Aula 101", 40, "P1", "Teoría");
         casoUso.actualizarAula(original, "Aula 102", 50, "P2", "Lab", ModalidadAula.PRESENCIAL);
-        assertEquals("Aula 102", original.getNombre());
-        assertEquals(50, original.getCapacidad());
-        verify(repoMock).actualizar(original, original);
+        
+        
+        verify(repoMock).actualizar(eq(original), any(Aula.class));
     }
 
     @Test

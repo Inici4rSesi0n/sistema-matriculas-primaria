@@ -1,9 +1,8 @@
 package boot;
 
 import aplicacion.casosdeuso.portaldeingreso.sistema.BootstrapUseCase;
+import dominio.puerto.repositorio.RepositorioAdministradores;
 import infraestructura.configuracion.SpringFxmlLoader;
-import infraestructura.persistencia.ManejadorPersistencia;
-import infraestructura.persistencia.Recargable;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,8 +11,6 @@ import javafx.stage.Stage;
 import presentacion.controlador.BootstrapController;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /**
  *
  * @author inici4rsesi0n
@@ -21,22 +18,18 @@ import java.util.List;
 @Component
 public class BootstrapRunner {
 
-    private final List<Recargable> repositoriosRecargables;
     private final BootstrapUseCase bootstrapUseCase;
     private final SpringFxmlLoader fxmlLoader;
+    private final RepositorioAdministradores repoAdmin;
 
-    public BootstrapRunner(List<Recargable> repositoriosRecargables,
-                           BootstrapUseCase bootstrapUseCase,
-                           SpringFxmlLoader fxmlLoader) {
-        this.repositoriosRecargables = repositoriosRecargables;
+    public BootstrapRunner(BootstrapUseCase bootstrapUseCase, SpringFxmlLoader fxmlLoader, RepositorioAdministradores repoAdmin) {
         this.bootstrapUseCase = bootstrapUseCase;
         this.fxmlLoader = fxmlLoader;
+        this.repoAdmin = repoAdmin;
     }
 
     public void inicializar(Stage stage) {
-        Object repoAdmin = ManejadorPersistencia.cargar("administradores.bin");
-
-        if (repoAdmin == null) {
+        if (repoAdmin.listarTodos().isEmpty()) {
             try {
                 FXMLLoader loader = fxmlLoader.crearLoader("/fxml/ConfiguracionInicial.fxml");
                 Parent root = loader.load();
@@ -44,26 +37,24 @@ public class BootstrapRunner {
 
                 Stage configStage = new Stage();
                 configStage.setTitle("Configuración Inicial del Sistema");
-                configStage.setScene(new Scene(root));
+                Scene scene = new Scene(root);
+                scene.getStylesheets().add(getClass().getResource("/css/app.css").toExternalForm());
+                configStage.setScene(scene);
                 configStage.initModality(Modality.APPLICATION_MODAL);
                 configStage.initOwner(stage);
                 configStage.showAndWait();
 
-                bootstrapUseCase.inicializarSistema(controller);
-
-                repoAdmin = ManejadorPersistencia.cargar("administradores.bin");
-                if (repoAdmin == null) {
-                    throw new RuntimeException("No se pudo inicializar el sistema.");
+                if (controller.isConfirmado()) {
+                    bootstrapUseCase.inicializarSistema(controller);
+                } else {
+                    javafx.application.Platform.exit(); // Si cancela, se cierra la app
                 }
             } catch (Exception e) {
                 throw new RuntimeException("No se pudo cargar la ventana de configuración inicial.", e);
             }
         } else {
-            bootstrapUseCase.inicializarSistema(null);
-        }
-
-        for (Recargable repositorio : repositoriosRecargables) {
-            repositorio.recargar();
+            // Si ya hay admin, solo aseguramos que los catálogos existan
+            bootstrapUseCase.inicializarCatalogos();
         }
     }
 }

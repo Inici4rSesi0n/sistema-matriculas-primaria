@@ -1,0 +1,17 @@
+.root {
+    /* Fondos Cósmicos */
+    -color-bg-deep: #07050C;
+    -color-bg-app: #0F172A;
+    -color-surface: #161A29;
+    
+    /* Acentos (Cian y Morado) */
+    -color-primary: #00D2FF;   /* Cian Neón */
+    -color-accent: #8B5CF6;    /* Morado/Violeta */
+    -color-accent-light: #A78BFA;
+    
+    -color-text-main: #F8FAFC;
+    -color-text-muted: #94A3B8;
+    
+    -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+    -fx-font-size: 14px;
+}

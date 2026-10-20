@@ -3,23 +3,21 @@ package presentacion.controlador;
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionAulas;
 import dominio.modelo.Aula;
 import dominio.modelo.ModalidadAula;
+import dominio.puerto.externo.LoggerPort;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
+import presentacion.utilidades.ValidadorUI;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -29,7 +27,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * Controlador de la pestaña "Aulas".
  *
  * @author inici4rsesi0n
  */
@@ -38,6 +35,7 @@ import org.springframework.stereotype.Component;
 public class TabAulasController implements Initializable {
 
     private final GestionAulas gestionAulas;
+    private final LoggerPort logger;
 
     @FXML private TableView<Aula> tablaAulas;
     @FXML private TableColumn<Aula, Integer> colNumAula;
@@ -45,37 +43,42 @@ public class TabAulasController implements Initializable {
     @FXML private TableColumn<Aula, Integer> colCapacidadAula;
     @FXML private TableColumn<Aula, ModalidadAula> colModalidadAula;
     @FXML private TableColumn<Aula, Void> colAccionesAula;
+    
     @FXML private VBox panelFormularioAula;
     @FXML private TextField txtNombreAula, txtCapacidadAula, txtUbicacionAula, txtTipoAula;
+    @FXML private Label lblFeedbackNombre, lblFeedbackCapacidad, lblFeedbackUbicacion, lblFeedbackTipo;
     @FXML private ComboBox<ModalidadAula> cmbModalidadAula;
     @FXML private Button btnNuevaAula, btnGuardarAula, btnCancelarAula;
 
     private ObservableList<Aula> listaAulas;
     private Aula aulaEditando;
 
-    public TabAulasController(GestionAulas gestionAulas) {
+    public TabAulasController(GestionAulas gestionAulas, LoggerPort logger) {
         this.gestionAulas = gestionAulas;
+        this.logger = logger;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configurarComboModalidad();
         configurarTabla();
+        configurarValidaciones();
         cargarAulas();
         SistemaEventBus.suscribir(TipoEvento.AULAS, this::cargarAulas);
+    }
+
+    private void configurarValidaciones() {
+        ValidadorUI.aplicar(txtNombreAula, val -> !val.trim().isEmpty(), lblFeedbackNombre);
+        ValidadorUI.aplicar(txtCapacidadAula, val -> val.matches("\\d+") && Integer.parseInt(val) > 0, lblFeedbackCapacidad);
+        ValidadorUI.aplicar(txtUbicacionAula, val -> !val.trim().isEmpty(), lblFeedbackUbicacion);
+        ValidadorUI.aplicar(txtTipoAula, val -> !val.trim().isEmpty(), lblFeedbackTipo);
     }
 
     private void configurarComboModalidad() {
         cmbModalidadAula.getItems().setAll(ModalidadAula.values());
         cmbModalidadAula.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(ModalidadAula modalidad) {
-                return modalidad != null ? modalidad.name() : "";
-            }
-            @Override
-            public ModalidadAula fromString(String string) {
-                return ModalidadAula.fromString(string);
-            }
+            @Override public String toString(ModalidadAula modalidad) { return modalidad != null ? modalidad.name() : ""; }
+            @Override public ModalidadAula fromString(String string) { return ModalidadAula.fromString(string); }
         });
         cmbModalidadAula.getSelectionModel().selectFirst();
     }
@@ -115,9 +118,14 @@ public class TabAulasController implements Initializable {
 
     private void cargarAulas() {
         Platform.runLater(() -> {
-            listaAulas = FXCollections.observableArrayList(gestionAulas.listarTodos());
-            tablaAulas.setItems(listaAulas);
-            tablaAulas.refresh();
+            try {
+                listaAulas = FXCollections.observableArrayList(gestionAulas.listarTodos());
+                tablaAulas.setItems(listaAulas);
+                tablaAulas.refresh();
+            } catch (Exception e) {
+                logger.error("Error al cargar aulas: " + e.getMessage());
+                Dialogos.info("Error al cargar aulas.");
+            }
         });
     }
 
@@ -130,6 +138,7 @@ public class TabAulasController implements Initializable {
         cmbModalidadAula.setValue(a.getModalidad());
         panelFormularioAula.setVisible(true);
         panelFormularioAula.setManaged(true);
+        txtNombreAula.requestFocus();
     }
 
     private void eliminar(Aula a) {
@@ -137,25 +146,22 @@ public class TabAulasController implements Initializable {
         try {
             gestionAulas.eliminarAula(a);
             SistemaEventBus.notificar(TipoEvento.AULAS);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al eliminar aula: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
 
-    @FXML
-    private void handleNuevaAula() {
+    @FXML private void handleNuevaAula() {
         aulaEditando = null;
-        txtNombreAula.clear();
-        txtCapacidadAula.clear();
-        txtUbicacionAula.clear();
-        txtTipoAula.clear();
+        txtNombreAula.clear(); txtCapacidadAula.clear(); txtUbicacionAula.clear(); txtTipoAula.clear();
         cmbModalidadAula.getSelectionModel().selectFirst();
         panelFormularioAula.setVisible(true);
         panelFormularioAula.setManaged(true);
+        txtNombreAula.requestFocus();
     }
 
-    @FXML
-    private void handleGuardarAula() {
+    @FXML private void handleGuardarAula() {
         String nombre = txtNombreAula.getText().trim();
         String capacidadStr = txtCapacidadAula.getText().trim();
         String ubicacion = txtUbicacionAula.getText().trim();
@@ -163,15 +169,13 @@ public class TabAulasController implements Initializable {
         ModalidadAula modalidad = cmbModalidadAula.getValue();
 
         if (nombre.isBlank() || capacidadStr.isBlank() || ubicacion.isBlank() || tipo.isBlank()) {
-            Dialogos.info("Todos los campos son obligatorios.");
-            return;
+            Dialogos.info("Todos los campos son obligatorios."); return;
         }
         int capacidad;
         try {
             capacidad = Integer.parseInt(capacidadStr);
         } catch (NumberFormatException e) {
-            Dialogos.info("La capacidad debe ser un número entero válido");
-            return;
+            Dialogos.info("La capacidad debe ser un número entero válido"); return;
         }
         try {
             if (aulaEditando == null) gestionAulas.crearAula(nombre, capacidad, ubicacion, tipo, modalidad);
@@ -179,13 +183,13 @@ public class TabAulasController implements Initializable {
             SistemaEventBus.notificar(TipoEvento.AULAS);
             panelFormularioAula.setVisible(false);
             panelFormularioAula.setManaged(false);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al guardar aula: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
 
-    @FXML
-    private void handleCancelarAula() {
+    @FXML private void handleCancelarAula() {
         panelFormularioAula.setVisible(false);
         panelFormularioAula.setManaged(false);
     }

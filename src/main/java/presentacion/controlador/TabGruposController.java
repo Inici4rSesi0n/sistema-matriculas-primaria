@@ -1,13 +1,12 @@
 package presentacion.controlador;
-
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrados;
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrupos;
 import dominio.modelo.Grado;
 import dominio.modelo.Grupo;
+import dominio.puerto.externo.LoggerPort;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -15,31 +14,22 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 /**
- * Controlador de la pestaña "Grupos".
- * También gestiona el combo de grados, exclusivo de esta pestaña.
  *
  * @author inici4rsesi0n
  */
 @Component
 @Scope("prototype")
 public class TabGruposController implements Initializable {
-
     private final GestionGrupos gestionGrupos;
     private final GestionGrados gestionGrados;
+    private final LoggerPort logger;
 
     @FXML private TableView<Grupo> tablaGrupos;
     @FXML private TableColumn<Grupo, Integer> colNumGrupo;
@@ -53,9 +43,10 @@ public class TabGruposController implements Initializable {
     private ObservableList<Grupo> listaGrupos;
     private Grupo grupoEditando;
 
-    public TabGruposController(GestionGrupos gestionGrupos, GestionGrados gestionGrados) {
+    public TabGruposController(GestionGrupos gestionGrupos, GestionGrados gestionGrados, LoggerPort logger) {
         this.gestionGrupos = gestionGrupos;
         this.gestionGrados = gestionGrados;
+        this.logger = logger;
     }
 
     @Override
@@ -63,7 +54,6 @@ public class TabGruposController implements Initializable {
         configurarTabla();
         recargarComboGrados();
         cargarGrupos();
-
         SistemaEventBus.suscribir(TipoEvento.GRUPOS, this::cargarGrupos);
         SistemaEventBus.suscribir(TipoEvento.GRADOS, this::recargarComboGrados);
     }
@@ -101,15 +91,19 @@ public class TabGruposController implements Initializable {
 
     private void cargarGrupos() {
         Platform.runLater(() -> {
-            listaGrupos = FXCollections.observableArrayList(gestionGrupos.listarTodos());
-            tablaGrupos.setItems(listaGrupos);
-            tablaGrupos.refresh();
+            try {
+                listaGrupos = FXCollections.observableArrayList(gestionGrupos.listarTodos());
+                tablaGrupos.setItems(listaGrupos);
+                tablaGrupos.refresh();
+            } catch (Exception e) {
+                logger.error("Error al cargar grupos: " + e.getMessage());
+                Dialogos.info("Error al cargar grupos.");
+            }
         });
     }
 
     private void recargarComboGrados() {
         cmbGradoGrupo.getItems().clear();
-        cmbGradoGrupo.getItems().add("Seleccione un grado");
         for (Grado g : gestionGrados.listarTodos()) {
             cmbGradoGrupo.getItems().add(formatearGrado(g));
         }
@@ -130,13 +124,13 @@ public class TabGruposController implements Initializable {
         try {
             gestionGrupos.eliminarGrupo(g);
             SistemaEventBus.notificar(TipoEvento.GRUPOS);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al eliminar grupo: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
 
-    @FXML
-    private void handleNuevoGrupo() {
+    @FXML private void handleNuevoGrupo() {
         grupoEditando = null;
         recargarComboGrados();
         txtNombreGrupo.clear();
@@ -144,18 +138,15 @@ public class TabGruposController implements Initializable {
         panelFormularioGrupo.setManaged(true);
     }
 
-    @FXML
-    private void handleGuardarGrupo() {
+    @FXML private void handleGuardarGrupo() {
         String nombre = txtNombreGrupo.getText().trim();
         String gradoNombre = cmbGradoGrupo.getValue();
         if (nombre.isBlank() || gradoNombre == null || gradoNombre.startsWith("Seleccione")) {
-            Dialogos.info("Todos los campos son obligatorios.");
-            return;
+            Dialogos.info("Todos los campos son obligatorios."); return;
         }
         Grado grado = parsearGrado(gradoNombre);
         if (grado == null) {
-            Dialogos.info("El grado seleccionado no existe.");
-            return;
+            Dialogos.info("El grado seleccionado no existe."); return;
         }
         try {
             if (grupoEditando == null) gestionGrupos.crearGrupo(nombre, grado);
@@ -163,25 +154,23 @@ public class TabGruposController implements Initializable {
             SistemaEventBus.notificar(TipoEvento.GRUPOS);
             panelFormularioGrupo.setVisible(false);
             panelFormularioGrupo.setManaged(false);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al guardar grupo: " + e.getMessage());
             Dialogos.info(e.getMessage());
         }
     }
 
-    @FXML
-    private void handleCancelarGrupo() {
+    @FXML private void handleCancelarGrupo() {
         panelFormularioGrupo.setVisible(false);
         panelFormularioGrupo.setManaged(false);
     }
 
-    /** Formato: "Nombre (Nivel)" para eliminar ambigüedad. */
     private String formatearGrado(Grado g) {
         if (g == null) return "";
         String nivel = (g.getNivel() != null) ? g.getNivel() : "Sin nivel";
         return g.getNombre() + " (" + nivel + ")";
     }
 
-    /** Parsea "1er Grado (Primaria)" y busca por nombre + nivel. */
     private Grado parsearGrado(String texto) {
         if (texto == null) return null;
         int idx = texto.lastIndexOf(" (");

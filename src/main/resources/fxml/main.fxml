@@ -1,95 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.SVGPath?>
 
-<?import java.net.URL?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="presentacion.controlador.MainController" maxWidth="1.0E8" maxHeight="1.0E8" styleClass="app-background">
+    
+    <center>
+        <StackPane alignment="CENTER">
+            <VBox maxWidth="460.0" maxHeight="-Infinity" styleClass="glass-card" spacing="20.0" alignment="CENTER">
+                <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+                
+                <Label text="WiredAcademy" style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: #F8FAFC; -fx-effect: dropshadow(gaussian, rgba(0,210,255,0.3), 20, 0.2, 0, 0);"/>
+                <Label text="Ecosistema Educativo Digital" style="-fx-font-size: 14px; -fx-text-fill: #A78BFA; -fx-letter-spacing: 2px; -fx-padding: -5 0 15 0;"/>
+                
+                <Button fx:id="btnPortalIngreso" styleClass="boton-primario" maxWidth="1.0E8" prefHeight="50.0" onAction="#handlePortalIngreso" alignment="CENTER">
+                    <graphic>
+                        <HBox alignment="CENTER" spacing="10.0">
+                            <SVGPath content="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" styleClass="svg-icon-white"/>
+                            <Label text="Portal de Ingreso" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                
+                <Button fx:id="btnPortalTramites" styleClass="boton-secundario-destacado" maxWidth="1.0E8" prefHeight="50.0" onAction="#handlePortalTramites" alignment="CENTER">
+                    <graphic>
+                        <HBox alignment="CENTER" spacing="10.0">
+                            <SVGPath content="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" styleClass="svg-icon-gradient"/>
+                            <Label text="Portal de Trámites" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #C7D2FE;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                
+                <Button fx:id="btnPortalMatricula" styleClass="boton-secundario-destacado" maxWidth="1.0E8" prefHeight="50.0" onAction="#handlePortalMatricula" alignment="CENTER">
+                    <graphic>
+                        <HBox alignment="CENTER" spacing="10.0">
+                            <SVGPath content="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72l5 2.73 5-2.73v3.72z" styleClass="svg-icon-gradient"/>
+                            <Label text="Portal de Matrícula" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #C7D2FE;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
 
-<BorderPane fx:id="mainRoot" 
-            xmlns="http://javafx.com/javafx/23.0.1" 
-            xmlns:fx="http://javafx.com/fxml/1" 
-            fx:controller="presentacion.controlador.MainController"
-            maxWidth="1.0E8" maxHeight="1.0E8">
-   <stylesheets>
-      <URL value="@/css/main.css" />
-   </stylesheets>
-   
-   <top>
-      <VBox>
-         <VBox styleClass="header-container">
-            <Label fx:id="lblWiredAcademy" 
-                   onMouseEntered="#handleMouseEntered" 
-                   onMouseExited="#handleMouseExited" 
-                   styleClass="titulo-principal" 
-                   text="WiredAcademy" />
-                   
-            <Label fx:id="lblConectado" 
-                   onMouseEntered="#handleMouseEntered" 
-                   onMouseExited="#handleMouseExited" 
-                   styleClass="subtitulo" 
-                   text="¡Conectado a la comunidad educativa!" />
-            
-            <Label fx:id="lblUsuarioConectado" styleClass="usuario-conectado" text="" />
-         </VBox>
-
-         <HBox styleClass="menu-bar-container">
-            <MenuButton fx:id="menuIdioma" 
-                        contentDisplay="BOTTOM" 
-                        mnemonicParsing="false" 
-                        styleClass="menu-idioma" 
-                        text="🌐 IDIOMA" />
-         </HBox>
-      </VBox>
-   </top>
-   
-   <center>
-      <VBox styleClass="center-container" 
-            maxWidth="1.0E8" maxHeight="1.0E8" spacing="20.0">
-         <VBox alignment="CENTER" spacing="20.0">
-            <Button fx:id="btnPortalIngreso" 
-                    mnemonicParsing="false" 
-                    onAction="#handlePortalIngreso" 
-                    styleClass="boton-primario" 
-                    prefWidth="320.0" prefHeight="65.0"
-                    text="Portal de Ingreso" />
-                    
-            <Button fx:id="btnPortalTramites" 
-                    mnemonicParsing="false" 
-                    onAction="#handlePortalTramites" 
-                    styleClass="boton-secundario" 
-                    prefWidth="320.0" prefHeight="65.0"
-                    text="Portal de Trámites" />
-                    
-            <Button fx:id="btnPortalMatricula" 
-                    mnemonicParsing="false" 
-                    onAction="#handlePortalMatricula" 
-                    styleClass="boton-terciario" 
-                    prefWidth="320.0" prefHeight="65.0"
-                    text="Portal de Matrícula" />
-            
-            <Button fx:id="btnCerrarSesion" 
-                    mnemonicParsing="false" 
-                    onAction="#handleCerrarSesion" 
-                    styleClass="boton-cerrar-sesion" 
-                    prefWidth="320.0" prefHeight="65.0"
-                    text="Cerrar Sesión" 
-                    visible="false" />
-         </VBox>
-      </VBox>
-   </center>
-   
-   <bottom>
-      <HBox styleClass="footer-container">
-         <Label styleClass="texto-pie" 
-                text="¿Problemas con el acceso? Contacta a inici4rsesi0n@gmail.com" 
-                textFill="WHITE" />
-                   
-         <Label styleClass="texto-pie" 
-                text=" | WiredAcademy 1.0.0 " 
-                textFill="WHITE" />
-      </HBox>
-   </bottom>
+                <HBox fx:id="panelSesion" alignment="CENTER" spacing="15.0" style="-fx-padding: 15 0 0 0; -fx-border-color: rgba(255,255,255,0.05) transparent transparent transparent; -fx-border-width: 1px 0 0 0;" visible="false" managed="false">
+                    <Label fx:id="lblUsuarioSesion" text="Usuario" style="-fx-font-size: 13px; -fx-text-fill: #94A3B8;"/>
+                    <Button fx:id="btnCerrarSesion" text="Cerrar Sesión" styleClass="boton-morado-suave" onAction="#handleCerrarSesion" style="-fx-padding: 5px 12px; -fx-font-size: 12px;"/>
+                </HBox>
+            </VBox>
+        </StackPane>
+    </center>
 </BorderPane>

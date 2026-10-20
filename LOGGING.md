@@ -372,3 +372,16 @@ El sistema aplica **dos estilos** para la creación de entidades, según el cont
 ---
 
 *WiredAcademy — Ecosistema Educativo Digital*
+
+### ADR-005 — Migración de persistencia de .bin a PostgreSQL (JPA)
+
+**Decisión:** Reemplazar el sistema de archivos `.bin` cifrados con AES por una base de datos relacional PostgreSQL, usando JPA/Hibernate y MapStruct.
+
+**Detalles de implementación:**
+- **Infraestructura:** PostgreSQL 16 corriendo en Podman (puerto 5433), volumen persistente `wiredacademy-pgdata`.
+- **Migraciones:** Flyway (`V1__init_schema.sql`) es la única fuente de verdad del esquema. Hibernate está en modo `validate`.
+- **Arquitectura:** Se mantiene el Hexágono puro (Opción A2). Las entidades `@Entity` y mappers viven en `infraestructura.persistencia`.
+- **Mapeo:** Uso de MapStruct para conversiones Dominio ↔ Entidad. Las relaciones M:N y M:1 se resuelven en los adaptadores para evitar `TransientObjectException`.
+- **Seguridad:** Se elimina el `keystore.jceks` y el `ManejadorPersistencia`. Las credenciales se manejan mediante variables de entorno (`.env`) con autenticación `scram-sha-256`.
+
+**Razón:** SQLite (o archivos locales) no soporta concurrencia real. PostgreSQL garantiza ACID, integridad referencial y prepara el terreno para RLS (Row-Level Security) en la LAN.

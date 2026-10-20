@@ -18,14 +18,12 @@ public class BootstrapController implements ProveedorDatosIniciales {
     @FXML private TextField campoApellido;
     @FXML private TextField campoDni;
     @FXML private PasswordField campoContrasena;
-    @FXML private PasswordField campoContrasenaMaestra;
     private boolean confirmado = false;
     private String codigo;
     private String nombre;
     private String apellido;
     private String dni;
     private char[] contrasena;
-    private char[] contrasenaMaestra;
 
     @FXML
     private void initialize() {}
@@ -37,14 +35,12 @@ public class BootstrapController implements ProveedorDatosIniciales {
         String apellidoTexto = campoApellido.getText();
         String dniTexto = campoDni.getText();
         String contrasenaTexto = campoContrasena.getText();
-        String contrasenaMaestraTexto = campoContrasenaMaestra.getText();
 
         if (codigoTexto == null || codigoTexto.isBlank()
                 || nombreTexto == null || nombreTexto.isBlank()
                 || apellidoTexto == null || apellidoTexto.isBlank()
                 || dniTexto == null || dniTexto.isBlank()
-                || contrasenaTexto == null || contrasenaTexto.isBlank()
-                || contrasenaMaestraTexto == null || contrasenaMaestraTexto.isBlank()) {
+                || contrasenaTexto == null || contrasenaTexto.isBlank()) {
             return;
         }
         this.codigo = codigoTexto.trim();
@@ -52,7 +48,6 @@ public class BootstrapController implements ProveedorDatosIniciales {
         this.apellido = apellidoTexto.trim();
         this.dni = dniTexto.trim();
         this.contrasena = contrasenaTexto.toCharArray();
-        this.contrasenaMaestra = contrasenaMaestraTexto.toCharArray();
         this.confirmado = true;
 
         campoCodigo.getScene().getWindow().hide();
@@ -64,24 +59,10 @@ public class BootstrapController implements ProveedorDatosIniciales {
         campoCodigo.getScene().getWindow().hide();
     }
 
-    @Override
-    public String getCodigo() { return codigo; }
-
-    @Override
-    public String getNombre() { return nombre; }
-
-    @Override
-    public String getApellido() { return apellido; }
-
-    @Override
-    public String getDni() { return dni; }
-
-    @Override
-    public char[] getContrasena() { return contrasena; }
-
-    @Override
-    public char[] getContrasenaMaestra() { return contrasenaMaestra; }
-
-    @Override
-    public boolean isConfirmado() { return confirmado; }
+    @Override public String getCodigo() { return codigo; }
+    @Override public String getNombre() { return nombre; }
+    @Override public String getApellido() { return apellido; }
+    @Override public String getDni() { return dni; }
+    @Override public char[] getContrasena() { return contrasena; }
+    @Override public boolean isConfirmado() { return confirmado; }
 }

@@ -1,16 +1,20 @@
 package presentacion.controlador;
+import presentacion.dto.AsignacionItem;
 
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionAsignaturas;
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.usuarios.GestionDocentes;
-import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrados;
-import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrupos;
-import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.usuarios.GestionUsuarios;
 import dominio.modelo.Asignatura;
-import dominio.modelo.CoordinadorAcademico;
 import dominio.modelo.Docente;
-import dominio.modelo.Grado;
 import dominio.modelo.Grupo;
-import dominio.modelo.Usuario;
+import dominio.puerto.externo.LoggerPort;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
@@ -19,156 +23,54 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
-
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-/**
- *
- * @author inici4rsesi0n
- */
 @Component
 @Scope("prototype")
 public class TabAsignacionesController implements Initializable {
-
     private final GestionDocentes gestionDocentes;
     private final GestionAsignaturas gestionAsignaturas;
-    private final GestionGrupos gestionGrupos;
-    private final GestionUsuarios gestionUsuarios;
-    private final GestionGrados gestionGrados;
+    private final LoggerPort logger;
 
-    @FXML private TabPane tabPaneAsignaciones;
-    @FXML private Tab tabAsignacionDocente, tabAsignacionCoordinacion;
+    @FXML private BorderPane root;
+    public BorderPane getRoot() { return root; }
 
     @FXML private TableView<AsignacionItem> tablaAsignaturasDocente;
     @FXML private TableColumn<AsignacionItem, String> colCodigoDocenteAsignatura, colNombreDocenteAsignatura, colAsignaturaDocente;
     @FXML private TableColumn<AsignacionItem, Void> colAccionesAsignaturaDocente;
     @FXML private ComboBox<String> cmbDocenteAsignatura, cmbAsignaturaDocente;
-    @FXML private Button btnAgregarAsignaturaDocente;
-
-    @FXML private TableView<TutorItem> tablaTutores;
-    @FXML private TableColumn<TutorItem, String> colGrupoTutor, colDocenteTutor;
-    @FXML private TableColumn<TutorItem, Void> colAccionesTutor;
-    @FXML private ComboBox<String> cmbDocenteTutor, cmbGrupoTutor;
-    @FXML private Button btnAsignarTutor;
-
-    @FXML private TableView<CoordinacionItem> tablaCoordinaciones;
-    @FXML private TableColumn<CoordinacionItem, String> colCoordinadorNombre, colGradoCoordinado;
-    @FXML private TableColumn<CoordinacionItem, Void> colAccionesCoordinacion;
-    @FXML private ComboBox<String> cmbCoordinador, cmbGradoCoordinacion;
-    @FXML private Button btnAsignarCoordinacion;
 
     private ObservableList<AsignacionItem> listaAsignacionesDocente;
-    private ObservableList<TutorItem> listaTutores;
-    private ObservableList<CoordinacionItem> listaCoordinaciones;
 
-    public TabAsignacionesController(GestionDocentes gestionDocentes,
-                                      GestionAsignaturas gestionAsignaturas,
-                                      GestionGrupos gestionGrupos,
-                                      GestionUsuarios gestionUsuarios,
-                                      GestionGrados gestionGrados) {
+    public TabAsignacionesController(GestionDocentes gestionDocentes, GestionAsignaturas gestionAsignaturas, LoggerPort logger) {
         this.gestionDocentes = gestionDocentes;
         this.gestionAsignaturas = gestionAsignaturas;
-        this.gestionGrupos = gestionGrupos;
-        this.gestionUsuarios = gestionUsuarios;
-        this.gestionGrados = gestionGrados;
+        this.logger = logger;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        configurarCombos();
         configurarTablaAsignacionesDocente();
-        configurarTablaTutores();
-        configurarTablaCoordinaciones();
-        cargarDatos();
-
-        tabPaneAsignaciones.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
-            if (newTab != null) {
-                recargarCombosAsignaciones();
-                cargarDatos();
-            }
-        });
-
-        SistemaEventBus.suscribir(TipoEvento.GRUPOS, this::recargarDesdeEvento);
+        recargarCombosAsignaciones();
+        cargarAsignacionesDocente();
         SistemaEventBus.suscribir(TipoEvento.DOCENTES, this::recargarDesdeEvento);
         SistemaEventBus.suscribir(TipoEvento.ASIGNATURAS, this::recargarDesdeEvento);
-        SistemaEventBus.suscribir(TipoEvento.GRADOS, this::recargarDesdeEvento);
-        SistemaEventBus.suscribir(TipoEvento.USUARIOS, this::recargarDesdeEvento);
     }
 
     private void recargarDesdeEvento() {
         recargarCombosAsignaciones();
-        cargarDatos();
-    }
-
-    private void configurarCombos() {
-        recargarCombosAsignaciones();
+        cargarAsignacionesDocente();
     }
 
     private void recargarCombosAsignaciones() {
-        cmbDocenteAsignatura.getItems().clear();
-        cmbDocenteAsignatura.getItems().add("Seleccione un docente");
-        for (Docente d : gestionDocentes.listarTodos()) {
-            cmbDocenteAsignatura.getItems().add(d.getCodigo() + " - " + d.getNombreCompleto());
-        }
+        cmbDocenteAsignatura.getItems().clear(); cmbDocenteAsignatura.getItems().add("Seleccione un docente");
+        for (Docente d : gestionDocentes.listarTodos()) cmbDocenteAsignatura.getItems().add(d.getCodigo() + " - " + d.getNombreCompleto());
         cmbDocenteAsignatura.getSelectionModel().selectFirst();
 
-        cmbAsignaturaDocente.getItems().clear();
-        cmbAsignaturaDocente.getItems().add("Seleccione una asignatura");
-        for (Asignatura a : gestionAsignaturas.listarTodos()) {
-            cmbAsignaturaDocente.getItems().add(a.getNombre());
-        }
+        cmbAsignaturaDocente.getItems().clear(); cmbAsignaturaDocente.getItems().add("Seleccione una asignatura");
+        for (Asignatura a : gestionAsignaturas.listarTodos()) cmbAsignaturaDocente.getItems().add(a.getNombre());
         cmbAsignaturaDocente.getSelectionModel().selectFirst();
-
-        cmbDocenteTutor.getItems().clear();
-        cmbDocenteTutor.getItems().add("Seleccione un docente");
-        for (Docente d : gestionDocentes.listarTodos()) {
-            cmbDocenteTutor.getItems().add(d.getCodigo() + " - " + d.getNombreCompleto());
-        }
-        cmbDocenteTutor.getSelectionModel().selectFirst();
-
-        cmbGrupoTutor.getItems().clear();
-        cmbGrupoTutor.getItems().add("Seleccione un grupo");
-        for (Grupo g : gestionGrupos.listarTodos()) {
-            cmbGrupoTutor.getItems().add(g.getNombre());
-        }
-        cmbGrupoTutor.getSelectionModel().selectFirst();
-
-        cmbCoordinador.getItems().clear();
-        cmbCoordinador.getItems().add("Seleccione un coordinador");
-        List<Usuario> usuarios = gestionUsuarios.listarTodos();
-        for (Usuario u : usuarios) {
-            if (u instanceof CoordinadorAcademico) {
-                cmbCoordinador.getItems().add(u.getCodigo() + " - " + u.getNombre() + " " + u.getApellido());
-            }
-        }
-        cmbCoordinador.getSelectionModel().selectFirst();
-
-        cmbGradoCoordinacion.getItems().clear();
-        cmbGradoCoordinacion.getItems().add("Seleccione un grado");
-        for (Grado g : gestionGrados.listarTodos()) {
-            cmbGradoCoordinacion.getItems().add(g.getNombre() + " (" + g.getNivel() + ")");
-        }
-        cmbGradoCoordinacion.getSelectionModel().selectFirst();
-    }
-
-    private void cargarDatos() {
-        cargarAsignacionesDocente();
-        cargarTutores();
-        cargarCoordinaciones();
     }
 
     private void configurarTablaAsignacionesDocente() {
@@ -187,8 +89,13 @@ public class TabAsignacionesController implements Initializable {
                     AsignacionItem item = getTableView().getItems().get(getIndex());
                     Docente docente = gestionDocentes.buscarPorCodigo(item.getCodigoDocente());
                     if (docente != null) {
-                        gestionDocentes.removerAsignatura(docente, item.getAsignatura());
-                        SistemaEventBus.notificar(TipoEvento.DOCENTES);
+                        try {
+                            gestionDocentes.removerAsignatura(docente, item.getAsignatura());
+                            SistemaEventBus.notificar(TipoEvento.DOCENTES);
+                        } catch (Exception ex) {
+                            logger.error("Error al remover asignatura: " + ex.getMessage());
+                            Dialogos.info(ex.getMessage());
+                        }
                     }
                 });
             }
@@ -200,277 +107,37 @@ public class TabAsignacionesController implements Initializable {
     }
 
     private void cargarAsignacionesDocente() {
-        List<AsignacionItem> items = new ArrayList<>();
-        for (Docente d : gestionDocentes.listarTodos()) {
-            for (Asignatura a : d.getAsignaturas()) {
-                items.add(new AsignacionItem(d.getCodigo(), d.getNombreCompleto(), a.getNombre(), a));
+        try {
+            List<AsignacionItem> items = new ArrayList<>();
+            for (Docente d : gestionDocentes.listarTodos()) {
+                for (Asignatura a : d.getAsignaturas()) items.add(new AsignacionItem(d.getCodigo(), d.getNombreCompleto(), a.getNombre(), a));
             }
+            listaAsignacionesDocente = FXCollections.observableArrayList(items);
+            tablaAsignaturasDocente.setItems(listaAsignacionesDocente);
+            tablaAsignaturasDocente.refresh();
+        } catch (Exception e) {
+            logger.error("Error al cargar asignaciones docente: " + e.getMessage());
         }
-        listaAsignacionesDocente = FXCollections.observableArrayList(items);
-        tablaAsignaturasDocente.setItems(listaAsignacionesDocente);
-        tablaAsignaturasDocente.refresh();
     }
 
-    private void configurarTablaTutores() {
-        colGrupoTutor.setCellValueFactory(new PropertyValueFactory<>("nombreGrupo"));
-        colDocenteTutor.setCellValueFactory(new PropertyValueFactory<>("nombreTutor"));
-        configurarAccionesTutor();
-    }
-
-    private void configurarAccionesTutor() {
-        colAccionesTutor.setCellFactory(param -> new TableCell<>() {
-            private final Button btnQuitar = new Button("Quitar");
-            {
-                btnQuitar.getStyleClass().add("boton-tabla-eliminar");
-                btnQuitar.setOnAction(e -> {
-                    TutorItem item = getTableView().getItems().get(getIndex());
-                    Grupo grupo = item.getGrupo();
-                    gestionGrupos.removerTutor(grupo);
-                    SistemaEventBus.notificar(TipoEvento.GRUPOS, TipoEvento.DOCENTES);
-                });
-            }
-            @Override protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : new HBox(10, btnQuitar));
-            }
-        });
-    }
-
-    private void cargarTutores() {
-        List<TutorItem> items = new ArrayList<>();
-        for (Grupo g : gestionGrupos.listarTodos()) {
-            if (g.getTutor() != null) {
-                items.add(new TutorItem(g));
-            }
-        }
-        listaTutores = FXCollections.observableArrayList(items);
-        tablaTutores.setItems(listaTutores);
-        tablaTutores.refresh();
-    }
-
-    private void configurarTablaCoordinaciones() {
-        colCoordinadorNombre.setCellValueFactory(new PropertyValueFactory<>("nombreCoordinador"));
-        colGradoCoordinado.setCellValueFactory(new PropertyValueFactory<>("nombreGrado"));
-        configurarAccionesCoordinacion();
-    }
-
-    private void configurarAccionesCoordinacion() {
-        colAccionesCoordinacion.setCellFactory(param -> new TableCell<>() {
-            private final Button btnQuitar = new Button("Quitar");
-            {
-                btnQuitar.getStyleClass().add("boton-tabla-eliminar");
-                btnQuitar.setOnAction(e -> {
-                    CoordinacionItem item = getTableView().getItems().get(getIndex());
-                    CoordinadorAcademico coord = item.getCoordinador();
-                    Grado grado = item.getGrado();
-                    coord.removerGrado(grado);
-                    gestionUsuarios.actualizarUsuario(coord);
-                    SistemaEventBus.notificar(TipoEvento.USUARIOS, TipoEvento.GRADOS);
-                });
-            }
-            @Override protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : new HBox(10, btnQuitar));
-            }
-        });
-    }
-
-    private void cargarCoordinaciones() {
-        List<CoordinacionItem> items = new ArrayList<>();
-        List<Usuario> usuarios = gestionUsuarios.listarTodos();
-        for (Usuario u : usuarios) {
-            if (u instanceof CoordinadorAcademico coord) {
-                for (Grado g : coord.getGradosSupervisados()) {
-                    items.add(new CoordinacionItem(coord, g));
-                }
-            }
-        }
-        listaCoordinaciones = FXCollections.observableArrayList(items);
-        tablaCoordinaciones.setItems(listaCoordinaciones);
-        tablaCoordinaciones.refresh();
-    }
-
-    @FXML
+    @FXML 
     private void handleAgregarAsignaturaDocente() {
         String docenteSel = cmbDocenteAsignatura.getValue();
         String asigSel = cmbAsignaturaDocente.getValue();
-        if (docenteSel == null || docenteSel.startsWith("Seleccione")
-                || asigSel == null || asigSel.startsWith("Seleccione")) {
-            Dialogos.info("Seleccione un docente y una asignatura.");
-            return;
+        if (docenteSel == null || docenteSel.startsWith("Seleccione") || asigSel == null || asigSel.startsWith("Seleccione")) {
+            Dialogos.info("Seleccione un docente y una asignatura."); return;
         }
         String cod = docenteSel.split(" - ")[0];
         Docente docente = gestionDocentes.buscarPorCodigo(cod);
-        if (docente == null) {
-            Dialogos.info("Docente no encontrado.");
-            return;
-        }
+        if (docente == null) { Dialogos.info("Docente no encontrado."); return; }
         Asignatura a = gestionAsignaturas.buscarAsignatura(asigSel);
-        if (a == null) {
-            Dialogos.info("Asignatura no encontrada.");
-            return;
-        }
+        if (a == null) { Dialogos.info("Asignatura no encontrada."); return; }
         try {
             gestionDocentes.agregarAsignatura(docente, a);
             SistemaEventBus.notificar(TipoEvento.DOCENTES);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Error al agregar asignatura a docente: " + e.getMessage());
             Dialogos.info(e.getMessage());
-        }
-    }
-
-    @FXML
-    private void handleAsignarTutor() {
-        String docenteSel = cmbDocenteTutor.getValue();
-        String grupoSel = cmbGrupoTutor.getValue();
-        if (docenteSel == null || docenteSel.startsWith("Seleccione")
-                || grupoSel == null || grupoSel.startsWith("Seleccione")) {
-            Dialogos.info("Seleccione un docente y un grupo.");
-            return;
-        }
-        String cod = docenteSel.split(" - ")[0];
-        Docente docente = gestionDocentes.buscarPorCodigo(cod);
-        if (docente == null) {
-            Dialogos.info("Docente no encontrado.");
-            return;
-        }
-        Grupo grupo = gestionGrupos.buscarPorNombre(grupoSel);
-        if (grupo == null) {
-            Dialogos.info("Grupo no encontrado.");
-            return;
-        }
-        try {
-            gestionGrupos.asignarTutor(grupo, docente);
-            SistemaEventBus.notificar(TipoEvento.GRUPOS, TipoEvento.DOCENTES);
-        } catch (IllegalArgumentException e) {
-            Dialogos.info(e.getMessage());
-        }
-    }
-
-    @FXML
-    private void handleAsignarCoordinacion() {
-        String coordSel = cmbCoordinador.getValue();
-        String gradoSel = cmbGradoCoordinacion.getValue();
-        if (coordSel == null || coordSel.startsWith("Seleccione")
-                || gradoSel == null || gradoSel.startsWith("Seleccione")) {
-            Dialogos.info("Seleccione un coordinador y un grado.");
-            return;
-        }
-        String cod = coordSel.split(" - ")[0];
-        Usuario u = gestionUsuarios.buscarPorCodigo(cod);
-        if (!(u instanceof CoordinadorAcademico coord)) {
-            Dialogos.info("El usuario seleccionado no es un coordinador.");
-            return;
-        }
-        Grado g = parsearGrado(gradoSel);
-        if (g == null) {
-            Dialogos.info("Grado no encontrado.");
-            return;
-        }
-        try {
-            coord.agregarGrado(g);
-            gestionUsuarios.actualizarUsuario(coord);
-            SistemaEventBus.notificar(TipoEvento.USUARIOS, TipoEvento.GRADOS);
-        } catch (IllegalArgumentException e) {
-            Dialogos.info(e.getMessage());
-        }
-    }
-
-    private Grado parsearGrado(String texto) {
-        if (texto == null) return null;
-        int idx = texto.lastIndexOf(" (");
-        if (idx < 0) return gestionGrados.buscarPorNombre(texto);
-        String nombre = texto.substring(0, idx).trim();
-        String nivel = texto.substring(idx + 2, texto.length() - 1).trim();
-        return gestionGrados.buscarPorNombreYNivel(nombre, nivel);
-    }
-
-    public TabPane getTabPane() {
-        return tabPaneAsignaciones;
-    }
-
-    public static class AsignacionItem {
-        private final String codigoDocente;
-        private final String nombreDocente;
-        private final String nombreAsignatura;
-        private final Asignatura asignatura;
-
-        public AsignacionItem(String codigoDocente, String nombreDocente, String nombreAsignatura, Asignatura asignatura) {
-            this.codigoDocente = codigoDocente;
-            this.nombreDocente = nombreDocente;
-            this.nombreAsignatura = nombreAsignatura;
-            this.asignatura = asignatura;
-        }
-
-        public String getCodigoDocente() { return codigoDocente; }
-        public String getNombreDocente() { return nombreDocente; }
-        public String getNombreAsignatura() { return nombreAsignatura; }
-        public Asignatura getAsignatura() { return asignatura; }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof AsignacionItem that)) return false;
-            return java.util.Objects.equals(codigoDocente, that.codigoDocente)
-                    && java.util.Objects.equals(nombreAsignatura, that.nombreAsignatura);
-        }
-
-        @Override
-        public int hashCode() {
-            return java.util.Objects.hash(codigoDocente, nombreAsignatura);
-        }
-    }
-
-    public static class TutorItem {
-        private final Grupo grupo;
-
-        public TutorItem(Grupo grupo) {
-            this.grupo = grupo;
-        }
-
-        public Grupo getGrupo() { return grupo; }
-        public String getNombreGrupo() { return grupo.getNombre(); }
-        public String getNombreTutor() {
-            return grupo.getTutor() != null ? grupo.getTutor().getNombreCompleto() : "Sin tutor";
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof TutorItem that)) return false;
-            return java.util.Objects.equals(grupo, that.grupo);
-        }
-
-        @Override
-        public int hashCode() {
-            return java.util.Objects.hash(grupo);
-        }
-    }
-
-    public static class CoordinacionItem {
-        private final CoordinadorAcademico coordinador;
-        private final Grado grado;
-
-        public CoordinacionItem(CoordinadorAcademico coordinador, Grado grado) {
-            this.coordinador = coordinador;
-            this.grado = grado;
-        }
-
-        public CoordinadorAcademico getCoordinador() { return coordinador; }
-        public Grado getGrado() { return grado; }
-        public String getNombreCoordinador() { return coordinador.getNombreCompleto(); }
-        public String getNombreGrado() { return grado.getNombre(); }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof CoordinacionItem that)) return false;
-            return java.util.Objects.equals(coordinador, that.coordinador)
-                    && java.util.Objects.equals(grado, that.grado);
-        }
-
-        @Override
-        public int hashCode() {
-            return java.util.Objects.hash(coordinador, grado);
         }
     }
 }

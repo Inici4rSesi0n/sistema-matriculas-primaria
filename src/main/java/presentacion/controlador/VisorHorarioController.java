@@ -54,6 +54,7 @@ public class VisorHorarioController implements Initializable {
     @FXML private TableColumn<Evento, String> colAsignaturaHorario;
     @FXML private TableColumn<Evento, String> colDocenteHorario;
     @FXML private TableColumn<Evento, String> colAulaHorario;
+    @FXML private TableColumn<Evento, String> colModalidadAula;
     @FXML private TableColumn<Evento, String> colDescripcion;
 
     private ObservableList<Evento> listaHorario;
@@ -77,14 +78,12 @@ public class VisorHorarioController implements Initializable {
 
     private void configurarCombos() {
         cmbGrupoVisor.getItems().clear();
-        cmbGrupoVisor.getItems().add("Seleccione un grupo");
         for (Grupo g : gestionGrupos.listarTodos()) {
             cmbGrupoVisor.getItems().add(g.getNombre());
         }
         cmbGrupoVisor.getSelectionModel().selectFirst();
 
         cmbPeriodoVisor.getItems().clear();
-        cmbPeriodoVisor.getItems().add("Seleccione un periodo");
         for (PeriodoAcademico p : gestionPeriodos.listarTodos()) {
             cmbPeriodoVisor.getItems().add(p.getNombre());
         }
@@ -121,6 +120,13 @@ public class VisorHorarioController implements Initializable {
             if (evento instanceof Clase clase) {
                 return new javafx.beans.property.SimpleStringProperty(
                         clase.getAula() != null ? clase.getAula().getNombre() : "");
+            }
+            return new javafx.beans.property.SimpleStringProperty("");
+        });
+        colModalidadAula.setCellValueFactory(cell -> {
+            Evento evento = cell.getValue();
+            if (evento instanceof Clase clase && clase.getAula() != null && clase.getAula().getModalidad() != null) {
+                return new javafx.beans.property.SimpleStringProperty(clase.getAula().getModalidad().name());
             }
             return new javafx.beans.property.SimpleStringProperty("");
         });

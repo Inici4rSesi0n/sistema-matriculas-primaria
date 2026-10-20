@@ -1,32 +1,34 @@
 package presentacion.controlador;
+
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionAsignaturas;
+import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrupos;
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.usuarios.GestionDocentes;
 import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.usuarios.GestionEstudiantes;
-import aplicacion.casosdeuso.portaldeingreso.administraciondelsistema.academico.GestionGrupos;
-import aplicacion.casosdeuso.portaldeingreso.sistema.GestionPermisos;
-import aplicacion.casosdeuso.portaldeingreso.sistema.GestionPermisos.SeccionMenu;
 import dominio.modelo.Usuario;
 import infraestructura.configuracion.SpringFxmlLoader;
 import presentacion.dialogos.Dialogos;
 import presentacion.eventos.SistemaEventBus;
 import presentacion.eventos.TipoEvento;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 /**
  *
  * @author inici4rsesi0n
@@ -35,32 +37,29 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class DashboardController implements Initializable {
 
-    private final GestionPermisos gestionPermisos;
     private final GestionEstudiantes gestionEstudiantes;
     private final GestionDocentes gestionDocentes;
     private final GestionGrupos gestionGrupos;
     private final GestionAsignaturas gestionAsignaturas;
     private final SpringFxmlLoader fxmlLoader;
 
-    @FXML private Label lblUsuarioHeader, lblBienvenida;
-    @FXML private Label lblNumEstudiantes, lblNumDocentes, lblNumGrupos, lblNumAsignaturas;
-    @FXML private Button btnMisCursos, btnMiHorario, btnCalificaciones, btnSubirMaterial, btnRegistrarAsistencia;
-    @FXML private Button btnTramites, btnMatricula;
-    @FXML private Button btnGestionUsuarios, btnGestionAcademica, btnReportes, btnConfiguracionSistema;
-    @FXML private Button btnVolverInicio;
+    @FXML private Label lblUsuarioHeader;
+    @FXML private Label lblNumEstudiantes;
+    @FXML private Label lblNumDocentes;
+    @FXML private Label lblNumGrupos;
+    @FXML private Label lblNumAsignaturas;
     @FXML private StackPane contenedorCentral;
+    @FXML private Button btnVolverInicio;
 
     private Usuario usuario;
     private final Map<String, Pane> vistasCargadas = new HashMap<>();
     private final Map<String, String> rutasVistas = new HashMap<>();
 
-    public DashboardController(GestionPermisos gestionPermisos,
-                                 GestionEstudiantes gestionEstudiantes,
-                                 GestionDocentes gestionDocentes,
-                                 GestionGrupos gestionGrupos,
-                                 GestionAsignaturas gestionAsignaturas,
-                                 SpringFxmlLoader fxmlLoader) {
-        this.gestionPermisos = gestionPermisos;
+    public DashboardController(GestionEstudiantes gestionEstudiantes,
+                               GestionDocentes gestionDocentes,
+                               GestionGrupos gestionGrupos,
+                               GestionAsignaturas gestionAsignaturas,
+                               SpringFxmlLoader fxmlLoader) {
         this.gestionEstudiantes = gestionEstudiantes;
         this.gestionDocentes = gestionDocentes;
         this.gestionGrupos = gestionGrupos;
@@ -71,7 +70,6 @@ public class DashboardController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         precargarRutas();
-
         SistemaEventBus.suscribir(TipoEvento.ESTUDIANTES, this::actualizarTarjetas);
         SistemaEventBus.suscribir(TipoEvento.DOCENTES, this::actualizarTarjetas);
         SistemaEventBus.suscribir(TipoEvento.GRUPOS, this::actualizarTarjetas);
@@ -86,45 +84,32 @@ public class DashboardController implements Initializable {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
-        configurarVisibilidadPorRol();
+        if (lblUsuarioHeader != null) {
+            lblUsuarioHeader.setText(usuario.getNombre() + " " + usuario.getApellido());
+        }
         cargarDatosIniciales();
-    }
-
-    private void configurarVisibilidadPorRol() {
-        if (usuario == null) return;
-        Usuario.Rol rol = usuario.getRol();
-
-        btnMisCursos.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.MIS_CURSOS));
-        btnMiHorario.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.MI_HORARIO));
-        btnCalificaciones.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.CALIFICACIONES));
-        btnSubirMaterial.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.SUBIR_MATERIAL));
-        btnRegistrarAsistencia.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.REGISTRAR_ASISTENCIA));
-        btnTramites.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.TRAMITES));
-        btnMatricula.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.MATRICULA));
-        btnGestionUsuarios.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.GESTION_USUARIOS));
-        btnGestionAcademica.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.GESTION_ACADEMICA));
-        btnReportes.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.REPORTES));
-        btnConfiguracionSistema.setVisible(gestionPermisos.esSeccionVisible(rol, SeccionMenu.CONFIGURACION_SISTEMA));
-
-        lblUsuarioHeader.setText(usuario.getNombre() + " " + usuario.getApellido());
-        lblBienvenida.setText("Bienvenido, " + usuario.getNombre() + ". Rol: " + rol);
     }
 
     private void cargarDatosIniciales() {
         if (usuario == null) return;
         actualizarTarjetas();
-        if (usuario.getRol() != Usuario.Rol.ADMINISTRADOR && usuario.getRol() != Usuario.Rol.DIRECTOR) {
-            ((GridPane) lblNumEstudiantes.getParent().getParent()).setVisible(false);
-            lblBienvenida.setText("Bienvenido, " + usuario.getNombre());
-        }
     }
+
     private void actualizarTarjetas() {
         if (usuario == null) return;
         Platform.runLater(() -> {
-            lblNumEstudiantes.setText(String.valueOf(gestionEstudiantes.listarTodos().size()));
-            lblNumDocentes.setText(String.valueOf(gestionDocentes.listarTodos().size()));
-            lblNumGrupos.setText(String.valueOf(gestionGrupos.listarTodos().size()));
-            lblNumAsignaturas.setText(String.valueOf(gestionAsignaturas.listarTodos().size()));
+            try {
+                if (lblNumEstudiantes != null)
+                    lblNumEstudiantes.setText(String.valueOf(gestionEstudiantes.listarTodos().size()));
+                if (lblNumDocentes != null)
+                    lblNumDocentes.setText(String.valueOf(gestionDocentes.listarTodos().size()));
+                if (lblNumGrupos != null)
+                    lblNumGrupos.setText(String.valueOf(gestionGrupos.listarTodos().size()));
+                if (lblNumAsignaturas != null)
+                    lblNumAsignaturas.setText(String.valueOf(gestionAsignaturas.listarTodos().size()));
+            } catch (Exception e) {
+                System.err.println("Error actualizando tarjetas KPI: " + e.getMessage());
+            }
         });
     }
 
@@ -146,25 +131,19 @@ public class DashboardController implements Initializable {
                 vista = loader.load();
                 vistasCargadas.put(clave, vista);
             } catch (IOException e) {
+                e.printStackTrace();
                 Dialogos.info("No se pudo cargar la sección: " + clave);
                 return;
             }
         }
         contenedorCentral.getChildren().setAll(vista);
-        actualizarTarjetas();
     }
 
     @FXML
     private void handleVolverInicio() {
-        cerrarVentana();
-    }
-
-    private void cerrarVentana() {
         if (btnVolverInicio != null && btnVolverInicio.getScene() != null) {
             Stage stage = (Stage) btnVolverInicio.getScene().getWindow();
-            if (stage != null) {
-                stage.close();
-            }
+            if (stage != null) stage.close();
         }
     }
 }

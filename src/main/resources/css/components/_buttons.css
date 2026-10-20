@@ -1,0 +1,117 @@
+.boton-primario {
+    -fx-background-color: linear-gradient(to right, #00D2FF, #3B82F6);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 210, 255, 0.3), 15, 0.1, 0, 5);
+}
+.boton-primario:hover {
+    -fx-background-color: linear-gradient(to right, #33DBFF, #60A5FA);
+    -fx-effect: dropshadow(gaussian, rgba(0, 210, 255, 0.5), 20, 0.2, 0, 5);
+}
+
+.boton-secundario-destacado {
+    -fx-background-color: rgba(99, 102, 241, 0.1);
+    -fx-border-color: rgba(139, 92, 246, 0.6);
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-text-fill: #C7D2FE;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.boton-secundario-destacado:hover {
+    -fx-background-color: rgba(99, 102, 241, 0.25);
+    -fx-border-color: #8B5CF6;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.3), 15, 0.1, 0, 3);
+}
+
+.boton-morado-suave {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(139, 92, 246, 0.4);
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 8px;
+    -fx-text-fill: #C4B5FD;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.boton-morado-suave:hover {
+    -fx-background-color: rgba(139, 92, 246, 0.1);
+    -fx-border-color: #8B5CF6;
+    -fx-text-fill: #DDD6FE;
+}
+
+/* Botón Secundario (Cancelar en formularios) */
+.boton-secundario {
+    -fx-background-color: rgba(255, 255, 255, 0.05) !important;
+    -fx-text-fill: #E2E8F0 !important;
+    -fx-border-color: rgba(255, 255, 255, 0.2) !important;
+    -fx-border-width: 1px !important;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+}
+.boton-secundario:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1) !important;
+    -fx-border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Botón de Tabla (Editar/Eliminar) */
+.boton-tabla-editar, .boton-tabla-eliminar {
+    -fx-background-color: rgba(30, 41, 59, 0.8);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-text-fill: #E2E8F0;
+    -fx-cursor: hand;
+    -fx-padding: 5px 10px;
+    -fx-font-size: 12px;
+}
+.boton-tabla-editar:hover { -fx-background-color: rgba(0, 210, 255, 0.2); -fx-border-color: #00D2FF; -fx-text-fill: #00D2FF; }
+.boton-tabla-eliminar:hover { -fx-background-color: rgba(239, 68, 68, 0.2); -fx-border-color: #EF4444; -fx-text-fill: #EF4444; }
+
+/* Botón Editar (Hover Verde) */
+.boton-tabla-editar {
+    -fx-background-color: rgba(30, 41, 59, 0.8);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-text-fill: #E2E8F0;
+    -fx-cursor: hand;
+    -fx-padding: 5px 10px;
+    -fx-font-size: 12px;
+}
+.boton-tabla-editar:hover {
+    -fx-background-color: rgba(16, 185, 129, 0.15); /* Fondo verde sutil */
+    -fx-border-color: #10B981; /* Borde verde esmeralda */
+    -fx-text-fill: #10B981; /* Texto verde */
+}
+
+.boton-morado-suave {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(139, 92, 246, 0.4);
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 8px;
+    -fx-text-fill: #C4B5FD;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 10px 20px;
+}
+.boton-morado-suave:hover {
+    -fx-background-color: rgba(139, 92, 246, 0.1);
+    -fx-border-color: #8B5CF6;
+    -fx-text-fill: #DDD6FE;
+}
+
+/* --- FIX DE SIMETRÍA DE BOTONES --- */
+.boton-primario {
+    -fx-border-color: transparent; /* Añade un borde transparente para igualar el box model */
+    -fx-border-width: 1.5px;       /* Mismo ancho que el botón morado */
+    -fx-border-radius: 8px;
+    -fx-padding: 10px 20px;        /* Mismo padding */
+}
+
+.boton-morado-suave {
+    -fx-padding: 10px 20px;        /* Asegurar mismo padding */
+}
